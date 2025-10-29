@@ -1,5 +1,8 @@
 # Conductor App Design Document
 
+### Old GOogle Doc Link:
+https://docs.google.com/document/d/1t_LFRt0wt6P4KaSxmBUDQpadODtPcCKyVPuFuuiivb4/edit?tab=t.0
+
 ## User Persona
 [To be filled]
 
