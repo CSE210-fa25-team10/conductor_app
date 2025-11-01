@@ -35,6 +35,19 @@ https://docs.google.com/document/d/1t_LFRt0wt6P4KaSxmBUDQpadODtPcCKyVPuFuuiivb4/
   - Node.js
 - **Project Resources**:
   - [Project Overview (Miro Board)](https://miro.com/app/board/uXjVJzfnF8M=/?share_link_id=649987878540)
+ 
+### Infrastructure
+- **Lead**: Jai
+- **Team Members**:
+  - Dennis
+  - Jiesen
+- **Technology Stack**:
+  - AWS/Azure EC2
+  - Docker
+  - PostgreSQL
+  - OAuth2.0/SAML
+- **Project Resources**:
+  - [Infra Diagram (Miro Board)](https://miro.com/app/board/uXjVJxpRiFg=/?share_link_id=679641774378 )
 
 ## Milestones
 
