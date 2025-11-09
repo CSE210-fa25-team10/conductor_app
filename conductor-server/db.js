@@ -2,7 +2,7 @@ import pkg from 'pg';
 const { Pool } = pkg;
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL || "postgresql://appuser:apppassword@localhost:5432/conductor",
     // For RDS with TLS later, you may need:
     // ssl: { rejectUnauthorized: false }
 });
