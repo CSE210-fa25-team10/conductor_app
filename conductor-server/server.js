@@ -3,34 +3,34 @@ import { Pool } from "pg";
 import session from 'express-session';
 import apiRoutes from './routes/apiRoutes.js';
 import dotenv from 'dotenv';
-import passport from 'passport';
-import './config/passport.js';
 
 dotenv.config();
 
 const app = express();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-    }
+    saveUninitialized: false,
 }));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use("/api", apiRoutes);
 
 // Test route
-app.get('/', (req, res) => {
-    res.send('✅ Express 5.1.0 server running on Node.js v24.11.0 LTS');
+const isLoggedIn = (req, res, next) => {
+  if (req.session.user) next();
+  else res.redirect('/users');
+};
+
+app.get('/', isLoggedIn, (req, res) => {
+  res.send(`
+    <h1>Welcome ${req.session.user.name}</h1>
+    <img src="${req.session.user.picture}" />
+    <br/>
+    <a href="/api/auth/logout">Logout</a>
+  `);
 });
 
 console.log("Running server.js from:", process.cwd());
