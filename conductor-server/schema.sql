@@ -102,3 +102,4 @@ ON activities (
   name,
   ((date_trunc('minute', (starts_at AT TIME ZONE 'UTC'))) AT TIME ZONE 'UTC')
 );
+
