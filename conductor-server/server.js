@@ -52,7 +52,7 @@ app.get("/users", async (_req, res) => {
   }
 });
 
-// COURSES (ERD: only course_id)
+// COURSES 
 app.get("/courses", async (_req, res) => {
   try {
     const { rows } = await pool.query(
@@ -67,7 +67,7 @@ app.get("/courses", async (_req, res) => {
   }
 });
 
-// ACTIVITIES (ERD: activity_id, course_id, name, starts_at, type) — NO ::uuid
+// ACTIVITIES 
 app.get("/activities", async (req, res) => {
   const hasFilter = typeof req.query.course_id !== "undefined";
   const courseId = hasFilter ? Number.parseInt(req.query.course_id, 10) : null;
@@ -93,7 +93,7 @@ app.get("/activities", async (req, res) => {
   }
 });
 
-// ROSTER (ERD: users.name; course_users has no enrolled_at) — NO ::uuid
+// ROSTER 
 app.get("/courses/:id/roster", async (req, res) => {
   const courseId = Number.parseInt(req.params.id, 10);
   if (!Number.isInteger(courseId)) {
@@ -115,7 +115,7 @@ app.get("/courses/:id/roster", async (req, res) => {
   }
 });
 
-// ATTENDANCE (ERD: present BOOLEAN; INT ids)
+// ATTENDANCE 
 app.post("/attendance", async (req, res) => {
   let { activity_id, user_id, present } = req.body || {};
   activity_id = typeof activity_id === "string" ? Number.parseInt(activity_id, 10) : activity_id;
