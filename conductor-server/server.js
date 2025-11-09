@@ -1,9 +1,37 @@
 import express from "express";
 import { Pool } from "pg";
-import "dotenv/config";
+import session from 'express-session';
+import apiRoutes from './routes/apiRoutes.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+}));
+
+app.use("/api", apiRoutes);
+
+// Test route
+const isLoggedIn = (req, res, next) => {
+  if (req.session.user) next();
+  else res.redirect('/users');
+};
+
+app.get('/', isLoggedIn, (req, res) => {
+  res.send(`
+    <h1>Welcome ${req.session.user.name}</h1>
+    <img src="${req.session.user.picture}" />
+    <br/>
+    <a href="/api/auth/logout">Logout</a>
+  `);
+});
 
 console.log("Running server.js from:", process.cwd());
 
