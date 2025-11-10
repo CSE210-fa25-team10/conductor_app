@@ -1,59 +1,330 @@
-// 模拟从后端获取课程数据
-async function fetchUserCourses() {
-    // 这里替换为你的实际 API 调用
-    // const response = await fetch('/api/user/courses');
-    // const courses = await response.json();
-    
-    // 模拟数据
-    return [
-        { id: 1, name: 'Introduction to Computer Science', code: 'CS101' },
-        { id: 2, name: 'Data Structures and Algorithms', code: 'CS201' },
-        { id: 3, name: 'Web Development', code: 'CS301' },
-        { id: 4, name: 'Database Systems', code: 'CS401' },
-        { id: 5, name: 'Machine Learning', code: 'CS501' }
-    ];
+const API_BASE_URL = '/api'; 
+
+async function apiCall(endpoint, options = {}) {
+    try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            },
+            ...options
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'API call failed');
+        }
+        return data;
+    } catch (error) {
+        console.error('API call error:', error);
+        throw error;
+    }
 }
 
-// 渲染课程列表
+async function fetchUserInfo() {
+    // return await apiCall('/user/complete');
+    return{
+        succsee: true,
+        data: {
+            profile: {
+                id: "user_123",
+                name: "John Doe",
+                email: "john.doe@university.edu",
+                phone: "+1-234-567-8900",
+                major: "Computer Science"
+            },
+            preferences: {
+                pronouns: "he/him",
+                freeTime: "Weekday evenings and weekends",
+                socialMedia: "@johndoe"
+            }
+        }
+    }
+}
+
+async function updateUserPreferences(preferences) {
+    // return await apiCall('/user/preferences', {
+    //     method: 'PUT',
+    //     body: JSON.stringify(preferences)
+    // });
+    
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({
+                success: true,
+                message: "Preferences updated successfully",
+                data: {
+                    ...preferences,
+                    updatedAt: new Date().toISOString()
+                }
+            });
+        }, 500);
+    });
+}
+
+function renderUserInfo(userData) {
+    const { profile, preferences } = userData;
+    
+    const userGreeting = document.querySelector('.user-greeting');
+    if (userGreeting) {
+        userGreeting.textContent = `Hi, ${profile.name}`;
+    }
+    
+    const infoFields = {
+        'major': profile.major || 'Not set',
+        'email': profile.email,
+        'pronouns': preferences.pronouns || 'Not set',
+        'phone': profile.phone || 'Not set',
+        'social media': preferences.socialMedia || 'Not set',
+        'free time': preferences.freeTime || 'Not set'
+    };
+    
+    document.querySelectorAll('.info-group').forEach(group => {
+        const infoText = group.querySelector('.info-text');
+        if (infoText) {
+            const originalText = infoText.textContent.toLowerCase();
+            
+
+            for (const [key, value] of Object.entries(infoFields)) {
+                if (originalText === key) {
+                    infoText.textContent = value;
+                    infoText.setAttribute('data-field', key);
+                    break;
+                }
+            }
+        }
+    });
+}
+
+function makeFieldsEditable() {
+    const editableFields = ['pronouns', 'free time', 'social media'];
+    
+    document.querySelectorAll('.info-group').forEach(group => {
+        const infoBox = group.querySelector('.info-box');
+        const infoText = group.querySelector('.info-text');
+        const fieldLabel = infoText.getAttribute('data-field');
+        
+        if (editableFields.includes(fieldLabel)) {
+            infoBox.classList.add('editable');
+            infoBox.style.cursor = 'pointer';
+            
+            infoBox.addEventListener('click', () => {
+                editField(infoText, fieldLabel);
+            });
+        }
+    });
+}
+
+function editField(element, fieldLabel) {
+    const currentValue = element.textContent;
+    const originalValue = currentValue === 'Not set' ? '' : currentValue;
+    
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = originalValue;
+    input.className = 'info-edit-input';
+    input.placeholder = `Enter your ${fieldLabel}`;
+    
+    element.textContent = '';
+    element.appendChild(input);
+    input.focus();
+    input.select();
+    
+    const saveEdit = async () => {
+        const newValue = input.value.trim();
+        
+        if (newValue === originalValue) {
+            element.textContent = currentValue;
+            return;
+        }
+        
+        element.textContent = 'Saving...';
+        
+        try {
+            const fieldMapping = {
+                'pronouns': 'pronouns',
+                'free time': 'freeTime',
+                'social media': 'socialMedia'
+            };
+            
+            const fieldKey = fieldMapping[fieldLabel];
+            const updateData = { [fieldKey]: newValue };
+            
+            await updateUserPreferences(updateData);
+            
+            element.textContent = newValue || 'Not set';
+            showNotification('Updated successfully!', 'success');
+            
+        } catch (error) {
+            element.textContent = currentValue;
+            showNotification('Failed to update. Please try again.', 'error');
+        }
+    };
+    
+    const cancelEdit = () => {
+        element.textContent = currentValue;
+    };
+    
+    input.addEventListener('blur', saveEdit);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            input.blur();
+        } else if (e.key === 'Escape') {
+            cancelEdit();
+        }
+    });
+}
+
+/* Courses */
+async function fetchUserCourses() {
+    // const response = await apiCall('/user/courses');
+    // return response.data;
+    
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve([
+                { 
+                    id: 1, 
+                    name: 'Introduction to Computer Science', 
+                    code: 'CS101',
+                    semester: '2024-Fall',
+                    instructor: 'Dr. Smith',
+                    schedule: 'MWF 10:00-11:00'
+                },
+                { 
+                    id: 2, 
+                    name: 'Data Structures and Algorithms', 
+                    code: 'CS201',
+                    semester: '2024-Fall',
+                    schedule: 'TTh 14:00-15:30'
+                },
+                { 
+                    id: 3, 
+                    name: 'Web Development', 
+                    code: 'CS301',
+                    semester: '2024-Fall',
+                    schedule: 'MWF 13:00-14:00'
+                },
+                { 
+                    id: 4, 
+                    name: 'Database Systems', 
+                    code: 'CS401',
+                    semester: '2024-Fall',
+                    schedule: 'TTh 10:00-11:30'
+                },
+                { 
+                    id: 5, 
+                    name: 'Machine Learning', 
+                    code: 'CS501',
+                    semester: '2024-Fall',
+                    schedule: 'MWF 15:00-16:00'
+                }
+            ]);
+        }, 800);
+    });
+}
+
 function renderCourses(courses) {
     const coursesList = document.getElementById('coursesList');
     
-    // 如果没有课程
     if (!courses || courses.length === 0) {
         coursesList.innerHTML = `
             <div class="empty-state">
                 <p>No courses enrolled yet</p>
+                <button class="join-class-btn" onclick="showJoinClassModal()">
+                    Join Your First Class
+                </button>
             </div>
         `;
         return;
     }
     
-    // 生成课程项
     coursesList.innerHTML = courses.map(course => `
         <div class="course-item" onclick="goToCourse(${course.id})">
-            <div>
-                <span class="course-name">${course.name}</span>
-                <span class="course-code">${course.code}</span>
+            <div class="course-info">
+                <div class="course-main">
+                    <span class="course-name">${course.name}</span>
+                    <span class="course-code">${course.code}</span>
+                </div>
+                ${course.schedule ? `<span class="course-schedule">${course.schedule}</span>` : ''}
             </div>
             <svg class="course-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" 
+                      stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </div>
     `).join('');
 }
 
-// 点击课程后的处理
 function goToCourse(courseId) {
     console.log('Going to course:', courseId);
-    // 这里添加跳转逻辑
     // window.location.href = `/course/${courseId}`;
+    showNotification(`Navigating to course ${courseId}...`, 'info');
 }
 
-// 页面加载时获取并显示课程
+function showJoinClassModal() {
+    const courseCode = prompt('Enter course code (e.g., CS101):');
+    if (courseCode && courseCode.trim()) {
+        joinCourse(courseCode.trim());
+    }
+}
+
+async function joinCourse(courseCode) {
+    try {
+        // const response = await apiCall('/user/courses/enroll', {
+        //     method: 'POST',
+        //     body: JSON.stringify({
+        //         courseCode: courseCode,
+        //         semester: '2024-Fall'
+        //     })
+        // });
+        
+        showNotification('Enrolling in course...', 'info');
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        showNotification('Successfully enrolled!', 'success');
+        
+        await initCourses();
+        
+    } catch (error) {
+        showNotification(error.message || 'Failed to enroll', 'error');
+    }
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
+
+async function initUserInfo() {
+    try {
+        const response = await fetchUserInfo();
+        renderUserInfo(response.data);
+        makeFieldsEditable();
+    } catch (error) {
+        console.error('Error loading user info:', error);
+        showNotification('Failed to load user information', 'error');
+    }
+}
+
 async function initCourses() {
     const coursesList = document.getElementById('coursesList');
     
-    // 显示加载状态
     coursesList.innerHTML = `
         <div class="loading-state">
             <p>Loading courses...</p>
@@ -68,10 +339,27 @@ async function initCourses() {
         coursesList.innerHTML = `
             <div class="empty-state">
                 <p>Failed to load courses</p>
+                <button class="retry-btn" onclick="initCourses()">Retry</button>
             </div>
         `;
     }
 }
 
-// 初始化
-document.addEventListener('DOMContentLoaded', initCourses);
+function initSettings() {
+    const settingsBtn = document.querySelector('.icon-btn.settings');
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            showNotification('Settings page coming soon!', 'info');
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initUserInfo();
+    initCourses();
+    initSettings();
+    const joinClassBtn = document.querySelector('.top-bar .join-class-btn');
+    if (joinClassBtn) {
+        joinClassBtn.addEventListener('click', showJoinClassModal);
+    }
+});
