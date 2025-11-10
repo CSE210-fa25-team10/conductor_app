@@ -25,7 +25,7 @@ This sprint focused on setting up the foundation for the Conductor application, 
 ## Frontend Progress
 
 Key Updates:	
-- Registration and login page designs completed.
+- Lisa, Zheng, and Chenhao completed Registration and login page designs.
 	- Clarified role-based access: professors and admins are created by administrators; students self-register using join codes.
 	- Team agreed on one unified login page — backend determines user role and permissions.
 - Class pages to be templated; frontend queries backend for course attributes and populates dynamically.
