@@ -1,6 +1,6 @@
 /**
  * userToDTO transfers the intermediate User class to a JSON Data-Transfer-Object.
- * This is useful for returning JSON objects to the frontend.
+ * This is useful for returning users as JSON objects to the frontend.
  * @param {*} User 
  * @returns JSON object representing User.
  */
