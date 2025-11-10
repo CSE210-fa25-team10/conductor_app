@@ -33,14 +33,17 @@ app.get('/', isLoggedIn, (req, res) => {
   `);
 });
 
-console.log("Running server.js from:", process.cwd());
+// Container/Service health
+app.get('/healthz', (_req, res) => res.status(200).send('ok'));
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || "postgres://localhost:5432/conductor",
-});
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(` Server listening on http://localhost:${port}`);
+// DB health — verifies backend <-> Postgres connectivity
+app.get('/db-check', async (_req, res) => {
+    try {
+        const ok = await dbHealth();
+        res.status(ok ? 200 : 500).json({ db: ok ? 'up' : 'down' });
+    } catch (e) {
+        res.status(500).json({ db: 'down', error: String(e) });
+    }
 });
 
 // helper: map PG bad-UUID to 400
@@ -51,8 +54,10 @@ function handlePgUuidError(res, err) {
   return res.status(500).json({ error: "internal_error" });
 }
 
-// Root
-app.get("/", (_req, res) => res.type("text").send("ok"));
+// Root test route
+app.get('/', (req, res) => {
+    res.send('✅ Express 5.1.0 server running on Node.js v24.11.0 LTS, Postgres + Docker setup running');
+});
 
 // Health
 app.get("/health", async (_req, res) => {
@@ -166,4 +171,10 @@ app.post("/attendance", async (req, res) => {
     console.error("POST /attendance error:", e);
     res.status(400).json({ error: e.message });
   }
+});
+
+// Start server
+console.log("Running server.js from:", process.cwd());
+app.listen(PORT, () => {
+  console.log(` Server listening on http://localhost:${PORT}`);
 });

@@ -1,7 +1,7 @@
 {
   "name": "conductor-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Conductor backend (Express 5, Node 24) with Postgres",
   "main": "server.js",
   "type": "module",
   "scripts": {
