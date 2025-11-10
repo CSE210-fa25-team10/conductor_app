@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login - Course Management System</title>
+    <title>Course Management System</title>
     <style>
         * {
             margin: 0;
@@ -26,50 +26,9 @@
         }
 
         .header h1 {
-            color: #999;
+            color: #2c2c2e;
             font-size: 24px;
-            font-weight: 400;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .action-bar {
-            background-color: #fff;
-            padding: 15px 40px;
-            display: flex;
-            justify-content: flex-end;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .btn-secondary, .btn-primary {
-            padding: 8px 20px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary {
-            background-color: #e8e8ed;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background-color: #d8d8dd;
-        }
-
-        .btn-primary {
-            background-color: #2c2c2e;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #1c1c1e;
+            font-weight: 600;
         }
 
         .browser-bar {
@@ -131,6 +90,47 @@
             margin-left: auto;
         }
 
+        .action-bar {
+            background-color: #fff;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: flex-end;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-secondary, .btn-primary {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background-color: #e8e8ed;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #d8d8dd;
+        }
+
+        .btn-primary {
+            background-color: #2c2c2e;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1c1c1e;
+        }
+
         .container {
             flex: 1;
             display: flex;
@@ -139,13 +139,21 @@
             padding: 40px 20px;
         }
 
-        .login-card {
+        .card {
             background-color: white;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c2c2e;
+            margin-bottom: 30px;
+            text-align: center;
         }
 
         .form-group {
@@ -160,21 +168,22 @@
             font-weight: 500;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #d1d1d6;
             border-radius: 8px;
             font-size: 14px;
             transition: border-color 0.3s ease;
+            font-family: inherit;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #2c2c2e;
         }
 
-        .form-group input.error {
+        .form-group input.error, .form-group select.error {
             border-color: #ff3b30;
         }
 
@@ -189,7 +198,38 @@
             display: block;
         }
 
-        .sign-in-btn {
+        .success-message {
+            color: #34c759;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .password-requirements ul {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        .password-requirements li {
+            margin-bottom: 3px;
+        }
+
+        .password-requirements li.met {
+            color: #34c759;
+        }
+
+        .submit-btn {
             width: 100%;
             padding: 14px;
             background-color: #2c2c2e;
@@ -203,34 +243,79 @@
             margin-top: 10px;
         }
 
-        .sign-in-btn:hover {
+        .submit-btn:hover {
             background-color: #1c1c1e;
         }
 
-        .sign-in-btn:disabled {
+        .submit-btn:disabled {
             background-color: #d1d1d6;
             cursor: not-allowed;
         }
 
-        .forgot-password {
+        .form-footer {
             text-align: center;
             margin-top: 20px;
         }
 
-        .forgot-password a {
+        .form-footer a {
             color: #2c2c2e;
             text-decoration: underline;
             font-size: 14px;
+            cursor: pointer;
         }
 
-        .forgot-password a:hover {
+        .form-footer a:hover {
             color: #666;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .role-option {
+            padding: 20px;
+            border: 2px solid #d1d1d6;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-option:hover {
+            border-color: #2c2c2e;
+        }
+
+        .role-option.selected {
+            border-color: #2c2c2e;
+            background-color: #f5f5f7;
+        }
+
+        .role-option .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .role-option .label {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Student Login</h1>
+        <h1>Your App Name</h1>
     </div>
 
     <div class="browser-bar">
@@ -241,7 +326,7 @@
         </div>
         <div class="url-bar">
             <span class="lock-icon">🔒</span>
-            <span class="url-text">www.url.com</span>
+            <span class="url-text" id="urlText">www.url.com</span>
         </div>
         <button class="browser-btn">☆</button>
         <div class="user-icon">M</div>
@@ -250,155 +335,429 @@
 
     <div class="action-bar">
         <div class="header-buttons">
-            <button class="btn-secondary" onclick="handleSignIn()">Sign in</button>
-            <button class="btn-primary" onclick="handleRegister()">Register</button>
+            <button class="btn-secondary" id="headerSignIn">Sign in</button>
+            <button class="btn-primary" id="headerRegister">Register</button>
         </div>
     </div>
 
     <div class="container">
-        <div class="login-card">
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        placeholder="Value"
-                        autocomplete="email"
-                    >
-                    <div class="error-message" id="emailError">Please enter a valid email address</div>
-                </div>
+        <!-- Login Page -->
+        <div class="page active" id="loginPage">
+            <div class="card">
+                <h2 class="card-title">Sign In</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input 
+                            type="email" 
+                            id="loginEmail" 
+                            placeholder="Enter your email"
+                            autocomplete="email"
+                        >
+                        <div class="error-message" id="loginEmailError">Please enter a valid email address</div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        placeholder="Value"
-                        autocomplete="current-password"
-                    >
-                    <div class="error-message" id="passwordError">Please enter your password</div>
-                </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input 
+                            type="password" 
+                            id="loginPassword" 
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                        >
+                        <div class="error-message" id="loginPasswordError">Please enter your password</div>
+                    </div>
 
-                <button type="submit" class="sign-in-btn">Sign In</button>
+                    <button type="submit" class="submit-btn">Sign In</button>
 
-                <div class="forgot-password">
-                    <a href="#" onclick="handleForgotPassword(event)">Forgot password?</a>
-                </div>
-            </form>
+                    <div class="form-footer">
+                        <a id="forgotPasswordLink">Forgot password?</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Registration Page -->
+        <div class="page" id="registerPage">
+            <div class="card">
+                <h2 class="card-title">Create Account</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label>Select Your Role</label>
+                        <div class="role-selector">
+                            <div class="role-option" data-role="student">
+                                <div class="icon">🎓</div>
+                                <div class="label">Student</div>
+                            </div>
+                            <div class="role-option" data-role="instructor">
+                                <div class="icon">👨‍🏫</div>
+                                <div class="label">Instructor</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="registerRole">
+                        <div class="error-message" id="roleError">Please select a role</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerName">Full Name</label>
+                        <input 
+                            type="text" 
+                            id="registerName" 
+                            placeholder="Enter your full name"
+                            autocomplete="name"
+                        >
+                        <div class="error-message" id="nameError">Please enter your full name</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input 
+                            type="email" 
+                            id="registerEmail" 
+                            placeholder="Enter your email"
+                            autocomplete="email"
+                        >
+                        <div class="error-message" id="registerEmailError">Please enter a valid email address</div>
+                        <div class="success-message" id="emailSuccess">Email is available</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input 
+                            type="password" 
+                            id="registerPassword" 
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                        >
+                        <div class="password-requirements">
+                            Password must contain:
+                            <ul>
+                                <li id="req-length">At least 8 characters</li>
+                                <li id="req-uppercase">One uppercase letter</li>
+                                <li id="req-lowercase">One lowercase letter</li>
+                                <li id="req-number">One number</li>
+                                <li id="req-special">One special character (!@#$%^&*)</li>
+                            </ul>
+                        </div>
+                        <div class="error-message" id="registerPasswordError">Password does not meet requirements</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            placeholder="Confirm your password"
+                            autocomplete="new-password"
+                        >
+                        <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Create Account</button>
+
+                    <div class="form-footer">
+                        <a id="backToLogin">Already have an account? Sign in</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
-        // Form validation and submission
-        const loginForm = document.getElementById('loginForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const emailError = document.getElementById('emailError');
-        const passwordError = document.getElementById('passwordError');
+        // Simulated database of registered emails
+        const registeredEmails = ['test@example.com', 'admin@example.com'];
 
-        // Email validation
+        // Page navigation
+        const loginPage = document.getElementById('loginPage');
+        const registerPage = document.getElementById('registerPage');
+        const urlText = document.getElementById('urlText');
+        const headerSignIn = document.getElementById('headerSignIn');
+        const headerRegister = document.getElementById('headerRegister');
+        const backToLogin = document.getElementById('backToLogin');
+
+        function showLoginPage() {
+            loginPage.classList.add('active');
+            registerPage.classList.remove('active');
+            urlText.textContent = 'www.url.com/login';
+            headerSignIn.classList.add('btn-secondary');
+            headerSignIn.classList.remove('btn-primary');
+            headerRegister.classList.remove('btn-secondary');
+            headerRegister.classList.add('btn-primary');
+        }
+
+        function showRegisterPage() {
+            loginPage.classList.remove('active');
+            registerPage.classList.add('active');
+            urlText.textContent = 'www.url.com/register';
+            headerRegister.classList.add('btn-secondary');
+            headerRegister.classList.remove('btn-primary');
+            headerSignIn.classList.remove('btn-secondary');
+            headerSignIn.classList.add('btn-primary');
+        }
+
+        headerSignIn.addEventListener('click', showLoginPage);
+        headerRegister.addEventListener('click', showRegisterPage);
+        backToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            showLoginPage();
+        });
+
+        // Utility functions
         function validateEmail(email) {
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(email);
         }
 
-        // Show error
-        function showError(input, errorElement) {
+        function showError(input, errorElement, message) {
             input.classList.add('error');
+            if (message) errorElement.textContent = message;
             errorElement.classList.add('show');
         }
 
-        // Hide error
         function hideError(input, errorElement) {
             input.classList.remove('error');
             errorElement.classList.remove('show');
         }
 
-        // Real-time validation on input
-        emailInput.addEventListener('input', function() {
+        function showSuccess(successElement) {
+            successElement.classList.add('show');
+        }
+
+        function hideSuccess(successElement) {
+            successElement.classList.remove('show');
+        }
+
+        // Login Form
+        const loginForm = document.getElementById('loginForm');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginEmailError = document.getElementById('loginEmailError');
+        const loginPasswordError = document.getElementById('loginPasswordError');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+        loginEmail.addEventListener('input', function() {
             if (this.value && validateEmail(this.value)) {
-                hideError(this, emailError);
+                hideError(this, loginEmailError);
             }
         });
 
-        passwordInput.addEventListener('input', function() {
+        loginPassword.addEventListener('input', function() {
             if (this.value) {
-                hideError(this, passwordError);
+                hideError(this, loginPasswordError);
             }
         });
 
-        // Form submission
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             let isValid = true;
 
-            // Validate email
-            if (!emailInput.value) {
-                showError(emailInput, emailError);
-                emailError.textContent = 'Please enter your email address';
+            if (!loginEmail.value) {
+                showError(loginEmail, loginEmailError, 'Please enter your email address');
                 isValid = false;
-            } else if (!validateEmail(emailInput.value)) {
-                showError(emailInput, emailError);
-                emailError.textContent = 'Please enter a valid email address';
+            } else if (!validateEmail(loginEmail.value)) {
+                showError(loginEmail, loginEmailError, 'Please enter a valid email address');
                 isValid = false;
             } else {
-                hideError(emailInput, emailError);
+                hideError(loginEmail, loginEmailError);
             }
 
-            // Validate password
-            if (!passwordInput.value) {
-                showError(passwordInput, passwordError);
+            if (!loginPassword.value) {
+                showError(loginPassword, loginPasswordError, 'Please enter your password');
                 isValid = false;
             } else {
-                hideError(passwordInput, passwordError);
+                hideError(loginPassword, loginPasswordError);
             }
 
-            // If form is valid, proceed with login
             if (isValid) {
-                handleLogin();
+                alert('Login successful!\n\nEmail: ' + loginEmail.value + '\n\nYou would now be redirected to the dashboard.');
+                // Here you would typically make an API call to authenticate
             }
         });
 
-        // Handle login
-        function handleLogin() {
-            const email = emailInput.value;
-            const password = passwordInput.value;
-
-            // Simulate login process
-            console.log('Logging in with:', { email, password });
-            
-            // Here you would typically make an API call
-            // For demonstration, we'll show an alert
-            alert('Login functionality would connect to your backend API.\n\nEmail: ' + email);
-            
-            // Clear form after successful login
-            // loginForm.reset();
-        }
-
-        // Handle sign in button click (header)
-        function handleSignIn() {
-            emailInput.focus();
-        }
-
-        // Handle register button click
-        function handleRegister() {
-            alert('Registration page would open here.\n\nThis would typically redirect to a registration form.');
-        }
-
-        // Handle forgot password link
-        function handleForgotPassword(event) {
-            event.preventDefault();
-            const email = emailInput.value;
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const email = loginEmail.value;
             
             if (email && validateEmail(email)) {
                 alert('Password reset link would be sent to:\n' + email);
             } else {
                 alert('Please enter your email address first to reset your password.');
-                emailInput.focus();
+                loginEmail.focus();
             }
+        });
+
+        // Registration Form
+        const registerForm = document.getElementById('registerForm');
+        const roleOptions = document.querySelectorAll('.role-option');
+        const registerRole = document.getElementById('registerRole');
+        const registerName = document.getElementById('registerName');
+        const registerEmail = document.getElementById('registerEmail');
+        const registerPassword = document.getElementById('registerPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        
+        const roleError = document.getElementById('roleError');
+        const nameError = document.getElementById('nameError');
+        const registerEmailError = document.getElementById('registerEmailError');
+        const emailSuccess = document.getElementById('emailSuccess');
+        const registerPasswordError = document.getElementById('registerPasswordError');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+
+        // Role selection
+        roleOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                roleOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                registerRole.value = this.dataset.role;
+                hideError(registerRole, roleError);
+            });
+        });
+
+        // Password complexity requirements
+        const requirements = {
+            length: false,
+            uppercase: false,
+            lowercase: false,
+            number: false,
+            special: false
+        };
+
+        function checkPasswordRequirements(password) {
+            requirements.length = password.length >= 8;
+            requirements.uppercase = /[A-Z]/.test(password);
+            requirements.lowercase = /[a-z]/.test(password);
+            requirements.number = /[0-9]/.test(password);
+            requirements.special = /[!@#$%^&*]/.test(password);
+
+            document.getElementById('req-length').classList.toggle('met', requirements.length);
+            document.getElementById('req-uppercase').classList.toggle('met', requirements.uppercase);
+            document.getElementById('req-lowercase').classList.toggle('met', requirements.lowercase);
+            document.getElementById('req-number').classList.toggle('met', requirements.number);
+            document.getElementById('req-special').classList.toggle('met', requirements.special);
+
+            return Object.values(requirements).every(req => req === true);
         }
+
+        // Email conflict check (simulated)
+        function checkEmailConflict(email) {
+            return !registeredEmails.includes(email.toLowerCase());
+        }
+
+        registerName.addEventListener('input', function() {
+            if (this.value.trim()) {
+                hideError(this, nameError);
+            }
+        });
+
+        registerEmail.addEventListener('blur', function() {
+            const email = this.value.trim();
+            hideSuccess(emailSuccess);
+            
+            if (email && validateEmail(email)) {
+                if (checkEmailConflict(email)) {
+                    hideError(this, registerEmailError);
+                    showSuccess(emailSuccess);
+                } else {
+                    showError(this, registerEmailError, 'This email is already registered');
+                }
+            }
+        });
+
+        registerEmail.addEventListener('input', function() {
+            hideSuccess(emailSuccess);
+            if (this.value && validateEmail(this.value)) {
+                hideError(this, registerEmailError);
+            }
+        });
+
+        registerPassword.addEventListener('input', function() {
+            const isValid = checkPasswordRequirements(this.value);
+            if (isValid) {
+                hideError(this, registerPasswordError);
+            }
+            
+            // Check confirm password match if it has a value
+            if (confirmPassword.value) {
+                if (this.value === confirmPassword.value) {
+                    hideError(confirmPassword, confirmPasswordError);
+                } else {
+                    showError(confirmPassword, confirmPasswordError, 'Passwords do not match');
+                }
+            }
+        });
+
+        confirmPassword.addEventListener('input', function() {
+            if (this.value === registerPassword.value) {
+                hideError(this, confirmPasswordError);
+            } else {
+                showError(this, confirmPasswordError, 'Passwords do not match');
+            }
+        });
+
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let isValid = true;
+
+            // Validate role
+            if (!registerRole.value) {
+                showError(registerRole, roleError, 'Please select a role');
+                isValid = false;
+            }
+
+            // Validate name
+            if (!registerName.value.trim()) {
+                showError(registerName, nameError, 'Please enter your full name');
+                isValid = false;
+            }
+
+            // Validate email
+            const email = registerEmail.value.trim();
+            if (!email) {
+                showError(registerEmail, registerEmailError, 'Please enter your email address');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError(registerEmail, registerEmailError, 'Please enter a valid email address');
+                isValid = false;
+            } else if (!checkEmailConflict(email)) {
+                showError(registerEmail, registerEmailError, 'This email is already registered');
+                isValid = false;
+            }
+
+            // Validate password
+            if (!checkPasswordRequirements(registerPassword.value)) {
+                showError(registerPassword, registerPasswordError, 'Password does not meet requirements');
+                isValid = false;
+            }
+
+            // Validate password confirmation
+            if (registerPassword.value !== confirmPassword.value) {
+                showError(confirmPassword, confirmPasswordError, 'Passwords do not match');
+                isValid = false;
+            }
+
+            if (isValid) {
+                // Add email to registered emails
+                registeredEmails.push(email.toLowerCase());
+                
+                alert('Registration successful!\n\n' +
+                      'Role: ' + registerRole.value.charAt(0).toUpperCase() + registerRole.value.slice(1) + '\n' +
+                      'Name: ' + registerName.value + '\n' +
+                      'Email: ' + email + '\n\n' +
+                      'You can now sign in with your credentials.');
+                
+                // Reset form and go to login
+                registerForm.reset();
+                roleOptions.forEach(opt => opt.classList.remove('selected'));
+                requirements.length = requirements.uppercase = requirements.lowercase = 
+                requirements.number = requirements.special = false;
+                document.querySelectorAll('.password-requirements li').forEach(li => li.classList.remove('met'));
+                
+                showLoginPage();
+            }
+        });
     </script>
 </body>
 </html>
+
+<!-- user info stored in browser's local storage for now, no backend -->
