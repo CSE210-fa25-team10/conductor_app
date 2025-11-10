@@ -1,19 +1,37 @@
-import express from 'express';
-import cors from 'cors';
-import "dotenv/config";
-import { pool, dbHealth } from './db.js';
+import express from "express";
+import { Pool } from "pg";
+import session from 'express-session';
+import apiRoutes from './routes/apiRoutes.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Allow local frontends in dev (edit CORS_ORIGIN in .env to lock down)
-const origins = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(',')
-    : ['http://localhost:8080', 'http://localhost:5173'];
-app.use(cors({ origin: origins, credentials: true }));
-
-//Parse JSON and forms
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+}));
+
+app.use("/api", apiRoutes);
+
+// Test route
+const isLoggedIn = (req, res, next) => {
+  if (req.session.user) next();
+  else res.redirect('/users');
+};
+
+app.get('/', isLoggedIn, (req, res) => {
+  res.send(`
+    <h1>Welcome ${req.session.user.name}</h1>
+    <img src="${req.session.user.picture}" />
+    <br/>
+    <a href="/api/auth/logout">Logout</a>
+  `);
+});
 
 // Container/Service health
 app.get('/healthz', (_req, res) => res.status(200).send('ok'));
