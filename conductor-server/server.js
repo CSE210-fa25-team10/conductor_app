@@ -1,6 +1,6 @@
 import express from "express";
 import session from 'express-session';
-import apiRoutes from './routes/apiRoutes.js';
+import apiRoutes from './adapters/in/routes/apiRoutes.js';
 import { pool, dbHealth } from "./db.js";
 import dotenv from 'dotenv';
 
