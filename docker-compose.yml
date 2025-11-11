@@ -29,6 +29,7 @@ services:
       PORT: ${PORT}
       DATABASE_URL: ${DATABASE_URL}
       CORS_ORIGIN: ${CORS_ORIGIN}
+      SESSION_SECRET: ${SESSION_SECRET}
     ports:
       - "3000:3000"
     healthcheck:
