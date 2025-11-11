@@ -1,5 +1,4 @@
 import express from "express";
-import { Pool } from "pg";
 import session from 'express-session';
 import apiRoutes from './routes/apiRoutes.js';
 import dotenv from 'dotenv';
