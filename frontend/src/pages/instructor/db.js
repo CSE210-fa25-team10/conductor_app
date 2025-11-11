@@ -230,9 +230,9 @@ function renderCourses(courses) {
     if (!courses || courses.length === 0) {
         coursesList.innerHTML = `
             <div class="empty-state">
-                <p>No courses enrolled yet</p>
-                <button class="join-class-btn" onclick="showReleaseCourseModal()">
-                    Release a Course
+                <p>No courses available yet</p>
+                <button class="join-class-btn" onclick="showCreateCourseModal()">
+                    Create a Course
                 </button>
             </div>
         `;
@@ -262,30 +262,47 @@ function goToCourse(courseId) {
     showNotification(`Navigating to course ${courseId}...`, 'info');
 }
 
-function showReleaseCourseModal() {
-    const courseCode = prompt('Enter course code to release (e.g., CS101):');
-    if (courseCode && courseCode.trim()) {
-        releaseCourse(courseCode.trim());
-    }
+/* Teacher/admin creates a course */
+function showCreateCourseModal() {
+    const name = prompt('Course name (e.g., Introduction to Computer Science):');
+    if (!name || !name.trim()) return;
+
+    const code = prompt('Course code (e.g., CS101):');
+    if (!code || !code.trim()) return;
+
+    const semester = prompt('Semester (e.g., 2024-Fall):', '2024-Fall');
+    const instructor = prompt('Instructor name (optional):', '');
+    const schedule = prompt('Schedule (optional):', '');
+
+    const courseData = {
+        name: name.trim(),
+        code: code.trim(),
+        semester: semester ? semester.trim() : '',
+        instructor: instructor ? instructor.trim() : '',
+        schedule: schedule ? schedule.trim() : ''
+    };
+
+    createCourse(courseData);
 }
 
-async function releaseCourse(courseCode) {
+async function createCourse(courseData) {
     try {
-        // const response = await apiCall('/user/courses/release', {
+        // const response = await apiCall('/courses', {
         //     method: 'POST',
-        //     body: JSON.stringify({ courseCode })
+        //     body: JSON.stringify(courseData)
         // });
-        
-        showNotification('Releasing course...', 'info');
-        
+        // const created = response.data;
+
+        showNotification('Creating course...', 'info');
+
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        showNotification('Successfully released!', 'success');
-        
+
+        showNotification('Course created successfully!', 'success');
+
         await initCourses();
-        
+
     } catch (error) {
-        showNotification(error.message || 'Failed to release course', 'error');
+        showNotification(error.message || 'Failed to create course', 'error');
     }
 }
 
@@ -357,6 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initSettings();
     const joinClassBtn = document.querySelector('.top-bar .join-class-btn');
     if (joinClassBtn) {
-        joinClassBtn.addEventListener('click', showReleaseCourseModal);
+        joinClassBtn.addEventListener('click', showCreateCourseModal);
     }
 });
