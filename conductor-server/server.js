@@ -1,7 +1,10 @@
 import express from "express";
 import session from 'express-session';
 import apiRoutes from './routes/apiRoutes.js';
+import { pool, dbHealth } from "./db.js";
 import dotenv from 'dotenv';
+
+const PORT = Number(process.env.PORT) || 3000;
 
 dotenv.config();
 
@@ -10,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "dev-secret",
     resave: false,
     saveUninitialized: false,
 }));
