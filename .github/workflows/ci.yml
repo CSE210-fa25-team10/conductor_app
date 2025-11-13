@@ -1,0 +1,40 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, stage, develop]
+  pull_request:
+    branches: [main, stage, develop]
+
+jobs:
+  lint-and-format:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: conductor-server/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./conductor-server
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./conductor-server
+        run: npm run lint
+
+      - name: Check code formatting
+        working-directory: ./conductor-server
+        run: npm run format:check
+
+  # Future: Add more jobs here
+  # test:
+  # build:
+  # deploy:
