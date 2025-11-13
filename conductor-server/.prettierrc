@@ -6,13 +6,4 @@
   "tabWidth": 2,
   "useTabs": false
 }
-```
 
-Create `conductor-server/.prettierignore`:
-```
-node_modules
-dist
-coverage
-*.log
-.env
-package-lock.json
