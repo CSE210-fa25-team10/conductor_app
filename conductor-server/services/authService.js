@@ -1,5 +1,5 @@
 import { OAuth2Client } from 'google-auth-library';
-import { Pool } from "pg";
+import { Pool } from 'pg';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -10,8 +10,8 @@ const client = new OAuth2Client(
 );
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || "postgres://localhost:5432/conductor",
-}); 
+  connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/conductor',
+});
 
 export const generateAuthUrl = () => {
   return client.generateAuthUrl({
@@ -29,12 +29,15 @@ export const getUserFromCode = async (code) => {
     audience: process.env.GOOGLE_CLIENT_ID,
   });
   const payload = ticket.getPayload();
-  console.log("Google user payload:", payload);
+  console.log('Google user payload:', payload);
   try {
     // make sure it is not already in the database
-    const res = await pool.query('SELECT user_id, name, email, profile_photo FROM users WHERE email = $1', [payload.email]);
+    const res = await pool.query(
+      'SELECT user_id, name, email, profile_photo FROM users WHERE email = $1',
+      [payload.email]
+    );
     if (res.rows.length > 0) {
-      console.log("User already exists in database:", res.rows[0]);
+      console.log('User already exists in database:', res.rows[0]);
       return {
         id: res.rows[0].user_id,
         name: res.rows[0].name,
@@ -48,7 +51,7 @@ export const getUserFromCode = async (code) => {
                    RETURNING user_id, name, email, profile_photo`;
     const values = [payload.name, payload.email, payload.picture];
     const result = await pool.query(query, values);
-    console.log("Inserted user into database:", result.rows[0]);
+    console.log('Inserted user into database:', result.rows[0]);
     return {
       id: result.rows[0].user_id,
       name: result.rows[0].name,
@@ -56,7 +59,6 @@ export const getUserFromCode = async (code) => {
       picture: result.rows[0].profile_photo,
     };
   } catch (error) {
-    console.error("Error inserting user into database:", error);
+    console.error('Error inserting user into database:', error);
   }
-
 };

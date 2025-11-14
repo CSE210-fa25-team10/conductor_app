@@ -9,10 +9,7 @@ const ATTENDANCE_WINDOW_MINUTES = 15; // 15 minute window for attendance
 // Deterministic 6-digit PIN from activity_id + secret
 function computePin(activityId) {
   const secret = process.env.ATTENDANCE_PIN_SECRET || 'dev-attendance-secret';
-  const hmac = crypto
-    .createHmac('sha256', secret)
-    .update(String(activityId))
-    .digest('hex');
+  const hmac = crypto.createHmac('sha256', secret).update(String(activityId)).digest('hex');
 
   // Take first 8 hex chars -> int -> mod 1,000,000 -> 6 digits
   const num = parseInt(hmac.slice(0, 8), 16) % 1_000_000;
@@ -26,12 +23,9 @@ function isWithinWindow(startsAt) {
   return diffMinutes <= ATTENDANCE_WINDOW_MINUTES;
 }
 
-
 function buildCheckinUrl(activityId, pin) {
   // Base for your static frontend (adjust path to match your repo)
-  const base =
-    process.env.FRONTEND_BASE_URL ||
-    'http://127.0.0.1:5500';
+  const base = process.env.FRONTEND_BASE_URL || 'http://127.0.0.1:5500';
 
   return `${base}/conductor_app/frontend/src/pages/student/checkin.html?activity_id=${encodeURIComponent(
     activityId
@@ -57,7 +51,7 @@ async function upsertAttendance({ userId, activityId, present }) {
 // POST /api/attendance/session/start
 // body: { course_id, name, type }
 // - creates an activities row
-// - asks instructor for course_id and name 
+// - asks instructor for course_id and name
 // - computes PIN
 // - generates QR data URL
 // - returns everything instructor needs to display
@@ -95,7 +89,7 @@ export async function startAttendanceSession(req, res) {
       starts_at: activity.starts_at,
       pin,
       checkin_url: checkinUrl,
-      qr_code_data_url: qrDataUrl
+      qr_code_data_url: qrDataUrl,
     });
   } catch (e) {
     console.error('startAttendanceSession error:', e);
@@ -106,10 +100,7 @@ export async function startAttendanceSession(req, res) {
 // Helper functions
 // Helper 1 : get user_id from email of the student
 async function getStudentUserIdByEmail(email) {
-  const { rows } = await pool.query(
-    `SELECT user_id FROM users WHERE email = $1`,
-    [email]
-  );
+  const { rows } = await pool.query(`SELECT user_id FROM users WHERE email = $1`, [email]);
   if (rows.length === 0) return null;
   return rows[0].user_id;
 }
@@ -173,9 +164,7 @@ export async function checkinAttendance(req, res) {
     if (activity_id) {
       // QR case: we know which activity this is
       const activityIdNum =
-        typeof activity_id === 'string'
-          ? Number.parseInt(activity_id, 10)
-          : activity_id;
+        typeof activity_id === 'string' ? Number.parseInt(activity_id, 10) : activity_id;
 
       if (!Number.isInteger(activityIdNum)) {
         return res.status(400).json({ error: 'activity_id must be an integer' });
@@ -194,9 +183,7 @@ export async function checkinAttendance(req, res) {
     } else if (course_id) {
       // Manual case: course_id + pin, find currently-active activity
       const courseIdNum =
-        typeof course_id === 'string'
-          ? Number.parseInt(course_id, 10)
-          : course_id;
+        typeof course_id === 'string' ? Number.parseInt(course_id, 10) : course_id;
       if (!Number.isInteger(courseIdNum)) {
         return res.status(400).json({ error: 'course_id must be an integer' });
       }
@@ -213,9 +200,7 @@ export async function checkinAttendance(req, res) {
       );
 
       if (rows.length === 0) {
-        return res
-          .status(404)
-          .json({ error: 'no_active_activity_for_course_in_window' });
+        return res.status(404).json({ error: 'no_active_activity_for_course_in_window' });
       }
       activity = rows[0];
     } else {
@@ -247,14 +232,14 @@ export async function checkinAttendance(req, res) {
     const attendanceRow = await upsertAttendance({
       userId,
       activityId: activity.activity_id,
-      present: true
+      present: true,
     });
 
     return res.status(200).json({
       message: 'checkin_success',
       attendance: attendanceRow,
       activity,
-      roll_id // just echo back if you want
+      roll_id, // just echo back if you want
     });
   } catch (e) {
     console.error('checkinAttendance error:', e);
@@ -277,9 +262,7 @@ export async function manualMarkAttendance(req, res) {
   const userIdNum = typeof user_id === 'string' ? Number.parseInt(user_id, 10) : user_id;
 
   if (!Number.isInteger(activityIdNum) || !Number.isInteger(userIdNum)) {
-    return res
-      .status(400)
-      .json({ error: 'activity_id and user_id must both be integers' });
+    return res.status(400).json({ error: 'activity_id and user_id must both be integers' });
   }
   if (typeof present !== 'boolean') {
     return res.status(400).json({ error: 'present must be boolean' });
@@ -289,12 +272,12 @@ export async function manualMarkAttendance(req, res) {
     const attendanceRow = await upsertAttendance({
       userId: userIdNum,
       activityId: activityIdNum,
-      present
+      present,
     });
 
     return res.status(200).json({
       message: 'attendance_updated',
-      attendance: attendanceRow
+      attendance: attendanceRow,
     });
   } catch (e) {
     console.error('manualMarkAttendance error:', e);
@@ -324,7 +307,7 @@ export async function getStudentsInGroup(req, res) {
 export async function getCourseGroupAttendanceSummary(req, res) {
   const courseId = Number(req.params.courseId);
   if (!Number.isInteger(courseId)) {
-    return res.status(400).json({ error: "course_id must be an integer" });
+    return res.status(400).json({ error: 'course_id must be an integer' });
   }
 
   try {
@@ -362,24 +345,23 @@ export async function getCourseGroupAttendanceSummary(req, res) {
         map.set(r.group_id, {
           group_id: r.group_id,
           name: r.group_name,
-          activities: []
+          activities: [],
         });
       }
       map.get(r.group_id).activities.push({
         activity_id: r.activity_id,
         name: r.activity_name,
         starts_at: r.starts_at,
-        present_users: r.present_users || []
+        present_users: r.present_users || [],
       });
     }
 
     return res.json({ course_id: courseId, groups: Array.from(map.values()) });
   } catch (e) {
-    console.error("getCourseGroupAttendanceSummary:", e);
-    return res.status(500).json({ error: "failed_to_load_group_summary" });
+    console.error('getCourseGroupAttendanceSummary:', e);
+    return res.status(500).json({ error: 'failed_to_load_group_summary' });
   }
 }
-
 
 // ---------- 4. Course attendance summary ----------
 //
@@ -452,7 +434,7 @@ export async function getCourseAttendanceSummary(req, res) {
         name: s.name,
         attended,
         total,
-        percent
+        percent,
       });
 
       totalPresent += attended;
@@ -468,7 +450,7 @@ export async function getCourseAttendanceSummary(req, res) {
       student_count: students.length,
       overall_attendance_percent: overallPercent,
       activities,
-      students: perStudent
+      students: perStudent,
     });
   } catch (e) {
     console.error('getCourseAttendanceSummary error:', e);
@@ -592,8 +574,7 @@ export async function getCourseGroupAndMemberOverview(req, res) {
         }
 
         const total = totalSessions;
-        const percent =
-          total === 0 ? 0 : Math.round((attended * 1000.0) / total) / 10.0;
+        const percent = total === 0 ? 0 : Math.round((attended * 1000.0) / total) / 10.0;
 
         groupPresent += attended;
         groupTotal += total;
@@ -648,9 +629,7 @@ export async function getStudentCourseAttendanceOverview(req, res) {
   const userId = Number.parseInt(req.params.userId, 10);
 
   if (!Number.isInteger(courseId) || !Number.isInteger(userId)) {
-    return res
-      .status(400)
-      .json({ error: 'course_id and user_id must be integers' });
+    return res.status(400).json({ error: 'course_id and user_id must be integers' });
   }
 
   try {
@@ -687,9 +666,7 @@ export async function getStudentCourseAttendanceOverview(req, res) {
       if (p === true) myAttended += 1;
     }
     const myPercent =
-      totalSessions === 0
-        ? 0
-        : Math.round((myAttended * 1000.0) / totalSessions) / 10.0;
+      totalSessions === 0 ? 0 : Math.round((myAttended * 1000.0) / totalSessions) / 10.0;
 
     // What groups is this student in (for this course)?
     const { rows: myGroups } = await pool.query(
@@ -707,9 +684,7 @@ export async function getStudentCourseAttendanceOverview(req, res) {
     const instructorOverview = await getCourseGroupAndMemberOverviewInternal(courseId);
 
     const groupSummaries = myGroups.map((g) => {
-      const full = instructorOverview.groups.find(
-        (gg) => gg.group_id === g.group_id
-      );
+      const full = instructorOverview.groups.find((gg) => gg.group_id === g.group_id);
       return {
         group_id: g.group_id,
         name: g.name,
@@ -794,8 +769,7 @@ async function getCourseGroupAndMemberOverviewInternal(courseId) {
         }
       }
       const total = totalSessions;
-      const percent =
-        total === 0 ? 0 : Math.round((attended * 1000.0) / total) / 10.0;
+      const percent = total === 0 ? 0 : Math.round((attended * 1000.0) / total) / 10.0;
 
       groupPresent += attended;
       groupTotal += total;

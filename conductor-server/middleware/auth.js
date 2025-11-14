@@ -29,13 +29,14 @@ export function requireInstructorOrTA(req, res, next) {
     return res.status(400).json({ error: 'invalid_course_id' });
   }
 
-  pool.query(
-    `SELECT role
+  pool
+    .query(
+      `SELECT role
        FROM course_users
       WHERE user_id = $1 AND course_id = $2`,
-    [user.id, courseId]
-  )
-    .then(result => {
+      [user.id, courseId]
+    )
+    .then((result) => {
       const row = result.rows[0];
       if (!row) return res.status(403).json({ error: 'not_enrolled' });
 
@@ -45,7 +46,7 @@ export function requireInstructorOrTA(req, res, next) {
       }
       return res.status(403).json({ error: 'insufficient_permissions' });
     })
-    .catch(err => {
+    .catch((err) => {
       console.error('requireInstructorOrTA error:', err);
       return res.status(500).json({ error: 'internal_error' });
     });

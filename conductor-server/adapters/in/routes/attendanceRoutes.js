@@ -7,7 +7,7 @@ import {
   getCourseGroupAttendanceSummary,
   getStudentsInGroup,
   getCourseGroupAndMemberOverview,
-  getStudentCourseAttendanceOverview
+  getStudentCourseAttendanceOverview,
 } from '../../../controllers/attendanceController.js';
 
 // import { requireAuth, requireInstructorOrTA } from '../../../middleware/auth.js'; #--> need oauth to be done
@@ -20,7 +20,6 @@ function requireAuth(_req, _res, next) {
   return next();
 }
 
-
 // 1. Instructor: start a session (creates activity, returns PIN + QR)
 router.post('/session/start', requireAuth, startAttendanceSession);
 
@@ -29,7 +28,7 @@ router.post('/checkin', requireAuth, checkinAttendance);
 
 // 3. Instructor/TA: manual mark
 router.post('/manual', requireAuth, manualMarkAttendance);
-router.get("/courses/:courseId/groups/:groupId/students", getStudentsInGroup);
+router.get('/courses/:courseId/groups/:groupId/students', getStudentsInGroup);
 
 // 4. Course-level summary (overall + per student)
 router.get('/courses/:courseId/summary', requireAuth, getCourseAttendanceSummary);
@@ -38,11 +37,7 @@ router.get('/courses/:courseId/summary', requireAuth, getCourseAttendanceSummary
 router.get('/courses/:courseId/groups', requireAuth, getCourseGroupAttendanceSummary);
 
 // 6. Instructor: group + member attendance across all activities
-router.get(
-  '/courses/:courseId/instructor-overview',
-  requireAuth,
-  getCourseGroupAndMemberOverview
-);
+router.get('/courses/:courseId/instructor-overview', requireAuth, getCourseGroupAndMemberOverview);
 
 // 7. Student: personal + team attendance across all activities
 router.get(
@@ -50,6 +45,5 @@ router.get(
   requireAuth,
   getStudentCourseAttendanceOverview
 );
-
 
 export default router;

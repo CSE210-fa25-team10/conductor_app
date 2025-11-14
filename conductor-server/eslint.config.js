@@ -1,26 +1,26 @@
 // eslint.config.js — Flat config for ESLint v9+
 
-import js from "@eslint/js";
+import js from '@eslint/js';
 
 export default [
   js.configs.recommended,
   {
-    files: ["**/*.js"],
+    files: ['**/*.js'],
     languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
+      ecmaVersion: 'latest',
+      sourceType: 'module',
       globals: {
-        console: "readonly",
-        process: "readonly",
-        __dirname: "readonly",
-        __filename: "readonly"
-      }
+        console: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+      },
     },
     rules: {
-      "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
-      "no-console": "off",
-      "prefer-const": "error",
-      "no-var": "error"
-    }
-  }
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-console': 'off',
+      'prefer-const': 'error',
+      'no-var': 'error',
+    },
+  },
 ];
