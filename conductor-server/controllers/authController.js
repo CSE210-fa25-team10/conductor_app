@@ -20,7 +20,7 @@ export const callback = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  req.session.destroy(err => {
+  req.session.destroy((err) => {
     if (err) console.error(err);
     res.redirect('/users');
   });

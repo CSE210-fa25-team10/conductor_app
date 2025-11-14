@@ -78,7 +78,7 @@
 //   }
 // });
 
-// // USERS 
+// // USERS
 
 // app.get("/users", async (_req, res) => {
 //   try {
@@ -94,7 +94,7 @@
 //   }
 // });
 
-// // COURSES 
+// // COURSES
 // app.get("/courses", async (_req, res) => {
 //   try {
 //     const { rows } = await pool.query(
@@ -109,7 +109,7 @@
 //   }
 // });
 
-// // ACTIVITIES 
+// // ACTIVITIES
 // app.get("/activities", async (req, res) => {
 //   const hasFilter = typeof req.query.course_id !== "undefined";
 //   const courseId = hasFilter ? Number.parseInt(req.query.course_id, 10) : null;
@@ -135,7 +135,7 @@
 //   }
 // });
 
-// // ROSTER 
+// // ROSTER
 // app.get("/courses/:id/roster", async (req, res) => {
 //   const courseId = Number.parseInt(req.params.id, 10);
 //   if (!Number.isInteger(courseId)) {
@@ -157,7 +157,7 @@
 //   }
 // });
 
-// // // ATTENDANCE 
+// // // ATTENDANCE
 // // app.post("/attendance", async (req, res) => {
 // //   let { activity_id, user_id, present } = req.body || {};
 // //   activity_id = typeof activity_id === "string" ? Number.parseInt(activity_id, 10) : activity_id;
@@ -189,14 +189,14 @@
 // });
 
 // conductor_app/conductor-server/server.js
-import express from "express";
-import session from "express-session";
-import apiRoutes from "./adapters/in/routes/apiRoutes.js";
-import { pool, dbHealth } from "./db.js";
-import dotenv from "dotenv";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
+import express from 'express';
+import session from 'express-session';
+import apiRoutes from './adapters/in/routes/apiRoutes.js';
+import { pool, dbHealth } from './db.js';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
@@ -209,22 +209,19 @@ const __dirname = path.dirname(__filename);
 
 // (Optional) serve static HTML if you want via backend
 // Not required if you keep using Live Server
-app.use(express.static(
-  path.join(__dirname, "../frontend/src/pages")
-));
+app.use(express.static(path.join(__dirname, '../frontend/src/pages')));
 
 // -------- CORS ----------
-const FRONTEND_ORIGIN = [
-  "http://localhost:5500",
-  "http://127.0.0.1:5500"
-];
+const FRONTEND_ORIGIN = ['http://localhost:5500', 'http://127.0.0.1:5500'];
 
-console.log("[server] Allowed CORS origins:", FRONTEND_ORIGIN);
+console.log('[server] Allowed CORS origins:', FRONTEND_ORIGIN);
 
-app.use(cors({
-  origin: FRONTEND_ORIGIN,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: FRONTEND_ORIGIN,
+    credentials: true,
+  })
+);
 
 // -------- Body + Session ----------
 app.use(express.json());
@@ -232,39 +229,39 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "dev-secret",
+    secret: process.env.SESSION_SECRET || 'dev-secret',
     resave: false,
     saveUninitialized: false,
   })
 );
 
 // -------- API routes ----------
-app.use("/api", apiRoutes);
+app.use('/api', apiRoutes);
 
 // -------- Health checks ----------
-app.get("/healthz", (_req, res) => res.status(200).send("ok"));
+app.get('/healthz', (_req, res) => res.status(200).send('ok'));
 
-app.get("/db-check", async (_req, res) => {
+app.get('/db-check', async (_req, res) => {
   try {
     const ok = await dbHealth();
-    res.status(ok ? 200 : 500).json({ db: ok ? "up" : "down" });
+    res.status(ok ? 200 : 500).json({ db: ok ? 'up' : 'down' });
   } catch (e) {
-    res.status(500).json({ db: "down", error: String(e) });
+    res.status(500).json({ db: 'down', error: String(e) });
   }
 });
 
 // Root – just a boring text so we know server is alive
-app.get("/", (_req, res) => {
-  res.send("Express API running (Conductor)");
+app.get('/', (_req, res) => {
+  res.send('Express API running (Conductor)');
 });
 
 // Simple debug endpoint to test from browser
-app.get("/api/debug/ping", (_req, res) => {
-  res.json({ ok: true, message: "pong from backend" });
+app.get('/api/debug/ping', (_req, res) => {
+  res.json({ ok: true, message: 'pong from backend' });
 });
 
 // -------- Start server ----------
-console.log("[server] CWD:", process.cwd());
+console.log('[server] CWD:', process.cwd());
 app.listen(PORT, () => {
   console.log(`🚀 API listening on http://localhost:${PORT}`);
 });
