@@ -255,7 +255,7 @@ app.get("/db-check", async (_req, res) => {
 
 // Root – just a boring text so we know server is alive
 app.get("/", (_req, res) => {
-  res.send("✅ Express API running (Conductor)");
+  res.send("Express API running (Conductor)");
 });
 
 // Simple debug endpoint to test from browser
