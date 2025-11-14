@@ -5,11 +5,34 @@ CREATE TABLE IF NOT EXISTS users (
   pronunciation VARCHAR,
   pronouns     VARCHAR,
   profile_photo BYTEA,
-  email        VARCHAR,
+  email        VARCHAR UNIQUE,
+  password     VARCHAR,  
+  token_response VARCHAR,  -- OAuth token response
   slack        VARCHAR,
-  phone        INT,
+  phone        VARCHAR, -- changed to VARCHAR
   availability VARCHAR
 );
+
+-- Ensure users.phone is VARCHAR if it previously existed as an integer
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+      FROM information_schema.columns
+     WHERE table_name = 'users'
+       AND column_name = 'phone'
+       AND data_type IN ('integer', 'bigint', 'smallint')
+  ) THEN
+    BEGIN
+      ALTER TABLE users
+        ALTER COLUMN phone TYPE VARCHAR
+        USING phone::text;
+    EXCEPTION WHEN others THEN
+      -- If conversion fails, keep existing type to avoid breaking deploys
+      NULL;
+    END;
+  END IF;
+END$$;
 
 -- GROUPS
 CREATE TABLE IF NOT EXISTS groups (
@@ -23,7 +46,11 @@ CREATE TABLE IF NOT EXISTS groups (
 
 -- COURSES
 CREATE TABLE IF NOT EXISTS courses (
-  course_id SERIAL PRIMARY KEY
+  course_id SERIAL PRIMARY KEY,
+  name      VARCHAR,
+  code      VARCHAR,
+  semester  VARCHAR,
+  description TEXT
 );
 
 -- ACTIVITIES
@@ -101,5 +128,16 @@ ON activities (
   course_id,
   name,
   ((date_trunc('minute', (starts_at AT TIME ZONE 'UTC'))) AT TIME ZONE 'UTC')
+);
+
+-- ASSIGNMENTS
+CREATE TABLE IF NOT EXISTS assignments (
+  assignment_id SERIAL PRIMARY KEY,
+  course_id     INT NOT NULL REFERENCES courses(course_id) ON DELETE CASCADE,
+  name          VARCHAR NOT NULL,
+  description   TEXT,
+  due_date      TIMESTAMPTZ,
+  created_at    TIMESTAMPTZ DEFAULT NOW(),
+  created_by    INT REFERENCES users(user_id) ON DELETE SET NULL
 );
 
