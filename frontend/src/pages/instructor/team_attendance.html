@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Team Attendance</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    .team-box {
+      border: 1px solid #aaa;
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      width: 70%;
+    }
+    .team-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    button { padding: 4px 10px; cursor: pointer; }
+  </style>
+</head>
+
+<body>
+
+<h2>Instructor — Team Attendance</h2>
+
+<p><strong>Course:</strong> <span id="courseName">CSE 101</span></p>
+<p><strong>Current Session:</strong> <span id="sessionName"></span></p>
+
+<div id="teamsContainer"></div>
+
+<script src="./team_attendance.js"></script>
+</body>
+</html>
