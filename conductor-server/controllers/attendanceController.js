@@ -270,7 +270,7 @@ export async function checkinAttendance(req, res) {
 // - For when a student participates / answered a question, or retro-fix.
 //
 export async function manualMarkAttendance(req, res) {
-  let { activity_id, user_id, present } = req.body || {};
+  const { activity_id, user_id, present } = req.body || {};
 
   const activityIdNum =
     typeof activity_id === 'string' ? Number.parseInt(activity_id, 10) : activity_id;
