@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   profile_photo BYTEA,
   email        VARCHAR,
   slack        VARCHAR,
-  phone        INT,
+  phone        VARCHAR,
   availability VARCHAR
 );
 
@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS attendance (
   user_id    INT NOT NULL REFERENCES users(user_id)       ON DELETE CASCADE,
   activity_id INT NOT NULL REFERENCES activities(activity_id) ON DELETE CASCADE,
   present    BOOLEAN,
+  checked_in_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (user_id, activity_id)
 );
 ALTER TABLE activities
@@ -79,6 +80,7 @@ ALTER TABLE activities
 
 ALTER TABLE activities
   ADD COLUMN IF NOT EXISTS starts_at TIMESTAMPTZ;
+
 
 DO $$
 BEGIN
