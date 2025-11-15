@@ -29,7 +29,6 @@ router.get('/user', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    
     const user = users[0];
     const userInfo = { ...user };
     delete userInfo.password; // Exclude password safely
