@@ -29,8 +29,10 @@ router.get('/user', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    
     const user = users[0];
-    const { password: _, ...userInfo } = user; // Exclude password
+    const userInfo = { ...user };
+    delete userInfo.password; // Exclude password safely
     res.json(userInfo);
   } catch (error) {
     console.error('GET /api/user error:', error);
@@ -78,7 +80,6 @@ router.post('/user', async (req, res) => {
   } catch (error) {
     console.error('POST /api/user error:', error);
     if (error.code === '23505') {
-      // Unique violation
       return res.status(400).json({ error: 'Email already in use' });
     }
     res.status(500).json({ error: error.message });
@@ -149,11 +150,9 @@ router.get('/courses', async (req, res) => {
 
   try {
     if (userId) {
-      // Get courses for a specific user
       const courses = await queryService.executeQuery('getUserCourses', [userId]);
       res.json(courses);
     } else {
-      // Get all courses
       const courses = await queryService.executeQuery('getCourses');
       res.json(courses);
     }
@@ -168,7 +167,9 @@ router.get('/courses', async (req, res) => {
  * Create attendance (instructor)
  */
 router.post('/attendance', async (req, res) => {
-  let { activity_id, user_id, present } = req.body || {};
+  const body = req.body ?? {};
+  let { activity_id, user_id } = body;
+  const { present } = body;
 
   activity_id = typeof activity_id === 'string' ? Number.parseInt(activity_id, 10) : activity_id;
   user_id = typeof user_id === 'string' ? Number.parseInt(user_id, 10) : user_id;

@@ -162,7 +162,9 @@ router.get('/users/:id/attendance', async (req, res) => {
  * Create or update attendance record
  */
 router.post('/attendance', async (req, res) => {
-  let { activity_id, user_id, present } = req.body || {};
+  const body = req.body ?? {};
+  let { activity_id, user_id } = body;
+  const { present } = body;
 
   activity_id = typeof activity_id === 'string' ? Number.parseInt(activity_id, 10) : activity_id;
   user_id = typeof user_id === 'string' ? Number.parseInt(user_id, 10) : user_id;
