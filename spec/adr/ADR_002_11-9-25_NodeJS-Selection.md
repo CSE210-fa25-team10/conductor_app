@@ -59,7 +59,7 @@ Negative outcomes:
 
 However, our choice of NodeJS + Express irrecovably locks us into this framework. Since Express overrides some of NodeJS's vanilla response headers, it is highly unlikely that the project may be easily shifted from NodeJS + Express in the future. Additionally, we must count on NodeJS and Express not making major changes to their platform in following releases, since our codebase will have to be modified if our stack's behaviour changes.
 
-This also holds for other aspects of our system, such as our choice of node-postgres as the adapter of choice for talking to our PostgreSQL server. If any changes are made in these sources, a major refactor will likely be required.
+This also holds for other aspects of our system, such as our choice of node-postgres as the adapter of choice for talking to our PostgreSQL server. If any changes are made in these sources, a major refactor will likely be required. This would also greatly impact our infrastructure team, since our choice of technology would drastically affect the CI/CD pipeline they build. However, we anticipate effects to be less dramatic for our frontend team, as we hope to keep as much Javascript out of the frontend pages as possible.
 
 ---
 
