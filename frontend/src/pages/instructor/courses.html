@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSE 210 - Professor View</title>
+    <link rel="stylesheet" href="courses.css">
+</head>
+<body>
+<div class="header">
+    <div class="header-left">
+        <button class="back-btn">←</button>
+        <h1>CSE 210</h1>
+    </div>
+    <div class="avatar">L</div>
+</div>
+
+<div class="container">
+    <div class="columns">
+        <!-- Assignments Column -->
+        <div class="column">
+            <div class="column-header">
+                <h2>Assignments</h2>
+                <button class="add-btn" onclick="showModal('assignment')">⊕</button>
+            </div>
+
+            <div class="item-card">
+                <div class="card-left">
+                    <div class="card-icon">🏔️</div>
+                    <div class="card-info">
+                        <div class="card-title">Assignment Title 1</div>
+                        <div class="card-meta">Due 7pm @ Nov 3, 2025</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="item-card">
+                <div class="card-left">
+                    <div class="card-icon">🏔️</div>
+                    <div class="card-info">
+                        <div class="card-title">Assignment Title 2</div>
+                        <div class="card-meta">Due 7pm @ Nov 4, 2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendances Column -->
+        <div class="column">
+            <div class="column-header">
+                <h2>Attendances</h2>
+                <button class="add-btn" onclick="showModal('attendance')">⊕</button>
+            </div>
+
+            <div class="item-card">
+                <div class="card-left">
+                    <div class="card-icon">🏔️</div>
+                    <div class="card-info">
+                        <div class="card-title">Attendance Title 1</div>
+                        <div class="card-meta">19/20 Attended</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="item-card">
+                <div class="card-left">
+                    <div class="card-icon">🏔️</div>
+                    <div class="card-info">
+                        <div class="card-title">Attendance Title 2</div>
+                        <div class="card-meta">19/20 Attended</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Overlay -->
+<div id="modal-overlay" class="modal-overlay" onclick="hideModal()"></div>
+
+<!-- New Assignment Modal -->
+<div id="assignment-modal" class="modal">
+    <div class="modal-header">
+        <h3>New Assignment</h3>
+        <button class="close-btn" onclick="hideModal()">⊗</button>
+    </div>
+    <div class="modal-body">
+        <div class="card-icon">🏔️</div>
+        <div class="form-group">
+            <input type="text" class="edit-input" placeholder="New Assignment Name">
+            <div class="card-meta">Due 7pm @ Nov 3, 2025</div>
+            <div class="card-meta">Supporting text</div>
+        </div>
+    </div>
+</div>
+
+<!-- New Attendance Modal -->
+<div id="attendance-modal" class="modal">
+    <div class="modal-header">
+        <h3>New Attendance</h3>
+        <button class="close-btn" onclick="hideModal()">⊗</button>
+    </div>
+    <div class="modal-body">
+        <div class="card-icon">🏔️</div>
+        <div class="form-group">
+            <input type="text" class="edit-input" placeholder="New Attendance Name">
+            <div class="card-meta">19/20 Attended</div>
+            <div class="card-meta">Supporting text</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showModal(type) {
+        document.getElementById('modal-overlay').classList.add('active');
+        document.getElementById(type + '-modal').classList.add('active');
+    }
+
+    function hideModal() {
+        document.getElementById('modal-overlay').classList.remove('active');
+        document.getElementById('assignment-modal').classList.remove('active');
+        document.getElementById('attendance-modal').classList.remove('active');
+    }
+</script>
+</body>
+</html>
