@@ -17,6 +17,8 @@ Key considerations:
   - The team requires a technology stack that offers good documentation, maintainability, and minimal overhead.
   - The solution should support long-term maintainability for future contributors with minimal dependency complexity.
 
+Furthermore, we wanted our system to use a unified language to simplify the implementation of a future Continuous Integration and Delivery pipeline, as well as to ease the burden of testing. We felt that in our current state, if we chose an architecture that required multiple languages and thus mutliple languages for compilation, linting, tests, and execution, we would not be able to complete the project in time.
+
 ---
 
 ## 2. Decision
@@ -54,6 +56,10 @@ Negative outcomes:
   - Manual setup for routing, validation, and error handling increases initial boilerplate.
   - NodeJS and PostgreSQL LTS versions are only supported at most for 5 years-so a code base update will be necessary soon.
   - A Relational database limits the ease with which we can change data types in the future. (However, it is likely still appropriate due to the nature of our structured data.)  
+
+However, our choice of NodeJS + Express irrecovably locks us into this framework. Since Express overrides some of NodeJS's vanilla response headers, it is highly unlikely that the project may be easily shifted from NodeJS + Express in the future. Additionally, we must count on NodeJS and Express not making major changes to their platform in following releases, since our codebase will have to be modified if our stack's behaviour changes.
+
+This also holds for other aspects of our system, such as our choice of node-postgres as the adapter of choice for talking to our PostgreSQL server. If any changes are made in these sources, a major refactor will likely be required.
 
 ---
 
