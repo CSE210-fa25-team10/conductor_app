@@ -42,4 +42,3 @@ export function makeQueryService({ pool }) {
     executeRawQuery,
   });
 }
-

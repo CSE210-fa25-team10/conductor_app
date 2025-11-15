@@ -55,4 +55,3 @@ export function loadQuery(queryName) {
 export function clearQueryCache() {
   queryCache.clear();
 }
-

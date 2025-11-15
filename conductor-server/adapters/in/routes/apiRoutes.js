@@ -5,9 +5,9 @@ import frontendRoutes from './frontendRoutes.js';
 
 const router = express.Router();
 
-router.use("/auth", authRoutes);
-router.use("/queries", queryRoutes);
+router.use('/auth', authRoutes);
+router.use('/queries', queryRoutes);
 // Frontend API routes matching frontend team specifications
-router.use("/", frontendRoutes);
+router.use('/', frontendRoutes);
 
 export default router;

@@ -5,20 +5,24 @@ This directory contains SQL query files that can be called from the frontend thr
 ## Available Queries
 
 ### User Queries
+
 - `getUsers.sql` - Get all users
 - `getUserById.sql` - Get a specific user by ID
 - `getUserCourses.sql` - Get all courses for a user
 - `getUserAttendance.sql` - Get attendance records for a user
 
 ### Course Queries
+
 - `getCourses.sql` - Get all courses
 - `getCourseRoster.sql` - Get roster (users) for a course
 - `getCourseActivities.sql` - Get activities for a course
 
 ### Activity Queries
+
 - `getActivities.sql` - Get all activities (optionally filtered by course_id)
 
 ### Attendance Queries
+
 - `createAttendance.sql` - Create or update an attendance record
 
 ## API Endpoints
@@ -46,13 +50,13 @@ All queries are accessible through the `/api/queries` endpoints:
 
 ```javascript
 // Get all users
-const users = await fetch('/api/queries/users').then(r => r.json());
+const users = await fetch('/api/queries/users').then((r) => r.json());
 
 // Get courses for a user
-const courses = await fetch('/api/queries/users/123/courses').then(r => r.json());
+const courses = await fetch('/api/queries/users/123/courses').then((r) => r.json());
 
 // Get activities for a course
-const activities = await fetch('/api/queries/courses/456/activities').then(r => r.json());
+const activities = await fetch('/api/queries/courses/456/activities').then((r) => r.json());
 
 // Create attendance record
 const attendance = await fetch('/api/queries/attendance', {
@@ -61,8 +65,7 @@ const attendance = await fetch('/api/queries/attendance', {
   body: JSON.stringify({
     activity_id: 789,
     user_id: 123,
-    present: true
-  })
-}).then(r => r.json());
+    present: true,
+  }),
+}).then((r) => r.json());
 ```
-

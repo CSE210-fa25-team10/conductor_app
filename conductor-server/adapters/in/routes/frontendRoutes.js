@@ -2,15 +2,13 @@ import express from 'express';
 import { makeQueryService } from '../../../services/queryService.js';
 import { pool } from '../../../db.js';
 
-
 const router = express.Router();
 const queryService = makeQueryService({ pool });
-
 
 /**
  * GET /api/user
  * Get current user info (instructor+student)
- * Note: Currently accepts user_id from session or query param. 
+ * Note: Currently accepts user_id from session or query param.
  * In production, should use proper authentication middleware.
  */
 router.get('/user', async (req, res) => {
@@ -43,7 +41,7 @@ router.get('/user', async (req, res) => {
 /**
  * POST /api/user
  * Edit user info (instructor+student)
- * Note: Currently accepts user_id from session or body. 
+ * Note: Currently accepts user_id from session or body.
  * In production, should use proper authentication middleware.
  */
 router.post('/user', async (req, res) => {
@@ -69,7 +67,7 @@ router.post('/user', async (req, res) => {
       phone || null,
       availability || null,
       pronunciation || null,
-      slack || null
+      slack || null,
     ]);
 
     if (result.length === 0) {
@@ -79,7 +77,8 @@ router.post('/user', async (req, res) => {
     res.json(result[0]);
   } catch (error) {
     console.error('POST /api/user error:', error);
-    if (error.code === '23505') { // Unique violation
+    if (error.code === '23505') {
+      // Unique violation
       return res.status(400).json({ error: 'Email already in use' });
     }
     res.status(500).json({ error: error.message });
@@ -102,7 +101,7 @@ router.post('/course', async (req, res) => {
       name,
       code || null,
       semester || null,
-      description || null
+      description || null,
     ]);
 
     res.status(201).json(result[0]);
@@ -118,9 +117,7 @@ router.post('/course', async (req, res) => {
  * Query params: course_id (required)
  */
 router.get('/course', async (req, res) => {
-  const courseId = req.query.course_id 
-    ? Number.parseInt(req.query.course_id, 10) 
-    : null;
+  const courseId = req.query.course_id ? Number.parseInt(req.query.course_id, 10) : null;
 
   if (!courseId || !Number.isInteger(courseId)) {
     return res.status(400).json({ error: 'course_id is required and must be an integer' });
@@ -144,9 +141,7 @@ router.get('/course', async (req, res) => {
  * Query params: user_id (optional) - if provided, returns courses for that user
  */
 router.get('/courses', async (req, res) => {
-  const userId = req.query.user_id 
-    ? Number.parseInt(req.query.user_id, 10) 
-    : null;
+  const userId = req.query.user_id ? Number.parseInt(req.query.user_id, 10) : null;
 
   if (req.query.user_id && !Number.isInteger(userId)) {
     return res.status(400).json({ error: 'user_id must be an integer' });
@@ -174,22 +169,26 @@ router.get('/courses', async (req, res) => {
  */
 router.post('/attendance', async (req, res) => {
   let { activity_id, user_id, present } = req.body || {};
-  
-  activity_id = typeof activity_id === 'string' 
-    ? Number.parseInt(activity_id, 10) 
-    : activity_id;
-  user_id = typeof user_id === 'string' 
-    ? Number.parseInt(user_id, 10) 
-    : user_id;
 
-  if (!Number.isInteger(activity_id) || !Number.isInteger(user_id) || typeof present !== 'boolean') {
-    return res.status(400).json({ 
-      error: 'activity_id (int), user_id (int), and present (boolean) are required' 
+  activity_id = typeof activity_id === 'string' ? Number.parseInt(activity_id, 10) : activity_id;
+  user_id = typeof user_id === 'string' ? Number.parseInt(user_id, 10) : user_id;
+
+  if (
+    !Number.isInteger(activity_id) ||
+    !Number.isInteger(user_id) ||
+    typeof present !== 'boolean'
+  ) {
+    return res.status(400).json({
+      error: 'activity_id (int), user_id (int), and present (boolean) are required',
     });
   }
 
   try {
-    const result = await queryService.executeQuery('createAttendance', [activity_id, user_id, present]);
+    const result = await queryService.executeQuery('createAttendance', [
+      activity_id,
+      user_id,
+      present,
+    ]);
     res.status(201).json(result[0]);
   } catch (error) {
     console.error('POST /api/attendance error:', error);
@@ -203,12 +202,8 @@ router.post('/attendance', async (req, res) => {
  * Query params: course_id (optional), user_id (optional)
  */
 router.get('/attendance', async (req, res) => {
-  const courseId = req.query.course_id 
-    ? Number.parseInt(req.query.course_id, 10) 
-    : null;
-  const userId = req.query.user_id 
-    ? Number.parseInt(req.query.user_id, 10) 
-    : null;
+  const courseId = req.query.course_id ? Number.parseInt(req.query.course_id, 10) : null;
+  const userId = req.query.user_id ? Number.parseInt(req.query.user_id, 10) : null;
 
   if (req.query.course_id && !Number.isInteger(courseId)) {
     return res.status(400).json({ error: 'course_id must be an integer' });
@@ -253,7 +248,7 @@ router.post('/assignment', async (req, res) => {
       name,
       description || null,
       due_date || null,
-      createdById
+      createdById,
     ]);
 
     res.status(201).json(result[0]);
@@ -269,9 +264,7 @@ router.post('/assignment', async (req, res) => {
  * Query params: course_id (optional)
  */
 router.get('/assignment', async (req, res) => {
-  const courseId = req.query.course_id 
-    ? Number.parseInt(req.query.course_id, 10) 
-    : null;
+  const courseId = req.query.course_id ? Number.parseInt(req.query.course_id, 10) : null;
 
   if (req.query.course_id && !Number.isInteger(courseId)) {
     return res.status(400).json({ error: 'course_id must be an integer' });
@@ -287,4 +280,3 @@ router.get('/assignment', async (req, res) => {
 });
 
 export default router;
-

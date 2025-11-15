@@ -98,9 +98,7 @@ router.get('/courses/:id/activities', async (req, res) => {
  * Get all activities, optionally filtered by course_id
  */
 router.get('/activities', async (req, res) => {
-  const courseId = req.query.course_id 
-    ? Number.parseInt(req.query.course_id, 10) 
-    : null;
+  const courseId = req.query.course_id ? Number.parseInt(req.query.course_id, 10) : null;
 
   if (req.query.course_id && !Number.isInteger(courseId)) {
     return res.status(400).json({ error: 'course_id must be an integer' });
@@ -144,9 +142,7 @@ router.get('/users/:id/attendance', async (req, res) => {
     return res.status(400).json({ error: 'user_id must be an integer' });
   }
 
-  const courseId = req.query.course_id 
-    ? Number.parseInt(req.query.course_id, 10) 
-    : null;
+  const courseId = req.query.course_id ? Number.parseInt(req.query.course_id, 10) : null;
 
   if (req.query.course_id && !Number.isInteger(courseId)) {
     return res.status(400).json({ error: 'course_id must be an integer' });
@@ -167,22 +163,26 @@ router.get('/users/:id/attendance', async (req, res) => {
  */
 router.post('/attendance', async (req, res) => {
   let { activity_id, user_id, present } = req.body || {};
-  
-  activity_id = typeof activity_id === 'string' 
-    ? Number.parseInt(activity_id, 10) 
-    : activity_id;
-  user_id = typeof user_id === 'string' 
-    ? Number.parseInt(user_id, 10) 
-    : user_id;
 
-  if (!Number.isInteger(activity_id) || !Number.isInteger(user_id) || typeof present !== 'boolean') {
-    return res.status(400).json({ 
-      error: 'activity_id (int), user_id (int), and present (boolean) are required' 
+  activity_id = typeof activity_id === 'string' ? Number.parseInt(activity_id, 10) : activity_id;
+  user_id = typeof user_id === 'string' ? Number.parseInt(user_id, 10) : user_id;
+
+  if (
+    !Number.isInteger(activity_id) ||
+    !Number.isInteger(user_id) ||
+    typeof present !== 'boolean'
+  ) {
+    return res.status(400).json({
+      error: 'activity_id (int), user_id (int), and present (boolean) are required',
     });
   }
 
   try {
-    const result = await queryService.executeQuery('createAttendance', [activity_id, user_id, present]);
+    const result = await queryService.executeQuery('createAttendance', [
+      activity_id,
+      user_id,
+      present,
+    ]);
     res.status(201).json(result[0]);
   } catch (error) {
     console.error('POST /api/queries/attendance error:', error);
@@ -191,4 +191,3 @@ router.post('/attendance', async (req, res) => {
 });
 
 export default router;
-
