@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Attendance Tool</title>
+  </head>
+  <body>
+    <h1>Attendance Tool</h1>
+
+    <label>Course ID:</label>
+    <input id="courseIdInput" type="number" placeholder="e.g. 101" />
+    <br /><br />
+
+    <label>Session name:</label>
+    <input id="nameInput" type="text" placeholder="Lecture 5" />
+    <br /><br />
+
+    <button id="startAttendanceBtn">Start Attendance Session</button>
+
+    <h3>QR Code</h3>
+    <img id="qrImg" style="width:200px; height:200px;" />
+
+    <h3>PIN</h3>
+    <p id="pinCode" style="font-size: 32px;"></p>
+
+    <p id="sessionInfo"></p>
+
+    <script src="./attendance.js"></script>
+  </body>
+</html>

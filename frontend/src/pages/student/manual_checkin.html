@@ -1,0 +1,77 @@
+<!--
+====================================================================
+  STUDENT MANUAL CHECK-IN PAGE (PIN-BASED)
+  ------------------------------------------------------------------
+
+  PURPOSE:
+    This page is used ONLY when the QR check-in method fails.
+    Students manually enter:
+        • course_id   – course running the session
+        • pin         – 6-digit PIN shown by instructor
+        • email       – identifies the student in database
+        • roll_id     – optional, recorded for instructor
+
+  WORKFLOW:
+    1. Student clicks "Record My Attendance" inside the LMS.
+       → They are redirected to this manual_checkin.html page.
+
+    2. Student enters:
+          - Course ID (the course they are enrolled in)
+          - PIN      (time-limited 6-digit code)
+          - Email    (required)
+          - Roll ID  (optional)
+
+    3. When the student submits:
+         → POST /api/attendance/checkin is triggered
+         → Backend logic:
+              - Validates email → resolves user_id
+              - Determines the active activity for this course
+                within the allowed attendance time window
+              - Ensures student is enrolled in the course
+              - Validates deterministic PIN for that activity
+              - Inserts/updates attendance row
+
+    4. On success:
+          ✓ Shows student the session name + timestamp
+          ✓ Attendance stored in the database
+
+  NOTE:
+    This manual entry system mirrors the QR system except:
+      - QR provides activity_id automatically
+      - Manual entry requires course_id + PIN to find activity
+====================================================================
+-->
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Student Check-In (Manual)</title>
+  </head>
+  <body>
+    <h2>Attendance Check-In (Manual PIN)</h2>
+
+    <p>
+      Use this only if the QR code isn’t working. You need the course ID and
+      PIN shown by your instructor.
+    </p>
+
+    <label>Course ID:</label><br />
+    <input id="courseIdInput" type="number" placeholder="e.g. 101" /><br /><br />
+
+    <label>PIN:</label><br />
+    <input id="pinInput" type="text" placeholder="6-digit PIN" /><br /><br />
+
+    <label>Email:</label><br />
+    <input id="emailInput" type="email" placeholder="you@ucsd.edu" /><br /><br />
+
+    <label>Roll ID:</label><br />
+    <input id="rollInput" type="text" placeholder="A12345678" /><br /><br />
+
+    <button id="submitBtn">Submit</button>
+
+    <p id="result" style="font-size:20px;"></p>
+
+    <script src="./manual_checkin.js"></script>
+  </body>
+</html>

@@ -23,15 +23,15 @@ jobs:
           cache-dependency-path: conductor-server/package-lock.json
 
       - name: Install dependencies
-        working-directory: ./conductor-server
+        working-directory: conductor-server
         run: npm ci
 
       - name: Run ESLint
-        working-directory: ./conductor-server
+        working-directory: conductor-server
         run: npm run lint
 
       - name: Check code formatting
-        working-directory: ./conductor-server
+        working-directory: conductor-server
         run: npm run format:check
 
   # Future: Add more jobs here
