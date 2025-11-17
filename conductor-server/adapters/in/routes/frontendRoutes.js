@@ -161,65 +161,65 @@ router.get('/courses', async (req, res) => {
   }
 });
 
-/**
- * POST /api/attendance
- * Create attendance (instructor)
- */
-router.post('/attendance', async (req, res) => {
-  const body = req.body ?? {};
-  let { activity_id, user_id } = body;
-  const { present } = body;
+// /**
+//  * POST /api/attendance
+//  * Create attendance (instructor)
+//  */
+// router.post('/attendance', async (req, res) => {
+//   const body = req.body ?? {};
+//   let { activity_id, user_id } = body;
+//   const { present } = body;
 
-  activity_id = typeof activity_id === 'string' ? Number.parseInt(activity_id, 10) : activity_id;
-  user_id = typeof user_id === 'string' ? Number.parseInt(user_id, 10) : user_id;
+//   activity_id = typeof activity_id === 'string' ? Number.parseInt(activity_id, 10) : activity_id;
+//   user_id = typeof user_id === 'string' ? Number.parseInt(user_id, 10) : user_id;
 
-  if (
-    !Number.isInteger(activity_id) ||
-    !Number.isInteger(user_id) ||
-    typeof present !== 'boolean'
-  ) {
-    return res.status(400).json({
-      error: 'activity_id (int), user_id (int), and present (boolean) are required',
-    });
-  }
+//   if (
+//     !Number.isInteger(activity_id) ||
+//     !Number.isInteger(user_id) ||
+//     typeof present !== 'boolean'
+//   ) {
+//     return res.status(400).json({
+//       error: 'activity_id (int), user_id (int), and present (boolean) are required',
+//     });
+//   }
 
-  try {
-    const result = await queryService.executeQuery('createAttendance', [
-      activity_id,
-      user_id,
-      present,
-    ]);
-    res.status(201).json(result[0]);
-  } catch (error) {
-    console.error('POST /api/attendance error:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
+//   try {
+//     const result = await queryService.executeQuery('createAttendance', [
+//       activity_id,
+//       user_id,
+//       present,
+//     ]);
+//     res.status(201).json(result[0]);
+//   } catch (error) {
+//     console.error('POST /api/attendance error:', error);
+//     res.status(400).json({ error: error.message });
+//   }
+// });
 
-/**
- * GET /api/attendance
- * Get attendance (instructor+student)
- * Query params: course_id (optional), user_id (optional)
- */
-router.get('/attendance', async (req, res) => {
-  const courseId = req.query.course_id ? Number.parseInt(req.query.course_id, 10) : null;
-  const userId = req.query.user_id ? Number.parseInt(req.query.user_id, 10) : null;
+// /**
+//  * GET /api/attendance
+//  * Get attendance (instructor+student)
+//  * Query params: course_id (optional), user_id (optional)
+//  */
+// router.get('/attendance', async (req, res) => {
+//   const courseId = req.query.course_id ? Number.parseInt(req.query.course_id, 10) : null;
+//   const userId = req.query.user_id ? Number.parseInt(req.query.user_id, 10) : null;
 
-  if (req.query.course_id && !Number.isInteger(courseId)) {
-    return res.status(400).json({ error: 'course_id must be an integer' });
-  }
-  if (req.query.user_id && !Number.isInteger(userId)) {
-    return res.status(400).json({ error: 'user_id must be an integer' });
-  }
+//   if (req.query.course_id && !Number.isInteger(courseId)) {
+//     return res.status(400).json({ error: 'course_id must be an integer' });
+//   }
+//   if (req.query.user_id && !Number.isInteger(userId)) {
+//     return res.status(400).json({ error: 'user_id must be an integer' });
+//   }
 
-  try {
-    const attendance = await queryService.executeQuery('getAttendance', [courseId, userId]);
-    res.json(attendance);
-  } catch (error) {
-    console.error('GET /api/attendance error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
+//   try {
+//     const attendance = await queryService.executeQuery('getAttendance', [courseId, userId]);
+//     res.json(attendance);
+//   } catch (error) {
+//     console.error('GET /api/attendance error:', error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 /**
  * POST /api/assignment
