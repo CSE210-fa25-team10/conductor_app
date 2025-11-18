@@ -1,9 +1,11 @@
 import express from 'express';
-import { login, callback, logout } from '../../../controllers/authController.js';
+import { googleLogin, callback, login, register, logout } from '../../../controllers/authController.js';
 
 const router = express.Router();
 
-router.get('/login', login);
+router.get('/googlelogin', googleLogin);
+router.post('/login', login);
+router.post('/register', register);
 router.get('/google/callback', callback);
 router.get('/logout', logout);
 

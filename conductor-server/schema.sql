@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
   token_response VARCHAR,  -- OAuth token response
   slack        VARCHAR,
   phone        VARCHAR, -- changed to VARCHAR
-  availability VARCHAR
+  availability VARCHAR, 
+  role         VARCHAR
 );
 
 -- Ensure users.phone is VARCHAR if it previously existed as an integer
@@ -33,6 +34,10 @@ BEGIN
     END;
   END IF;
 END$$;
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS token_response VARCHAR;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR;
 
 -- GROUPS
 CREATE TABLE IF NOT EXISTS groups (
