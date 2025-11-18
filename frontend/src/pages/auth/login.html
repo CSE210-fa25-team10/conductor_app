@@ -572,6 +572,26 @@
             if (isValid) {
                 alert('Login successful!\n\nEmail: ' + loginEmail.value + '\n\nYou would now be redirected to the dashboard.');
                 // Here you would typically make an API call to authenticate
+                fetch(`http://localhost:3000/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: loginEmail.value,
+                        password: loginPassword.value
+                    })
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data => {
+                    console.log('Login successful!');
+                }).catch(error => {
+                    console.error('There was a problem with the login request:', error);
+                });
+                // TODO: redirect to dashboard depending on role
             }
         });
 
@@ -640,7 +660,17 @@
 
         // Email conflict check (simulated)
         function checkEmailConflict(email) {
-            return !registeredEmails.includes(email.toLowerCase());
+            // fetch the list of users and check if email exists
+            fetch(`http://localhost:3000/api/queries/users`)
+                .then(response => response.json())
+                .then(data => {
+                    const emails = data.map(user => user.email.toLowerCase());
+                    return !emails.includes(email.toLowerCase());
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                    return false;
+                });
         }
 
         registerName.addEventListener('input', function() {
@@ -745,6 +775,30 @@
                       'Name: ' + registerName.value + '\n' +
                       'Email: ' + email + '\n\n' +
                       'You can now sign in with your credentials.');
+
+                // send registration data to server here
+                // for now, use the localhost, this would be replaced with the live URL in production
+                fetch(`http://localhost:3000/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        role: registerRole.value,
+                        name: registerName.value,
+                        email: email,
+                        password: registerPassword.value
+                    })
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data => {
+                    console.log('Registration successful!');
+                }).catch(error => {
+                    console.error('There was a problem with the registration request:', error);
+                });
                 
                 // Reset form and go to login
                 registerForm.reset();
