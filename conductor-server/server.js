@@ -3,11 +3,11 @@ import session from 'express-session';
 import apiRoutes from './adapters/in/routes/apiRoutes.js';
 import { pool, dbHealth } from './db.js';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 const PORT = Number(process.env.PORT) || 3000;
 
 dotenv.config();
-
 const app = express();
 
 app.use(express.json());
@@ -19,6 +19,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(cors());
 
 // API routes
 app.use('/api', apiRoutes);
