@@ -1,8 +1,9 @@
-import { 
-  generateAuthUrl, 
-  getUserFromCode, 
-  login as loginService, 
-  register as registerService } from '../services/authService.js';
+import {
+  generateAuthUrl,
+  getUserFromCode,
+  login as loginService,
+  register as registerService,
+} from '../services/authService.js';
 
 export const googleLogin = (req, res) => {
   const url = generateAuthUrl();
