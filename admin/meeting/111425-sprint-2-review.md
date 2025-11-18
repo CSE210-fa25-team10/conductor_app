@@ -1,4 +1,4 @@
-# Conductor — Sprint Review 11/07/2025
+# Conductor — Sprint 2 Review 11/14/2025
 
 Date: 14 November 2025  
 Meeting Type: Sprint Review
