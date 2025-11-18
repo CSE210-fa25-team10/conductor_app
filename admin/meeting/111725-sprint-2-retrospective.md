@@ -20,7 +20,7 @@ Project: Conductor – Course Management Web Application
 
 ## Overview
 
-The goal of this retrospective was to examine our processes for our group's second sprint. We began the retrospective with a warm up excersize rating how we felt about the team's practices. Next, we ran the "Start, Stop, Continue" retrospective on Retrium, giving each other feedback on what we thought we should start doing, what we should stop, and what we should continue doing from previous retrospectives. Finally, we came up with an action plan, listing several items were are interested in actively working on in the next sprint.
+The goal of this retrospective was to examine our processes for our group's second sprint. We began the retrospective with a warm up exercise rating how we felt about the team's practices. Next, we ran the "Start, Stop, Continue" retrospective on Retrium, giving each other feedback on what we thought we should start doing, what we should stop, and what we should continue doing from previous retrospectives. Finally, we came up with an action plan, listing several items were are interested in actively working on in the next sprint.
 
 ## Radar Warm Up
 
