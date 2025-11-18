@@ -33,12 +33,12 @@ export const login = async (loginData) => {
     id: user.user_id,
     name: user.name,
     email: user.email,
-    role: user.role
+    role: user.role,
   };
 };
 
 export const register = async (userData) => {
-  const { name, email, password, role } = userData; 
+  const { name, email, password, role } = userData;
   // check to see if the email exists, if so, throw an error
   const checkQuery = 'SELECT user_id FROM users WHERE email = $1';
   const checkResult = await pool.query(checkQuery, [email]);
