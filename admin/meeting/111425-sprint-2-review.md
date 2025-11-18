@@ -46,7 +46,7 @@ Key Updates:
 	- Nikita completed the attendance feature, with pin, QR code, and manual instructor control for attendance keeping.
 
 Next Steps:
-- Modfiy server to start serving frontend pages.
+- Modify server to start serving frontend pages.
 - Continue collaborating with frontend on desired API calls.
 
 ## Infrastructure Progress
