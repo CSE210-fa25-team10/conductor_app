@@ -21,6 +21,8 @@ services:
     build:
       context: ./conductor-server
       dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app/frontend
     depends_on:
       db:
         condition: service_healthy
