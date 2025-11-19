@@ -5,6 +5,10 @@ import {
   register as registerService,
 } from '../services/authService.js';
 
+export const showLoginPage = (req, res) => {
+  res.sendFile('login.html', { root: 'frontend/src/pages/auth' });
+};
+
 export const googleLogin = (req, res) => {
   const url = generateAuthUrl();
   res.redirect(url);
