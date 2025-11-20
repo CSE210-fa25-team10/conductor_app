@@ -41,5 +41,14 @@ services:
       timeout: 5s
       retries: 30
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
 volumes:
   db_data:
