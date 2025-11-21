@@ -5,19 +5,25 @@ A lightweight Node.js + Express 5.1.0 backend for the Conductor Tool project.
 ## 🚀 Setup
 
 ### 1. Install dependencies
+
 ```bash
 npm install
-````
+```
+
 ### 2. Run the server
+
 ```bash
 npm start
 ```
+
 The server will start at:
+
 ```
 http://localhost:3000
 ```
 
 You should see:
+
 ```angular2html
 ✅ Express 5.1.0 server running on Node.js v24.11.0 LTS
 ```
@@ -25,6 +31,7 @@ You should see:
 ---
 
 ## 🧠 Project Structure
+
 ```bash
 conductor-server/
 ├── package.json     # Project config
@@ -32,6 +39,7 @@ conductor-server/
 ├── README.md        # This file
 └── node_modules/    # Installed dependencies
 ```
+
 ---
 
 ## 🧩 Tech Stack

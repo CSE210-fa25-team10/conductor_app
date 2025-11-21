@@ -63,7 +63,7 @@ body {
     align-items: center;
 }
 
-.join-class-btn {
+.join-class-btn, .attendance-btn {
     padding: 10px 20px;
     background: #8b5cf6;  /* 紫色 */
     color: white;
@@ -75,13 +75,13 @@ body {
     transition: all 0.2s;
 }
 
-.join-class-btn:hover {
+.join-class-btn:hover, .attendance-btn:hover {
     background: #7c3aed;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
 }
 
-.join-class-btn:active {
+.join-class-btn:active, .attendance-btn:active {
     transform: translateY(0);
 }
 
