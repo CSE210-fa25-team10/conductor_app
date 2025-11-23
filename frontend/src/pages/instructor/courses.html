@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSE 210 - Professor View</title>
+    <title>course detail - Professor View</title>
     <link rel="stylesheet" href="courses.css">
 </head>
 <body>
 <div class="header">
-    <div class="header-left">
-        <button class="back-btn">←</button>
-        <h1>CSE 210</h1>
-    </div>
-    <div class="avatar">L</div>
+    <h1>CSE 210</h1>
 </div>
 
 <div class="container">
@@ -73,6 +69,8 @@
             </div>
         </div>
     </div>
+    <div id="group-info-section"></div>
+    
 </div>
 
 <!-- Modal Overlay -->
@@ -110,17 +108,7 @@
     </div>
 </div>
 
-<script>
-    function showModal(type) {
-        document.getElementById('modal-overlay').classList.add('active');
-        document.getElementById(type + '-modal').classList.add('active');
-    }
-
-    function hideModal() {
-        document.getElementById('modal-overlay').classList.remove('active');
-        document.getElementById('assignment-modal').classList.remove('active');
-        document.getElementById('attendance-modal').classList.remove('active');
-    }
+<script src="courses.js">
 </script>
 </body>
 </html>
