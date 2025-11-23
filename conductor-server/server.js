@@ -53,8 +53,14 @@ app.get('/db-check', async (_req, res) => {
   }
 });
 
-// Start server
-console.log('Running server.js from:', process.cwd());
-app.listen(PORT, () => {
-  console.log(` Server listening on http://localhost:${PORT}`);
-});
+
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  console.log('Running server.js from:', process.cwd());
+  app.listen(PORT, () => {
+    console.log(` Server listening on http://localhost:${PORT}`);
+  });
+}
+
+// Export app for testing
+export default app;
