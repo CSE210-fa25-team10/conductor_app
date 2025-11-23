@@ -1,30 +1,60 @@
 // middleware/auth.js
 
+import { verifyToken } from '../services/authService.js';
+import { pool } from '../db.js';
+
 /**
- * A user is considered authenticated if req.session.user exists
- * AND has at least an id field populated.
+ * JWT Token-based authentication middleware
+ * Expects token in Authorization header: "Bearer <token>"
+ * or in query parameter: ?token=<token>
+ *
+ * Sets req.user with decoded token payload if valid
  */
 export function requireAuth(req, res, next) {
-  if (req.session && req.session.user && req.session.user.id) {
-    return next();
+  // Try to get token from Authorization header first
+  let token = null;
+  const authHeader = req.headers.authorization;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.substring(7).trim(); // Remove 'Bearer ' prefix and trim whitespace
   }
-  return res.status(401).json({ error: 'not_authenticated' });
+  // Fallback to query parameter (for convenience, less secure)
+  else if (req.query.token) {
+    token = req.query.token;
+  }
+  // Fallback to body (for some POST requests)
+  else if (req.body && req.body.token) {
+    token = req.body.token;
+  }
+
+  // Check if token is missing or empty
+  if (!token || token.trim() === '') {
+    return res.status(401).json({ error: 'no_token_provided' });
+  }
+
+  try {
+    const decoded = verifyToken(token);
+    // Attach user info to request object
+    req.user = decoded;
+    return next();
+  } catch (error) {
+    return res.status(401).json({ error: 'invalid_or_expired_token' });
+  }
 }
 
 /**
- * Optional: Role-based instructor/TA auth
+ * Role-based instructor/TA auth
  * Requires course_users.role to be 'instructor' or 'ta'
- * (You can use this later for instructor-only actions)
+ * Must be used after requireAuth middleware
  */
-import { pool } from '../db.js';
-
 export function requireInstructorOrTA(req, res, next) {
-  const user = req.session?.user;
-  const courseId = Number(req.params.courseId || req.body.course_id);
-
-  if (!user || !user.id) {
+  // First ensure user is authenticated (from requireAuth)
+  if (!req.user || !req.user.id) {
     return res.status(401).json({ error: 'not_authenticated' });
   }
+
+  const courseId = Number(req.params.courseId || req.body.course_id);
+
   if (!Number.isInteger(courseId)) {
     return res.status(400).json({ error: 'invalid_course_id' });
   }
@@ -34,7 +64,7 @@ export function requireInstructorOrTA(req, res, next) {
       `SELECT role
        FROM course_users
       WHERE user_id = $1 AND course_id = $2`,
-      [user.id, courseId]
+      [req.user.id, courseId]
     )
     .then((result) => {
       const row = result.rows[0];

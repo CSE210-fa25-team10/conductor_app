@@ -10,15 +10,9 @@ import {
   getStudentCourseAttendanceOverview,
 } from '../../../controllers/attendanceController.js';
 
-// import { requireAuth, requireInstructorOrTA } from '../../../middleware/auth.js'; #--> need oauth to be done
+import { requireAuth, requireInstructorOrTA } from '../../../middleware/auth.js';
 
 const router = express.Router();
-
-//Removing this TEMP section, you should replace 'requireAuth' with 'requireInstructorOrTA' in all router.posts
-// ⚠️ TEMP: disable auth while we test
-function requireAuth(_req, _res, next) {
-  return next();
-}
 
 // 1. Instructor: start a session (creates activity, returns PIN + QR)
 router.post('/session/start', requireAuth, startAttendanceSession);
