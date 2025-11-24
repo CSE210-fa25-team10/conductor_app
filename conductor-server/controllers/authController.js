@@ -47,7 +47,7 @@ export const callback = async (req, res) => {
   try {
     const response = await getUserFromCode(code);
     // response now includes token from authService
-    const { token, ...user } = response;
+    const { token } = response;
 
     // For OAuth callback, we can either:
     // 1. Redirect with token in query (less secure but works for web)
