@@ -30,7 +30,7 @@ describe('Attendance Controller Unit Tests', () => {
     // Mock all the necessary database calls (get user, get activity, check enrollment, upsert)
     // const req = { body: { course_id: TEST_COURSE_ID, pin: '000000', email: TEST_EMAIL } };
     // const res = mockRes();
-    
+
     // await checkinAttendance(req, res);
     // expect(res.status).toHaveBeenCalledWith(200);
     console.log('Check-in Success Test Placeholder: Implement mocks and assertions.');
@@ -40,7 +40,7 @@ describe('Attendance Controller Unit Tests', () => {
     // Mock to force the PIN validation to fail for a known activity
     // const req = { body: { course_id: TEST_COURSE_ID, pin: '999999', email: TEST_EMAIL } };
     // const res = mockRes();
-    
+
     // await checkinAttendance(req, res);
     // expect(res.status).toHaveBeenCalledWith(400);
     // expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: 'invalid_pin' }));

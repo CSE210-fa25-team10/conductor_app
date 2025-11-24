@@ -53,7 +53,6 @@ app.get('/db-check', async (_req, res) => {
   }
 });
 
-
 // Only start server if not in test mode
 if (process.env.NODE_ENV !== 'test') {
   console.log('Running server.js from:', process.cwd());

@@ -6,7 +6,8 @@ import app from '../../server.js';
 
 // Test database pool
 const testPool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://testuser:testpassword@localhost:5432/testdb',
+  connectionString:
+    process.env.DATABASE_URL || 'postgresql://testuser:testpassword@localhost:5432/testdb',
 });
 
 describe('Full User Flow Integration Tests', () => {
@@ -31,7 +32,7 @@ describe('Full User Flow Integration Tests', () => {
       } catch (err) {
         retries--;
         if (retries === 0) throw err;
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
 
@@ -65,9 +66,7 @@ describe('Full User Flow Integration Tests', () => {
   });
 
   it('should allow a new user to register successfully', async () => {
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send(testUser);
+    const res = await request(app).post('/api/auth/register').send(testUser);
 
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty('user');
@@ -81,18 +80,16 @@ describe('Full User Flow Integration Tests', () => {
   });
 
   it('should allow the registered user to log in', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ 
-        email: testUser.email, 
-        password: testUser.password 
-      });
+    const res = await request(app).post('/api/auth/login').send({
+      email: testUser.email,
+      password: testUser.password,
+    });
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('user');
     expect(res.body.user.email).toBe(testUser.email);
     expect(res.body.user.id).toBe(userId);
-    
+
     // Store token if returned (for future authenticated requests)
     if (res.body.token) {
       authToken = res.body.token;
@@ -102,8 +99,7 @@ describe('Full User Flow Integration Tests', () => {
   });
 
   it('should fetch user info on the dashboard (GET /api/user)', async () => {
-    const res = await request(app)
-      .get(`/api/user?user_id=${userId}`);
+    const res = await request(app).get(`/api/user?user_id=${userId}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body.user_id).toBe(userId);
@@ -123,22 +119,21 @@ describe('Full User Flow Integration Tests', () => {
       [userId, courseId, 'student']
     );
 
-    const res = await request(app)
-      .get(`/api/courses?user_id=${userId}`);
+    const res = await request(app).get(`/api/courses?user_id=${userId}`);
 
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
-    
+
     // Verify our test course is in the list
-    const testCourse = res.body.find(c => c.course_id === courseId);
+    const testCourse = res.body.find((c) => c.course_id === courseId);
     expect(testCourse).toBeDefined();
     expect(testCourse.name).toBe('Test Course');
     expect(testCourse.code).toBe('TEST101');
 
     console.log('✅ Courses fetched successfully');
   });
-  
+
   it('should fetch student attendance overview (GET /api/attendance/courses/:id/student/:user/overview)', async () => {
     // Create a test activity for the course
     const activityResult = await testPool.query(
@@ -156,8 +151,9 @@ describe('Full User Flow Integration Tests', () => {
       [userId, activityId, true]
     );
 
-    const res = await request(app)
-      .get(`/api/attendance/courses/${courseId}/student/${userId}/overview`);
+    const res = await request(app).get(
+      `/api/attendance/courses/${courseId}/student/${userId}/overview`
+    );
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('me');
@@ -173,21 +169,17 @@ describe('Full User Flow Integration Tests', () => {
   });
 
   it('should reject login with incorrect password', async () => {
-    const res = await request(app)
-      .post('/api/auth/login')
-      .send({ 
-        email: testUser.email, 
-        password: 'WrongPassword123!' 
-      });
+    const res = await request(app).post('/api/auth/login').send({
+      email: testUser.email,
+      password: 'WrongPassword123!',
+    });
 
     expect(res.statusCode).toBeGreaterThanOrEqual(400);
     console.log('✅ Invalid password correctly rejected');
   });
 
   it('should reject registration with duplicate email', async () => {
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send(testUser);
+    const res = await request(app).post('/api/auth/register').send(testUser);
 
     expect(res.statusCode).toBeGreaterThanOrEqual(400);
     console.log('✅ Duplicate email correctly rejected');
