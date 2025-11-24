@@ -18,10 +18,6 @@ export function requireAuth(req, res, next) {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     token = authHeader.substring(7).trim(); // Remove 'Bearer ' prefix and trim whitespace
   }
-  // Fallback to body (for some POST requests)
-  else if (req.body && req.body.token) {
-    token = req.body.token;
-  }
 
   // Check if token is missing or empty
   if (!token || token.trim() === '') {
