@@ -7,8 +7,7 @@
 // import { makePgPool } from './pg.js';
 
 // // REPOSITORIES
-import { makeQueryService } from '../../../services/queryService.js';
-import { pool } from '../../../db.js';
+import { pool } from '../db.js';
 
 // // USE-CASES
 // import { makeLoginUser } from '../app/usecases/loginUser.js';
@@ -16,6 +15,7 @@ import { pool } from '../../../db.js';
 
 // CONTROLLERS
 import { makeAuthController } from '../controllers/authController.js';
+import { makeQueryController } from '../controllers/queryController.js';
 // import { makeClassController } from '../adapters/in/http/ClassController.js';
 
 // UTILITIES
@@ -34,22 +34,20 @@ export function buildContainer(config) {
 //   const passwordHasher = makePasswordHasher(); // some password hasher here
 
 
-//   //
-//   // ---------------------
-//   //  Driven Adapters
-//   //  (Repositories)
-//   // ---------------------
-//   //
-//   const userRepo = makePgUserRepository({ pool });
-//   const classRepo = makePgClassRepository({ pool });
+  //
+  // ---------------------
+  //  Driven Adapters
+  //  (Repositories)
+  // ---------------------
+  const queryController = makeQueryController({ pool });
 
 
-//   //
-//   // ---------------------
-//   //  Application Layer
-//   //  (Use Cases)
-//   // ---------------------
-//   //
+  //
+  // ---------------------
+  //  Application Layer
+  //  (Use Cases)
+  // ---------------------
+  //
 //   const loginUser = makeLoginUser({ userRepo, passwordHasher });
 //   const searchClasses = makeSearchClasses({ classQueryRepo: classRepo });
 
@@ -60,24 +58,17 @@ export function buildContainer(config) {
   //  (Controllers)
   // ---------------------
   //
-//   const authController = makeAuthController({ loginUser });
   const authController = makeAuthController({  });
+//   const authController = makeAuthController({ loginUser });
 //   const classController = makeClassController({ searchClasses });
 
 
-//   //
-//   // Return precise object
-//   //
-//   return Object.freeze({
-//     pool,                // in case server wants to close it
-//     authController,
-//     classController,
-//     loginUser,
-//     searchClasses,
-//   });
-
+  //
+  // Return precise object
+  //
   return Object.freeze({
-    // pool,                // in case server wants to close it
+    pool,                    // in case server wants to close it
+    queryController,               
     authController,
     // classController,
     // loginUser,
