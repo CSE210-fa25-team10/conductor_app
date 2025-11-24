@@ -19,16 +19,31 @@ export function makeAttendanceRouter({ attendanceController }) {
 
   // 3. Instructor/TA: manual mark
   router.post('/manual', requireAuth, attendanceController.manualMarkAttendance);
-  router.get('/courses/:courseId/groups/:groupId/students', attendanceController.getStudentsInGroup);
+  router.get(
+    '/courses/:courseId/groups/:groupId/students',
+    attendanceController.getStudentsInGroup
+  );
 
   // 4. Course-level summary (overall + per student)
-  router.get('/courses/:courseId/summary', requireAuth, attendanceController.getCourseAttendanceSummary);
+  router.get(
+    '/courses/:courseId/summary',
+    requireAuth,
+    attendanceController.getCourseAttendanceSummary
+  );
 
   // 5. Team (group) attendance over time
-  router.get('/courses/:courseId/groups', requireAuth, attendanceController.getCourseGroupAttendanceSummary);
+  router.get(
+    '/courses/:courseId/groups',
+    requireAuth,
+    attendanceController.getCourseGroupAttendanceSummary
+  );
 
   // 6. Instructor: group + member attendance across all activities
-  router.get('/courses/:courseId/instructor-overview', requireAuth, attendanceController.getCourseGroupAndMemberOverview);
+  router.get(
+    '/courses/:courseId/instructor-overview',
+    requireAuth,
+    attendanceController.getCourseGroupAndMemberOverview
+  );
 
   // 7. Student: personal + team attendance across all activities
   router.get(

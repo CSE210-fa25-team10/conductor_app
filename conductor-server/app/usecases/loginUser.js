@@ -1,7 +1,7 @@
 /**
- * 
- * @param {*} param0 
- * @returns 
+ *
+ * @param {*} param0
+ * @returns
  */
 export function makeLoginUser({ userRepo, passwordHasher }) {
   return async function login({ email, password }) {

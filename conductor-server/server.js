@@ -1,7 +1,6 @@
 import express from 'express';
 import session from 'express-session';
 // import apiRoutes from './adapters/in/routes/apiRoutes.js';
-import { pool, dbHealth } from './db.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import path from 'path';
@@ -16,7 +15,6 @@ const __filename = fileURLToPath(import.meta.url);
 
 // Get the directory name of the current file
 const __dirname = path.dirname(__filename);
-
 
 dotenv.config();
 const app = express();
