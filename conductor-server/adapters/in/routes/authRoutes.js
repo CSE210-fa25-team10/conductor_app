@@ -1,18 +1,14 @@
-import express from 'express';
-import {
-  googleLogin,
-  callback,
-  login,
-  register,
-  logout,
-} from '../../../controllers/authController.js';
+import { Router } from 'express';
 
-const router = express.Router();
+export function makeAuthRouter({ authController }) {
+  const router = Router();
 
-router.get('/googlelogin', googleLogin);
-router.post('/login', login);
-router.post('/register', register);
-router.get('/google/callback', callback);
-router.get('/logout', logout);
+  router.get('/googlelogin', authController.googleLogin);
+  // router.post('/login', authController.login);
+  router.post('/register', authController.register);
+  router.get('/google/callback', authController.callback);
+  router.get('/logout', authController.logout);
+  router.get('/login', authController.showLoginPage);
 
-export default router;
+  return router;
+}
