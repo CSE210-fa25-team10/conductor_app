@@ -5,7 +5,7 @@ import {
   register as registerService,
 } from '../services/authService.js';
 
-export function makeAuthController({ loginUser }) {
+export function makeAuthController() {
   return {
     showLoginPage(req, res) {
       res.sendFile('login.html', { root: 'frontend/src/pages/auth' });
@@ -55,6 +55,6 @@ export function makeAuthController({ loginUser }) {
         if (err) console.error(err);
         res.redirect('/users');
       });
-    }
-  }
+    },
+  };
 }

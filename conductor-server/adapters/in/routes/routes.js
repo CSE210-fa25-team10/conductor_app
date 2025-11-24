@@ -2,7 +2,6 @@
  * routes.js is the central index pointing towards other API routers in the server.
  */
 
-import path from 'path';
 import { makeAuthRouter } from './authRoutes.js';
 import { makeQueryRouter } from './queryRoutes.js';
 import { makePageRouter } from './pageRouter.js';
@@ -19,8 +18,11 @@ export function mountRoutes(app, container) {
   // frontendRoutes here...
 
   // Attendance APIs
-  app.use('/api/attendance', makeAttendanceRouter({ attendanceController: container.attendanceController }))
+  app.use(
+    '/api/attendance',
+    makeAttendanceRouter({ attendanceController: container.attendanceController })
+  );
 
   // HTML pages
-  app.use('/', makePageRouter(container));
+  app.use('/', makePageRouter());
 }

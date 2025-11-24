@@ -1,5 +1,5 @@
 /**
- * container.js is the composition root of the server. It is a pure wiring module, where all 
+ * container.js is the composition root of the server. It is a pure wiring module, where all
  * dependencies are assembled and stored. This is useful for a ports & adapters structure,
  * as well as preventing a nest of dependencies bouncing around the project.
  */
@@ -22,18 +22,17 @@ import { makeAttendanceController } from '../controllers/attendanceController.js
 // UTILITIES
 // import { makePasswordHasher } from './passwordHasher.js';
 
-export function buildContainer(config) {
-//   //
-//   // ---------------------
-//   //  Infrastructure Layer
-//   // ---------------------
-//   //
-//   const pool = makePgPool({
-//     connectionString: config.DATABASE_URL
-//   });
+export function buildContainer() {
+  //   //
+  //   // ---------------------
+  //   //  Infrastructure Layer
+  //   // ---------------------
+  //   //
+  //   const pool = makePgPool({
+  //     connectionString: config.DATABASE_URL
+  //   });
 
-//   const passwordHasher = makePasswordHasher(); // some password hasher here
-
+  //   const passwordHasher = makePasswordHasher(); // some password hasher here
 
   //
   // ---------------------
@@ -42,16 +41,14 @@ export function buildContainer(config) {
   // ---------------------
   const queryController = makeQueryController({ pool });
 
-
   //
   // ---------------------
   //  Application Layer
   //  (Use Cases)
   // ---------------------
   //
-//   const loginUser = makeLoginUser({ userRepo, passwordHasher });
-//   const searchClasses = makeSearchClasses({ classQueryRepo: classRepo });
-
+  //   const loginUser = makeLoginUser({ userRepo, passwordHasher });
+  //   const searchClasses = makeSearchClasses({ classQueryRepo: classRepo });
 
   //
   // ---------------------
@@ -59,18 +56,17 @@ export function buildContainer(config) {
   //  (Controllers)
   // ---------------------
   //
-  const authController = makeAuthController({  });
-  const attendanceController = makeAttendanceController({  });
-//   const authController = makeAuthController({ loginUser });
-//   const classController = makeClassController({ searchClasses });
-
+  const authController = makeAuthController();
+  const attendanceController = makeAttendanceController({});
+  //   const authController = makeAuthController({ loginUser });
+  //   const classController = makeClassController({ searchClasses });
 
   //
   // Return precise object
   //
   return Object.freeze({
-    pool,                    // in case server wants to close it
-    queryController,               
+    pool, // in case server wants to close it
+    queryController,
     authController,
     attendanceController,
     // classController,
