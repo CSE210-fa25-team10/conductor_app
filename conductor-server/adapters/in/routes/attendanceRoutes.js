@@ -10,7 +10,7 @@ import {
   getStudentCourseAttendanceOverview,
 } from '../../../controllers/attendanceController.js';
 
-import { requireAuth, requireInstructorOrTA } from '../../../middleware/auth.js';
+import { requireAuth } from '../../../middleware/auth.js';
 
 const router = express.Router();
 
