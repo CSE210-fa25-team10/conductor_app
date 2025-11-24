@@ -57,6 +57,8 @@ export const callback = async (req, res) => {
     // Option: Redirect to frontend with token
     // In production, use a more secure method like httpOnly cookies or state parameter
     const redirectUrl = process.env.FRONTEND_URL || 'http://localhost:5500';
+    // SECURITY WARNING: Passing JWT tokens in URL query parameters exposes the token to browser history, server logs, referer headers, and accidental sharing.
+    // For production, use httpOnly secure cookies or OAuth2 authorization code flow instead.
     res.redirect(`${redirectUrl}/auth/callback?token=${token}`);
   } catch (err) {
     console.error(err);
