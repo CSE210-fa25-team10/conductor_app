@@ -18,10 +18,6 @@ export function requireAuth(req, res, next) {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     token = authHeader.substring(7).trim(); // Remove 'Bearer ' prefix and trim whitespace
   }
-  // Fallback to query parameter (for convenience, less secure)
-  else if (req.query.token) {
-    token = req.query.token;
-  }
   // Fallback to body (for some POST requests)
   else if (req.body && req.body.token) {
     token = req.body.token;
