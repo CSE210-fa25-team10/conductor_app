@@ -144,7 +144,7 @@ export const getUserFromCode = async (code) => {
 
   try {
     const res = await pool.query(
-      'SELECT user_id, name, email, profile_photo FROM users WHERE email = $1',
+      'SELECT user_id, name, email, profile_photo, role FROM users WHERE email = $1',
       [payload.email]
     );
 
@@ -157,7 +157,7 @@ export const getUserFromCode = async (code) => {
         name: res.rows[0].name,
         email: res.rows[0].email,
         picture: res.rows[0].profile_photo,
-        role: null,
+        role: res.rows[0].role,
       };
 
       const token = generateToken(existingGoogleUserData);
@@ -171,7 +171,7 @@ export const getUserFromCode = async (code) => {
     // Insert new Google user:
     const query = `INSERT INTO users (name, email, profile_photo)
                    VALUES ($1, $2, $3)
-                   RETURNING user_id, name, email, profile_photo`;
+                   RETURNING user_id, name, email, profile_photo, role`;
     const values = [payload.name, payload.email, payload.picture];
     const result = await pool.query(query, values);
 
@@ -182,7 +182,7 @@ export const getUserFromCode = async (code) => {
       name: result.rows[0].name,
       email: result.rows[0].email,
       picture: result.rows[0].profile_photo,
-      role: null,
+      role: result.rows[0].role,
     };
 
     const token = generateToken(newGoogleUserData);
