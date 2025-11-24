@@ -1,10 +1,7 @@
 import express from 'express';
-import { makeQueryService } from '../../../controllers/queryController.js';
-import { pool } from '../../../db.js';
 
-export function makeQueryRouter({}) {
+export function makeQueryRouter({ queryService }) {
   const router = express.Router();
-  const queryService = makeQueryService({ pool });
 
   /**
    * GET /api/queries/users
