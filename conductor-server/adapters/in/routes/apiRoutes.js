@@ -12,3 +12,7 @@
 // router.use('/', frontendRoutes);
 
 // export default router;
+
+/**
+ * apiRoutes is deprecated, please use routes.js instead.
+ */
