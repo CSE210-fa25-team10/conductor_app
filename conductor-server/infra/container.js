@@ -16,6 +16,7 @@ import { pool } from '../db.js';
 // CONTROLLERS
 import { makeAuthController } from '../controllers/authController.js';
 import { makeQueryController } from '../controllers/queryController.js';
+import { makeAttendanceController } from '../controllers/attendanceController.js';
 // import { makeClassController } from '../adapters/in/http/ClassController.js';
 
 // UTILITIES
@@ -59,6 +60,7 @@ export function buildContainer(config) {
   // ---------------------
   //
   const authController = makeAuthController({  });
+  const attendanceController = makeAttendanceController({  });
 //   const authController = makeAuthController({ loginUser });
 //   const classController = makeClassController({ searchClasses });
 
@@ -70,6 +72,7 @@ export function buildContainer(config) {
     pool,                    // in case server wants to close it
     queryController,               
     authController,
+    attendanceController,
     // classController,
     // loginUser,
     // searchClasses,

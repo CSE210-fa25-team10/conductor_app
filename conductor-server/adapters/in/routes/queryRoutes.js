@@ -1,7 +1,7 @@
-import express from 'express';
+import { Router } from 'express';
 
 export function makeQueryRouter({ queryService }) {
-  const router = express.Router();
+  const router = Router();
 
   /**
    * GET /api/queries/users
