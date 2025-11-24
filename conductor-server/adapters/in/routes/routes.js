@@ -1,12 +1,12 @@
 import path from 'path';
-import {
-  showLoginPage,
-  googleLogin,
-  callback,
-  login,
-  register,
-  logout,
-} from '../../../controllers/authController.js';
+// import {
+//   showLoginPage,
+//   googleLogin,
+//   callback,
+//   login,
+//   register,
+//   logout,
+// } from '../../../controllers/authController.js';
 // import { requireAuth } from './requireAuth.js';
 
 export function mountRoutes(app, container) {
@@ -16,9 +16,9 @@ export function mountRoutes(app, container) {
   app.get('/', (req, res) => res.redirect('/login'));
 
   // login / logout
-  app.get('/login', showLoginPage);
-  app.post('/login', login);
-  app.post('/logout', logout);
+  app.get('/login', authController.showLoginPage);
+  app.post('/login', authController.login);
+  app.post('/logout', authController.logout);
 
 //   // instructor area (HTML pages)
 //   app.get(
