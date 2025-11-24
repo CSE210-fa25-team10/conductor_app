@@ -1,24 +1,13 @@
 import path from 'path';
-// import {
-//   showLoginPage,
-//   googleLogin,
-//   callback,
-//   login,
-//   register,
-//   logout,
-// } from '../../../controllers/authController.js';
-// import { requireAuth } from './requireAuth.js';
+import { makeAuthRouter } from './authRoutes.js';
 
 export function mountRoutes(app, container) {
   const { authController } = container;
 
   // root → login
-  app.get('/', (req, res) => res.redirect('/login'));
+  app.get('/', (req, res) => res.redirect('/auth/login'));
 
-  // login / logout
-  app.get('/login', authController.showLoginPage);
-  app.post('/login', authController.login);
-  app.post('/logout', authController.logout);
+  app.use('/auth', makeAuthRouter({ authController: container.authController }));
 
 //   // instructor area (HTML pages)
 //   app.get(
