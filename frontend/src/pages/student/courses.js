@@ -1,5 +1,5 @@
 // 配置用户角色和数据
-const userRole = 'ta'; // 可以是 'student', 'ta', 或 'professor'
+const userRole = 'student'; // 可以是 'student', 'ta', 或 'professor'
 
 // 模拟数据
 const userData = {

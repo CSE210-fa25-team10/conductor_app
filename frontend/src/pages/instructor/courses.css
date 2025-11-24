@@ -364,3 +364,6 @@ body {
         grid-template-columns: 1fr;
     }
 }
+.container > .section:last-child {
+    order: 3;
+}
