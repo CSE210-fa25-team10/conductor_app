@@ -7,8 +7,8 @@
 // import { makePgPool } from './pg.js';
 
 // // REPOSITORIES
-// import { makePgUserRepository } from '../adapters/out/db/PgUserRepository.js';
-// import { makePgClassRepository } from '../adapters/out/db/PgClassRepository.js';
+import { makeQueryService } from '../../../services/queryService.js';
+import { pool } from '../../../db.js';
 
 // // USE-CASES
 // import { makeLoginUser } from '../app/usecases/loginUser.js';

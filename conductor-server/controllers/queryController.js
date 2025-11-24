@@ -1,4 +1,4 @@
-import { loadQuery } from './queryLoader.js';
+import { loadQuery } from '../services/queryLoader.js';
 
 /**
  * QueryService - Executes SQL queries loaded from files
