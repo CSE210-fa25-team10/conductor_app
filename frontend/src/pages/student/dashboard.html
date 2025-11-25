@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    <link rel="stylesheet" href="db_styles.css">
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <div class="content-box">
@@ -17,6 +17,10 @@
             </div>
 
             <div class="icon">
+                <a href="manual_checkin.html" class="attendance-btn" style="margin-left:15px;">
+                    Record My Attendance
+                </a>
+
                 <button class="join-class-btn">Join Class</button>
                 <button class="icon-btn settings">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -141,6 +145,43 @@
         </div>
     
     </div>
-    <script src="db.js"></script>
+    
+
+    <div id="joinClassModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Join a Class</h3>
+                <button class="close-modal-btn" onclick="closeJoinClassModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="joinClassForm" onsubmit="handleJoinClass(event)">
+                <div class="form-group">
+                    <label>Course ID <span class="required">*</span></label>
+                    <input type="text" name="courseId" placeholder="e.g. 101" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Course Name</label>
+                    <input type="text" name="courseName" placeholder="e.g. Intro to CS">
+                </div>
+
+                <div class="form-group">
+                    <label>Course Code <span class="required">*</span></label>
+                    <input type="text" name="courseCode" placeholder="e.g. CS101" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeJoinClassModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Join Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="dashboard.js"></script>
 </body>
 </html>

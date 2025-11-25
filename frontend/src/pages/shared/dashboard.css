@@ -1,14 +1,14 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #e9dbee; /* 淡紫色背景 */
+    background-color: #e9dbee;
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    position: relative;  /* 为 fixed 定位提供参考 */
-    overflow-x: hidden;  /* 防止横向滚动 */
+    position: relative;  
+    overflow-x: hidden; 
 }
 
 .content-box {
@@ -20,8 +20,8 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     box-sizing: border-box;
-    position: relative;  /* 确保内容在正常文档流中 */
-    z-index: 1;  /* 低于通知层 */
+    position: relative;  
+    z-index: 1;  
 }
 
 /* ============================================
@@ -65,7 +65,7 @@ body {
 
 .join-class-btn {
     padding: 10px 20px;
-    background: #8b5cf6;  /* 紫色 */
+    background: #8b5cf6; 
     color: white;
     border: none;
     border-radius: 20px;
@@ -164,7 +164,6 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* 可编辑字段样式 */
 .info-box.editable {
     cursor: pointer;
     position: relative;
@@ -197,7 +196,6 @@ body {
     font-weight: 400;
 }
 
-/* 编辑输入框样式 */
 .info-edit-input {
     width: 100%;
     padding: 0;
@@ -359,15 +357,13 @@ body {
 }
 
 /* ============================================
-   Notifications - 固定定位，不占用文档流
+   Notifications 
    ============================================ */
 .notification {
-    /* 关键：使用 fixed 定位，完全脱离文档流 */
     position: fixed;
     top: -100px;
     right: 20px;
     
-    /* 样式 */
     padding: 15px 20px;
     border-radius: 8px;
     color: white;
@@ -375,17 +371,13 @@ body {
     font-size: 14px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     
-    /* 尺寸 */
     min-width: 250px;
     max-width: 400px;
     
-    /* 层级：确保在最上层，不被其他元素遮挡 */
     z-index: 99999;
     
-    /* 动画 */
     transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     
-    /* 确保不影响布局 */
     margin: 0;
     width: auto;
 }
