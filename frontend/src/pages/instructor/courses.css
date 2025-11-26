@@ -38,6 +38,23 @@ body {
     font-weight: 500;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.group-btn {
+    background: #5e4e99;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
 .avatar {
     width: 48px;
     height: 48px;
@@ -56,12 +73,22 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 24px;
+    display: flex;
+    flex-direction: column;
 }
 
+/* 让 columns 排在前面 */
 .columns {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+    order: 1;
+}
+
+/* 让 group-info-section 排在后面 */
+#group-info-section {
+    order: 2;
+    margin-top: 24px;
 }
 
 .column {
@@ -76,6 +103,19 @@ body {
 }
 
 .column-header h2 {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.section {
+    margin-bottom: 32px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
     font-size: 20px;
     font-weight: 500;
 }
@@ -151,6 +191,56 @@ body {
 }
 
 .card-meta {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Groups Overview Styles */
+.groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.group-summary-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.group-summary-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.group-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5e4e99;
+}
+
+.group-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.group-summary-info h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.group-summary-info p {
     font-size: 14px;
     color: #666;
 }
@@ -269,4 +359,11 @@ body {
         height: 80px;
         font-size: 32px;
     }
+
+    .groups-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.container > .section:last-child {
+    order: 3;
 }
