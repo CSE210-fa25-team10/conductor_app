@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": [
+      "**/src/tests/unit/**/*.test.js"
+    ]
+  }
+}

@@ -3,20 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSE 210</title>
+    <title>course detail</title>
     <link rel="stylesheet" href="courses.css">
+    <link rel="stylesheet" href="../shared/standup.css">
 </head>
 <body>
 <div class="header">
     <h1>CSE 210</h1>
-    <div class="header-right">
-        <div class="group-btn">
-            <span>⚙</span>
-            <span>Group N</span>
-            <span>▼</span>
-        </div>
-        <div class="avatar">L</div>
-    </div>
 </div>
 
 <div class="container">
@@ -52,35 +45,95 @@
             <div class="card-grade">Grade: 30/40</div>
         </div>
     </div>
-
+    <!-- Group Info Section - 根据角色动态显示 -->
+    <div id="group-info-section"></div>
     <div class="section">
         <div class="section-header">
-            <span>Attendances</span>
-            <span>→</span>
+            <span>Standup Tool</span>
         </div>
 
-        <div class="attendance-item">
-            <div class="attendance-header">Lecture on Nov 3, 2025</div>
-            <div class="attendance-status">
-                <div class="status-left">
-                    <span class="checkbox checked"></span>
-                    <span>Checked in • at 1:12pm, 11/03/2025</span>
+        <div class="standup-card">
+            <!-- Status Report Input -->
+            <div class="standup-input-section">
+                <textarea class="standup-textarea" placeholder="Add text..."></textarea>
+            </div>
+
+            <!-- Pulse Section -->
+            <div class="pulse-section">
+                <h3 class="pulse-title">Sentiment</h3>
+
+                <!-- Personal Row -->
+                <div class="pulse-row">
+                    <span class="pulse-label">Personal</span>
+                    <div class="pulse-emojis">
+                        <button class="emoji-btn" data-value="1">😰</button>
+                        <button class="emoji-btn" data-value="2">😞</button>
+                        <button class="emoji-btn" data-value="3">😐</button>
+                        <button class="emoji-btn" data-value="4">😊</button>
+                        <button class="emoji-btn" data-value="5">😄</button>
+                    </div>
                 </div>
-                <div>Grade: 5/5</div>
+
+                <!-- Team Row -->
+                <div class="pulse-row">
+                    <span class="pulse-label">Team</span>
+                    <div class="pulse-emojis">
+                        <button class="emoji-btn" data-value="1">😰</button>
+                        <button class="emoji-btn" data-value="2">😞</button>
+                        <button class="emoji-btn" data-value="3">😐</button>
+                        <button class="emoji-btn" data-value="4">😊</button>
+                        <button class="emoji-btn" data-value="5">😄</button>
+                    </div>
+                </div>
+
+                <!-- Course Row -->
+                <div class="pulse-row">
+                    <span class="pulse-label">Course</span>
+                    <div class="pulse-emojis">
+                        <button class="emoji-btn" data-value="1">😰</button>
+                        <button class="emoji-btn" data-value="2">😞</button>
+                        <button class="emoji-btn" data-value="3">😐</button>
+                        <button class="emoji-btn" data-value="4">😊</button>
+                        <button class="emoji-btn" data-value="5">😄</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="standup-actions">
+                <button class="save-btn">Save</button>
             </div>
         </div>
 
-        <div class="attendance-item">
-            <div class="attendance-header">Lecture on Nov 6, 2025</div>
-            <div class="attendance-status">
-                <div class="status-left">
-                    <span class="checkbox"></span>
-                    <span>Absent • None</span>
+        <!-- Work Journal Section -->
+        <div class="section-header" style="margin-top: 32px;">
+            <span>History</span>
+        </div>
+
+        <div class="journal-grid">
+            <!-- Left: Dates -->
+            <div class="journal-dates">
+                <a href="#" class="journal-date-link">Nov 23, 2025</a>
+                <a href="#" class="journal-date-link">More...</a>
+            </div>
+
+            <!-- Right: Pulses -->
+            <div class="journal-pulses">
+                <div class="pulse-title">Sentiment</div>
+                <div class="journal-pulse-entry">
+                    <span class="pulse-date">Jan 16, 2024</span>
+                    <span class="pulse-emoji">😞</span>
                 </div>
-                <div>Grade: 0/5</div>
+                <div class="journal-pulse-entry">
+                    <span class="pulse-date">Jan 15, 2024</span>
+                    <span class="pulse-emoji">😄</span>
+                </div>
             </div>
         </div>
     </div>
+
+    <script src="../shared/standup.js"></script>
 </div>
+<script src="courses.js"></script>
 </body>
 </html>
