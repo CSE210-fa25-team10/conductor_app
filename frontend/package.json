@@ -1,11 +1,19 @@
 {
+  "name": "conductor-frontend-tests",
+  "private": true,
   "scripts": {
-    "test": "jest"
+      "test": "jest"
   },
   "jest": {
     "testEnvironment": "jsdom",
     "testMatch": [
       "**/src/tests/unit/**/*.test.js"
     ]
+  },
+  "devDependencies": {
+      "jest": "^29.7.0",
+      "jest-environment-jsdom": "^29.7.0",
+      "@testing-library/dom": "^9.3.0",
+      "@testing-library/jest-dom": "^6.5.0"
   }
 }

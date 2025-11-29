@@ -45,8 +45,13 @@ mountRoutes(app, container);
 // Health check endpoints
 app.get('/healthz', (_req, res) => res.status(200).send('OK'));
 
-// Start server
-console.log('Running server.js from:', process.cwd());
-app.listen(PORT, () => {
-  console.log(` Server listening on http://localhost:${PORT}`);
-});
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  console.log('Running server.js from:', process.cwd());
+  app.listen(PORT, () => {
+    console.log(` Server listening on http://localhost:${PORT}`);
+  });
+}
+
+// Export app for testing
+export default app;
