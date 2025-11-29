@@ -17,6 +17,7 @@ import { pool } from '../db.js';
 import { makeAuthController } from '../controllers/authController.js';
 import { makeQueryController } from '../controllers/queryController.js';
 import { makeAttendanceController } from '../controllers/attendanceController.js';
+
 // import { makeClassController } from '../adapters/in/http/ClassController.js';
 
 // UTILITIES

@@ -1,6 +1,6 @@
 const API_BASE = "http://localhost:3000";
 const courseId = 101;   // TODO: drive from URL or dropdown
-const userId = 12;      // TODO: in real app, derive from session/auth
+const userId = 10;      // TODO: in real app, derive from session/auth
 
 async function loadMyAttendance() {
   const res = await fetch(

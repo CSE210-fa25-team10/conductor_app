@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Journal / Standup</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .star { cursor: pointer; font-size: 24px; color: gray; }
+    .star.selected { color: gold; }
+    .entry { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+    .entry-header { font-weight: bold; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <h1>My Work Journal / Standup</h1>
+
+  <div>
+    <textarea id="content" rows="3" placeholder="Write your daily update..."></textarea>
+    <div>
+      <label>Leader & Course Sentiment:</label>
+      <span id="star-container">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
+      </span>
+    </div>
+    <input type="text" id="leader_feedback" placeholder="Leader feedback (optional)">
+    <input type="text" id="course_feedback" placeholder="Course feedback (optional)">
+    <button id="submit-btn">Submit Entry</button>
+  </div>
+
+  <h2>Previous Entries</h2>
+  <div id="entries-container"></div>
+
+  <script src="standup.js" type="module"></script>
+</body>
+</html>
