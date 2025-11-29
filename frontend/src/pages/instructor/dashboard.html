@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    <link rel="stylesheet" href="db_styles.css">
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <div class="content-box">
@@ -145,6 +145,58 @@
         </div>
     
     </div>
-    <script src="db.js"></script>
+    
+    <div id="createCourseModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Create New Course</h3>
+                <button class="close-modal-btn" onclick="closeCreateCourseModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="createCourseForm" onsubmit="handleCreateCourse(event)">
+                <div class="form-group">
+                    <label>Course Name <span class="required">*</span></label>
+                    <input type="text" name="courseName" placeholder="e.g. Intro to Computer Science" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Course Code <span class="required">*</span></label>
+                        <input type="text" name="courseCode" placeholder="e.g. CS101" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Semester</label>
+                        <input type="text" name="semester" value="2024-Fall">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Instructor</label>
+                        <input type="text" name="instructor" placeholder="Dr. Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Schedule</label>
+                        <input type="text" name="schedule" placeholder="e.g. Mon/Wed 10:00 AM">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Course Detail / Description</label>
+                    <textarea name="courseDetail" rows="4" placeholder="Enter course objectives, prerequisites, or description..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeCreateCourseModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Create Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="dashboard.js"></script>
 </body>
 </html>

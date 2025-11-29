@@ -264,25 +264,60 @@ function goToCourse(courseId) {
 
 /* Teacher/admin creates a course */
 function showCreateCourseModal() {
-    const name = prompt('Course name (e.g., Introduction to Computer Science):');
-    if (!name || !name.trim()) return;
+    const modal = document.getElementById('createCourseModal');
+    if (modal) {
+        modal.classList.add('active');
+        const firstInput = modal.querySelector('input[name="courseName"]');
+        if (firstInput) setTimeout(() => firstInput.focus(), 100);
+    }
+}
 
-    const code = prompt('Course code (e.g., CS101):');
-    if (!code || !code.trim()) return;
+function closeCreateCourseModal() {
+    const modal = document.getElementById('createCourseModal');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            document.getElementById('createCourseForm').reset();
+        }, 300);
+    }
+}
 
-    const semester = prompt('Semester (e.g., 2024-Fall):', '2024-Fall');
-    const instructor = prompt('Instructor name (optional):', '');
-    const schedule = prompt('Schedule (optional):', '');
+async function handleCreateCourse(event) {
+    event.preventDefault(); 
 
+    const form = event.target;
+    const formData = new FormData(form);
+    
     const courseData = {
-        name: name.trim(),
-        code: code.trim(),
-        semester: semester ? semester.trim() : '',
-        instructor: instructor ? instructor.trim() : '',
-        schedule: schedule ? schedule.trim() : ''
+        name: formData.get('courseName').trim(),
+        code: formData.get('courseCode').trim(),
+        semester: formData.get('semester').trim(),
+        instructor: formData.get('instructor').trim(),
+        schedule: formData.get('schedule').trim(),
+        detail: formData.get('courseDetail').trim(), 
+        createdAt: new Date().toISOString()
     };
 
-    createCourse(courseData);
+    const submitBtn = form.querySelector('.btn-submit');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Creating...';
+    submitBtn.disabled = true;
+
+    try {
+        await createCourse(courseData);
+        
+        closeCreateCourseModal();
+        
+    } catch (error) {
+        console.error(error);
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    } finally {
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }, 500);
+    }
 }
 
 async function createCourse(courseData) {
@@ -291,11 +326,10 @@ async function createCourse(courseData) {
         //     method: 'POST',
         //     body: JSON.stringify(courseData)
         // });
-        // const created = response.data;
-
-        showNotification('Creating course...', 'info');
 
         await new Promise(resolve => setTimeout(resolve, 1000));
+
+        console.log("Created Course with Detail:", courseData); 
 
         showNotification('Course created successfully!', 'success');
 
@@ -303,6 +337,7 @@ async function createCourse(courseData) {
 
     } catch (error) {
         showNotification(error.message || 'Failed to create course', 'error');
+        throw error; 
     }
 }
 
@@ -375,5 +410,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const joinClassBtn = document.querySelector('.top-bar .join-class-btn');
     if (joinClassBtn) {
         joinClassBtn.addEventListener('click', showCreateCourseModal);
+    }
+
+    const modal = document.getElementById('createCourseModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeCreateCourseModal();
+            }
+        });
     }
 });

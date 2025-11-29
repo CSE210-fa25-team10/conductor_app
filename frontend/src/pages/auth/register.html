@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register | Conductor</title>
+  <link rel="stylesheet" href="../../css/auth.css" />
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-header">
+      <div class="auth-title">Create your account</div>
+      <div class="auth-subtitle">Sign up to start using Conductor</div>
+    </div>
+
+    <div id="registerError" class="error-message"></div>
+    <div id="registerSuccess" class="success-message"></div>
+
+    <form id="registerForm" novalidate>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="firstName">First name</label>
+          <input
+            type="text"
+            id="firstName"
+            class="form-input"
+            name="firstName"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="lastName">Last name</label>
+          <input
+            type="text"
+            id="lastName"
+            class="form-input"
+            name="lastName"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="pronunciation">
+          Preferred name / pronunciation (optional)
+        </label>
+        <input
+          type="text"
+          id="pronunciation"
+          class="form-input"
+          name="pronunciation"
+          placeholder="e.g., LEE-sah, Sam, Alex"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          class="form-input"
+          name="email"
+          autocomplete="email"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="role">Role</label>
+        <select id="role" name="role" class="form-select" required>
+          <option value="" selected disabled>Select your role</option>
+          <option value="student">Student</option>
+          <option value="instructor">Instructor</option>
+        </select>
+        <p class="small-note">
+          Your role determines which dashboard you see after login.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="password-row">
+          <input
+            type="password"
+            id="password"
+            class="form-input"
+            name="password"
+            autocomplete="new-password"
+            required
+          />
+          <button type="button" id="togglePassword" class="toggle-password">
+            Show
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="confirmPassword">Confirm password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          class="form-input"
+          name="confirmPassword"
+          autocomplete="new-password"
+          required
+        />
+      </div>
+
+      <button type="submit" class="auth-button" id="registerButton">
+        Create account
+      </button>
+
+      <p class="small-note">
+        By creating an account, your name and email will be used to populate your
+        profile. First and last name cannot be changed later.
+      </p>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account?
+      <a href="login.html">Sign in</a>
+    </div>
+  </div>
+  <script src="../../js/register.js"></script>
+</body>
+</html>

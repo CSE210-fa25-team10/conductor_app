@@ -263,32 +263,83 @@ function goToCourse(courseId) {
 }
 
 function showJoinClassModal() {
-    const courseCode = prompt('Enter course code (e.g., CS101):');
-    if (courseCode && courseCode.trim()) {
-        joinCourse(courseCode.trim());
+    const modal = document.getElementById('joinClassModal');
+    if (modal) {
+        modal.classList.add('active');
+        const firstInput = modal.querySelector('input[name="courseId"]');
+        if (firstInput) setTimeout(() => firstInput.focus(), 100);
     }
 }
 
-async function joinCourse(courseCode) {
+function closeJoinClassModal() {
+    const modal = document.getElementById('joinClassModal');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            const form = document.getElementById('joinClassForm');
+            if (form) form.reset();
+        }, 300);
+    }
+}
+
+async function handleJoinClass(event) {
+    event.preventDefault(); 
+
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    const joinData = {
+        courseId: formData.get('courseId').trim(),
+        courseName: formData.get('courseName').trim(),
+        courseCode: formData.get('courseCode').trim()
+    };
+
+    if (!joinData.courseId || !joinData.courseCode) {
+        showNotification('Please fill in required fields', 'error');
+        return;
+    }
+
+    const submitBtn = form.querySelector('.btn-submit');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Joining...';
+    submitBtn.disabled = true;
+
     try {
-        // const response = await apiCall('/user/courses/enroll', {
-        //     method: 'POST',
-        //     body: JSON.stringify({
-        //         courseCode: courseCode,
-        //         semester: '2024-Fall'
-        //     })
-        // });
+        await joinCourse(joinData);
         
-        showNotification('Enrolling in course...', 'info');
-        
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        showNotification('Successfully enrolled!', 'success');
-        
-        await initCourses();
+        closeJoinClassModal();
         
     } catch (error) {
+        console.error(error);
+    } finally {
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }, 500);
+    }
+}
+
+// 4. 实际的 API 调用逻辑
+async function joinCourse(joinData) {
+    try {
+        showNotification(`Joining ${joinData.courseCode}...`, 'info');
+
+        // const response = await apiCall('/user/courses/enroll', {
+        //     method: 'POST',
+        //     body: JSON.stringify(joinData)
+        // });
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        console.log("Joined Course Data:", joinData);
+
+        showNotification('Successfully enrolled!', 'success');
+
+        await initCourses();
+
+    } catch (error) {
         showNotification(error.message || 'Failed to enroll', 'error');
+        throw error; 
     }
 }
 
@@ -361,5 +412,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const joinClassBtn = document.querySelector('.top-bar .join-class-btn');
     if (joinClassBtn) {
         joinClassBtn.addEventListener('click', showJoinClassModal);
+    }
+
+    const modal = document.getElementById('joinClassModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeJoinClassModal();
+            }
+        });
     }
 });

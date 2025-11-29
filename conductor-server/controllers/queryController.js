@@ -1,9 +1,9 @@
-import { loadQuery } from './queryLoader.js';
+import { loadQuery } from '../services/queryLoader.js';
 
 /**
  * QueryService - Executes SQL queries loaded from files
  */
-export function makeQueryService({ pool }) {
+export function makeQueryController({ pool }) {
   /**
    * Execute a SQL query by name with optional parameters
    * @param {string} queryName - Name of the SQL file (without .sql extension)
