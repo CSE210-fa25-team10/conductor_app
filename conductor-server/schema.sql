@@ -72,7 +72,8 @@ CREATE TABLE IF NOT EXISTS standup_entries (
   user_id    INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
   name       VARCHAR,
   time       TIMESTAMP,       -- "DATETIME" in the diagram
-  content    VARCHAR
+  content    VARCHAR,
+  sentiment  INT
   -- sentiment/etc TBD in diagram -> intentionally omitted
 );
 
@@ -104,6 +105,7 @@ CREATE TABLE IF NOT EXISTS attendance (
   user_id    INT NOT NULL REFERENCES users(user_id)       ON DELETE CASCADE,
   activity_id INT NOT NULL REFERENCES activities(activity_id) ON DELETE CASCADE,
   present    BOOLEAN,
+  checked_in_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (user_id, activity_id)
 );
 ALTER TABLE activities
@@ -134,6 +136,10 @@ ON activities (
   name,
   ((date_trunc('minute', (starts_at AT TIME ZONE 'UTC'))) AT TIME ZONE 'UTC')
 );
+
+-- ATTENDANCE (to check if students check in within 15 minute frame of start of attendance)
+ALTER TABLE attendance
+ADD COLUMN IF NOT EXISTS checked_in_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
 
 -- ASSIGNMENTS
 CREATE TABLE IF NOT EXISTS assignments (
