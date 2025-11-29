@@ -1,10 +1,12 @@
 const API_BASE = "http://localhost:3000"; // backend URL
 
+
+// Initial fetch
+fetchEntries();
+
 const starContainer = document.getElementById('star-container');
 const stars = starContainer.querySelectorAll('.star');
 const contentEl = document.getElementById('content');
-const leaderFeedbackEl = document.getElementById('leader_feedback');
-const courseFeedbackEl = document.getElementById('course_feedback');
 const submitBtn = document.getElementById('submit-btn');
 const entriesContainer = document.getElementById('entries-container');
 
@@ -24,8 +26,6 @@ stars.forEach(star => {
 // Submit new entry
 submitBtn.addEventListener('click', async () => {
   const content = contentEl.value.trim();
-  const leader_feedback = leaderFeedbackEl.value.trim();
-  const course_feedback = courseFeedbackEl.value.trim();
 
   if (!content) {
     alert('Please write something for your entry.');
@@ -40,9 +40,7 @@ submitBtn.addEventListener('click', async () => {
         user_id: dummyUser.user_id,
         name: dummyUser.name,
         content,
-        sentiment: selectedSentiment,
-        leader_feedback,
-        course_feedback
+        sentiment: selectedSentiment
       }),
     });
 
@@ -56,8 +54,6 @@ submitBtn.addEventListener('click', async () => {
 
     // Reset form
     contentEl.value = '';
-    leaderFeedbackEl.value = '';
-    courseFeedbackEl.value = '';
     selectedSentiment = 0;
     stars.forEach(s => s.classList.remove('selected'));
 
@@ -114,11 +110,7 @@ function addEntryToDOM(entry) {
     </div>
     <p>${entry.content}</p>
     <p>Sentiment: ${'★'.repeat(entry.sentiment || 0)}${'☆'.repeat(5 - (entry.sentiment || 0))}</p>
-    ${entry.leader_feedback ? `<p>Leader Feedback: ${entry.leader_feedback}</p>` : ''}
-    ${entry.course_feedback ? `<p>Course Feedback: ${entry.course_feedback}</p>` : ''}
   `;
   entriesContainer.prepend(div);
 }
 
-// Initial fetch
-fetchEntries();

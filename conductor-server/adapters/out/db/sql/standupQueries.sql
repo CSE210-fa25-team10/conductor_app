@@ -5,8 +5,8 @@ WHERE user_id = $1
 ORDER BY time DESC;
 
 -- Insert a new standup entry
--- Params: $1=user_id, $2=name, $3=content, $4=sentiment, $5=leader_feedback, $6=course_feedback
-INSERT INTO standup_entries (user_id, name, content, sentiment, leader_feedback, course_feedback)
+-- Params: $1=user_id, $2=name, $3=content, $4=sentiment
+INSERT INTO standup_entries (user_id, name, content, sentiment)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 

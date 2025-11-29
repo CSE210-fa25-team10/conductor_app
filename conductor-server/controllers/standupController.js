@@ -33,7 +33,7 @@ async function getMyEntries(req, res) {
  */
 async function createEntry(req, res) {
   try {
-    const { user_id, name, content, sentiment, leader_feedback, course_feedback } = req.body;
+    const { user_id, name, content, sentiment } = req.body;
     if (!user_id || !name) {
       return res.status(400).json({ error: 'user_id_and_name_required' });
     }
@@ -46,8 +46,6 @@ async function createEntry(req, res) {
       name,
       content,
       sentiment,
-      leader_feedback,
-      course_feedback,
     });
     res.status(201).json({ entry });
 
