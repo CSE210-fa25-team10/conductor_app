@@ -6,15 +6,15 @@ ORDER BY time DESC;
 
 -- Insert a new standup entry
 -- Params: $1=user_id, $2=name, $3=content, $4=sentiment
-INSERT INTO standup_entries (user_id, name, content, sentiment)
+INSERT INTO standup_entries (user_id, name, content, sentiment_personal, sentiment_team, sentiment_course)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 
--- Get standup entries for a course (optional: if we need aggregated sentiment)
--- Params: $1 = course_id
-SELECT se.*, u.name AS user_name
-FROM standup_entries se
-JOIN users u ON u.user_id = se.user_id
-JOIN course_users cu ON cu.user_id = u.user_id
-WHERE cu.course_id = $1
-ORDER BY se.time DESC;
+-- -- Get standup entries for a course (optional: if we need aggregated sentiment)
+-- -- Params: $1 = course_id
+-- SELECT se.*, u.name AS user_name
+-- FROM standup_entries se
+-- JOIN users u ON u.user_id = se.user_id
+-- JOIN course_users cu ON cu.user_id = u.user_id
+-- WHERE cu.course_id = $1
+-- ORDER BY se.time DESC;

@@ -20,8 +20,11 @@ export function makeStandUpRouter({ standupController }) {
   router.get('/', requireAuth, standupController.getMyEntries);
   router.post('/', requireAuth, standupController.createEntry);
 
-  // Instructor/TA view
-  router.get('/course/:courseId', requireAuth, requireInstructorOrTA, standupController.getCourseEntries);
+  //Anonymous Feedback Endpoint
+  router.post('/feedback', requireAuth, standupController.postAnonymousFeedback);
+
+//   // Instructor/TA view
+//   router.get('/course/:courseId', requireAuth, requireInstructorOrTA, standupController.getCourseEntries);
 
   return router;
 }

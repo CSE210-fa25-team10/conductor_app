@@ -71,10 +71,21 @@ CREATE TABLE IF NOT EXISTS standup_entries (
   standup_id SERIAL PRIMARY KEY,
   user_id    INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
   name       VARCHAR,
-  time       TIMESTAMP,       -- "DATETIME" in the diagram
+  time      TIMESTAMPTZ DEFAULT NOW(),      -- "DATETIME" in the diagram
   content    VARCHAR,
-  sentiment  INT
-  -- sentiment/etc TBD in diagram -> intentionally omitted
+  sentiment_personal INT,                --  Personal rating (1-5)
+  sentiment_team INT,                -- Team rating (1-5)
+  sentiment_course INT                 -- Course rating (1-5)
+);
+
+-- ANONYMOUS FEEDBACK TABLE
+-- This handles anonymous messages (to Team/Leader or Course)
+CREATE TABLE IF NOT EXISTS standup_feedback (
+    feedback_id SERIAL PRIMARY KEY,
+    course_id INT NOT NULL REFERENCES courses(course_id) ON DELETE CASCADE,
+    type VARCHAR NOT NULL, -- 'TEAM' or 'COURSE'
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- GROUPS <-> USERS (membership)

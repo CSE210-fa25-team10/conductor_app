@@ -7,7 +7,9 @@ export function StandupEntry({
   name,
   time,
   content,
-  sentiment // Now represents the combined sentiment data (personal, team, course)
+  sentiment_personal,
+  sentiment_team,     
+  sentiment_course   
 }) {
   return Object.freeze({
     standup_id,
@@ -15,7 +17,9 @@ export function StandupEntry({
     name,
     time,
     content,
-    sentiment
+    sentiment_personal,
+    sentiment_team,
+    sentiment_course
   });
 }
 
