@@ -19,10 +19,35 @@ export function makeAuthController() {
     async login(req, res) {
       try {
         const response = await loginService(req.body);
+
+        if (!response) {  // probably redundant
+          return res.status(401).send({ error: 'invalid_password' });
+        }
+
+        // Save minimal info in the session
+        req.session.user = {
+          id: response.id,
+          name: response.name,
+          role: response.role,
+          email: response.email,
+        };
+
         res.status(200).json({ user: response });
+
+        // Redirect based on role
+        if (user.role === 'instructor') {
+          return res.redirect('/instructor');
+        } else if (user.role === 'student') {
+          return res.redirect('/student');
+        }
+        return res.redirect('/');
       } catch (err) {
         console.error(err);
-        res.send('Login failed');
+        if (err.message == 'Invalid password') {
+          return res.status(401).json({ error: 'invalid_password' });
+        }
+
+        return res.status(400).json({ error: 'login_failed' });
       }
     },
 
@@ -38,7 +63,7 @@ export function makeAuthController() {
 
     async callback(req, res) {
       const code = req.query.code;
-      if (!code) return res.redirect('/login');
+      if (!code) return res.redirect('/api/auth/login');
 
       try {
         const user = await getUserFromCode(code);
@@ -53,7 +78,7 @@ export function makeAuthController() {
     logout(req, res) {
       req.session.destroy((err) => {
         if (err) console.error(err);
-        res.redirect('/users');
+        res.redirect('/api/auth/login');
       });
     },
   };

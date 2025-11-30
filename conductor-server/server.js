@@ -23,9 +23,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
+    name: 'conductor.sid',
     secret: process.env.SESSION_SECRET || 'dev-secret',
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      // maxAge: 1000 * 60 * 60 * 2, // 2 hours
+    },
+    // Store the session somewhere if we want
   })
 );
 app.use(cors());
