@@ -20,7 +20,8 @@ export function makeAuthController() {
       try {
         const response = await loginService(req.body);
 
-        if (!response) {  // probably redundant
+        if (!response) {
+          // probably redundant
           return res.status(401).send({ error: 'invalid_password' });
         }
 
@@ -35,9 +36,9 @@ export function makeAuthController() {
         res.status(200).json({ user: response });
 
         // Redirect based on role
-        if (user.role === 'instructor') {
+        if (response.role === 'instructor') {
           return res.redirect('/instructor');
-        } else if (user.role === 'student') {
+        } else if (response.role === 'student') {
           return res.redirect('/student');
         }
         return res.redirect('/');
