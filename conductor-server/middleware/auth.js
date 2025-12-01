@@ -8,7 +8,7 @@ export function requireAuth(requiredRole = null) {
   return (req, res, next) => {
     const user = req.session?.user;
     if (!user) {
-      return res.redirect('/api/auth/login');
+      return res.redirect('/login');
     }
 
     if (requiredRole && user.role !== requiredRole) {
