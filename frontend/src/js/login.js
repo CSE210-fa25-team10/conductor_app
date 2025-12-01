@@ -79,9 +79,9 @@ function attachLoginHandlers() {
 
       setTimeout(() => {
         if (user.role === "instructor") {
-          window.location.href = "../instructor/instructor_dashboard.html";
+          window.location.href = "/instructor";
         } else {
-          window.location.href = "../student/student_dashboard.html";
+          window.location.href = "/student";
         }
       }, 600);
     } catch (err) {
