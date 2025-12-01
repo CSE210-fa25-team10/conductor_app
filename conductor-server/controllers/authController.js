@@ -29,15 +29,16 @@ export function makeAuthController() {
           email: response.email,
         };
 
-        res.status(200).json({ user: response });
+        return res.status(200).json({ user: response });
 
-        // Redirect based on role
-        if (response.role === 'instructor') {
-          return res.redirect('/instructor');
-        } else if (response.role === 'student') {
-          return res.redirect('/student');
-        }
-        return res.redirect('/');
+        // FIXME: Temporary, we handle redirects elsewhere. This shouldn't be needed.
+        // // Redirect based on role
+        // if (response.role === 'instructor') {
+        //   return res.redirect('/instructor');
+        // } else if (response.role === 'student') {
+        //   return res.redirect('/student');
+        // }
+        // return res.redirect('/');
       } catch (err) {
         console.error(err);
         if (err.message == 'Invalid password') {
