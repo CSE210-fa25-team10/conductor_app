@@ -4,6 +4,7 @@
 
 import { makeAuthRouter } from './authRoutes.js';
 import { makeQueryRouter } from './queryRoutes.js';
+import { makeFrontendRouter } from './frontendRoutes.js';
 import { makePageRouter } from './pageRouter.js';
 import { makeAttendanceRouter } from './attendanceRoutes.js';
 import { makeCssRouter } from './cssRouter.js';
@@ -16,8 +17,8 @@ export function mountRoutes(app, container) {
   // Query APIs
   app.use('/api/queries', makeQueryRouter({ queryService: container.queryController }));
 
-  // Modification APIs
-  // frontendRoutes (the api ones) here...
+  // Postman APIs
+  app.use('/api/postman', makeFrontendRouter());
 
   // Attendance APIs
   app.use(
