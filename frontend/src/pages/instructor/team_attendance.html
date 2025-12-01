@@ -1,31 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Team Attendance</title>
   <style>
-    body { font-family: Arial; margin: 20px; }
-    .team-box {
-      border: 1px solid #aaa;
-      margin-bottom: 20px;
-      padding: 15px;
-      border-radius: 6px;
-      width: 70%;
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      background-color: #e9dbee;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1f2937;
+      min-height: 100vh;
+      box-sizing: border-box;
     }
-    .team-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    button { padding: 4px 10px; cursor: pointer; }
+
+    .main-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 40px;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: #1f2937;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #f3f4f6;
+      padding-bottom: 15px;
+    }
+
+    .info-panel {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 30px;
+      background: #f9fafb;
+      padding: 15px 20px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .info-item {
+      font-size: 14px;
+      color: #4b5563;
+    }
+
+    .info-item strong {
+      color: #1f2937;
+      font-weight: 600;
+      margin-right: 5px;
+    }
+
+    .team-box {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+      background: #fff;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .team-box:hover {
+      border-color: #c4b5fd;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+    }
+
+    .team-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .team-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background-color: #8b5cf6;
+      margin-right: 10px;
+      border-radius: 2px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f9fafb;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f3f4f6;
+      color: #374151;
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    td:nth-child(2) {
+      text-align: center;
+      font-size: 16px;
+    }
+
+    td:nth-child(3) {
+      text-align: right;
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #fff;
+      color: #8b5cf6;
+      border: 1px solid #8b5cf6;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background-color: #8b5cf6;
+      color: #fff;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 20px 10px; }
+      .main-card { padding: 20px; }
+      .info-panel { flex-direction: column; gap: 10px; }
+      th, td { padding: 10px 8px; }
+    }
   </style>
 </head>
 
 <body>
 
-<h2>Instructor — Team Attendance</h2>
+<div class="main-card">
+  <h2>Instructor — Team Attendance</h2>
 
-<p><strong>Course:</strong> <span id="courseName">CSE 101</span></p>
-<p><strong>Current Session:</strong> <span id="sessionName"></span></p>
+  <div class="info-panel">
+    <div class="info-item">
+      <strong>Course:</strong> <span id="courseName">CSE 101</span>
+    </div>
+    <div class="info-item">
+      <strong>Current Session:</strong> <span id="sessionName">Loading...</span>
+    </div>
+  </div>
 
-<div id="teamsContainer"></div>
+  <div id="teamsContainer"></div>
+</div>
 
 <script src="./team_attendance.js"></script>
 </body>

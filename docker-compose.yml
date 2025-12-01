@@ -21,6 +21,8 @@ services:
     build:
       context: ./conductor-server
       dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app/frontend
     depends_on:
       db:
         condition: service_healthy
@@ -38,6 +40,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
 
 volumes:
   db_data:
