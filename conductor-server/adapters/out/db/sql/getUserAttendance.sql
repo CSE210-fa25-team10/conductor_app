@@ -1,0 +1,13 @@
+SELECT 
+  a.activity_id,
+  a.course_id,
+  a.name,
+  a.starts_at,
+  a.type,
+  att.present
+FROM attendance att
+JOIN activities a ON a.activity_id = att.activity_id
+WHERE att.user_id = $1
+  AND ($2::INT IS NULL OR a.course_id = $2)
+ORDER BY a.starts_at DESC;
+

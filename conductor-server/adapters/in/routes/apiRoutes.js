@@ -1,7 +1,18 @@
-import express from 'express';
-import authRoutes from './authRoutes.js';
-const router = express.Router();
+// import express from 'express';
+// import authRoutes from './authRoutes.js';
+// import queryRoutes from './queryRoutes.js';
+// import frontendRoutes from './frontendRoutes.js';
+// import attendanceRoutes from './attendanceRoutes.js';
 
-router.use("/auth", authRoutes);
+// const router = express.Router();
 
-export default router;
+// router.use('/auth', authRoutes);
+// router.use('/queries', queryRoutes);
+// router.use('/attendance', attendanceRoutes);
+// router.use('/', frontendRoutes);
+
+// export default router;
+
+/**
+ * README: apiRoutes is deprecated, please use routes.js instead.
+ */
