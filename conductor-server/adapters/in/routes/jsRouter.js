@@ -12,5 +12,9 @@ export function makeJsRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/js/register.js'));
   });
 
+  router.get('/dashboard.js', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/js/dashboard.js'));
+  })
+
   return router;
 }
