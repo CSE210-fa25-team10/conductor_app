@@ -17,7 +17,7 @@ export function mountRoutes(app, container) {
   app.use('/api/queries', makeQueryRouter({ queryService: container.queryController }));
 
   // Modification APIs
-  // frontendRoutes here...
+  // frontendRoutes (the api ones) here...
 
   // Attendance APIs
   app.use(
