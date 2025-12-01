@@ -7,10 +7,6 @@ import {
 
 export function makeAuthController() {
   return {
-    showLoginPage(req, res) {
-      res.sendFile('login.html', { root: 'frontend/src/pages/auth' });
-    },
-
     googleLogin(req, res) {
       const url = generateAuthUrl();
       res.redirect(url);
@@ -19,7 +15,30 @@ export function makeAuthController() {
     async login(req, res) {
       try {
         const response = await loginService(req.body);
-        res.status(200).json({ user: response });
+
+        if (!response) {
+          // probably redundant
+          return res.status(401).send({ error: 'invalid_password' });
+        }
+
+        // Save minimal info in the session
+        req.session.user = {
+          id: response.id,
+          name: response.name,
+          role: response.role,
+          email: response.email,
+        };
+
+        return res.status(200).json({ user: response });
+
+        // FIXME: Temporary, we handle redirects elsewhere. This shouldn't be needed.
+        // // Redirect based on role
+        // if (response.role === 'instructor') {
+        //   return res.redirect('/instructor');
+        // } else if (response.role === 'student') {
+        //   return res.redirect('/student');
+        // }
+        // return res.redirect('/');
       } catch (err) {
         console.error(err);
         if (err.message === 'Invalid password') {
@@ -44,7 +63,7 @@ export function makeAuthController() {
 
     async callback(req, res) {
       const code = req.query.code;
-      if (!code) return res.redirect('/login');
+      if (!code) return res.redirect('/api/auth/login');
 
       try {
         const user = await getUserFromCode(code);
@@ -59,7 +78,7 @@ export function makeAuthController() {
     logout(req, res) {
       req.session.destroy((err) => {
         if (err) console.error(err);
-        res.redirect('/users');
+        res.redirect('/api/auth/login');
       });
     },
   };

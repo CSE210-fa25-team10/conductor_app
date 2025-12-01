@@ -4,11 +4,21 @@
  * A user is considered authenticated if req.session.user exists
  * AND has at least an id field populated.
  */
-export function requireAuth(req, res, next) {
-  if (req.session && req.session.user && req.session.user.id) {
-    return next();
-  }
-  return res.status(401).json({ error: 'not_authenticated' });
+export function requireAuth(requiredRole = null) {
+  return (req, res, next) => {
+    const user = req.session?.user;
+    if (!user) {
+      return res.redirect('/login');
+    }
+
+    if (requiredRole && user.role !== requiredRole) {
+      return res.status(403).send('Forbidden');
+    }
+
+    // Optionally attach user to req for controllers
+    req.user = user;
+    next();
+  };
 }
 
 /**
