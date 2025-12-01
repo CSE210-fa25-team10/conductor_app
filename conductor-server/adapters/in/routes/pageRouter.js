@@ -5,7 +5,15 @@ import { requireAuth } from '../../../middleware/auth.js';
 export function makePageRouter() {
   const router = Router();
 
-  router.get('/', (req, res) => res.redirect('/api/auth/login'));
+  router.get('/', (req, res) => res.redirect('/login'));
+
+  router.get('/login', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/auth/login.html'));
+  });
+
+  router.get('/register', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/auth/register.html'));
+  });
 
   // router.get('/instructor', (req, res) => {
   //   res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/dashboard.html'));

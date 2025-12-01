@@ -7,10 +7,6 @@ import {
 
 export function makeAuthController() {
   return {
-    showLoginPage(req, res) {
-      res.sendFile('login.html', { root: 'frontend/src/pages/auth' });
-    },
-
     googleLogin(req, res) {
       const url = generateAuthUrl();
       res.redirect(url);
