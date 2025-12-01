@@ -15,25 +15,24 @@ export function makePageRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/auth/register.html'));
   });
 
-  // router.get('/instructor', (req, res) => {
-  //   res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/dashboard.html'));
-  // });
+  /**
+   * ===== INSTRUCTOR ROUTES =====
+   */
 
-  // router.get('/student', (req, res) => {
-  //   res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/dashboard.html'));
-  // });
-
-  // router.get('/instructor/attendance', (req, res) => {
-  //   res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/attendance.html'));
-  // });
-
-  // Eventually we'll want to use these versions that check for a valid logged in user before redirect
   router.get('/instructor', requireAuth('instructor'), (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/dashboard.html'));
   });
 
+  /**
+   * ===== STUDENT ROUTES =====
+   */
+
   router.get('/student', requireAuth('student'), (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/dashboard.html'));
+  });
+
+  router.get('/student/manual_checkin', requireAuth('student'), (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/manual_checkin.html'));
   });
 
   return router;

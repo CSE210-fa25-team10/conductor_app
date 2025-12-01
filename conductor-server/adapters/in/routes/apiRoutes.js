@@ -14,5 +14,5 @@
 // export default router;
 
 /**
- * apiRoutes is deprecated, please use routes.js instead.
+ * README: apiRoutes is deprecated, please use routes.js instead.
  */
