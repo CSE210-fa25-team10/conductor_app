@@ -23,6 +23,10 @@ export function makePageRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/dashboard.html'));
   });
 
+  router.get('/instructor/attendance', requireAuth('instructor'), (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/attendance.html'));
+  });
+
   /**
    * ===== STUDENT ROUTES =====
    */
