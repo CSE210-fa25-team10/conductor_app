@@ -6,6 +6,8 @@ import { makeAuthRouter } from './authRoutes.js';
 import { makeQueryRouter } from './queryRoutes.js';
 import { makePageRouter } from './pageRouter.js';
 import { makeAttendanceRouter } from './attendanceRoutes.js';
+import { makeCssRouter } from './cssRouter.js';
+import { makeJsRouter } from './jsRouter.js';
 
 export function mountRoutes(app, container) {
   // Auth APIs
@@ -22,6 +24,12 @@ export function mountRoutes(app, container) {
     '/api/attendance',
     makeAttendanceRouter({ attendanceController: container.attendanceController })
   );
+
+  // CSS routes
+  app.use('/css', makeCssRouter());
+
+  // JS routes
+  app.use('/js', makeJsRouter());
 
   // HTML pages
   app.use('/', makePageRouter());
