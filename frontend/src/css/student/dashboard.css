@@ -73,6 +73,7 @@ body {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
+    text-decoration: none;
 }
 
 .join-class-btn:hover, .attendance-btn:hover {
