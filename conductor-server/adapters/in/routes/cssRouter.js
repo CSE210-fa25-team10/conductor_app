@@ -24,6 +24,9 @@ export function makeCssRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/css/student/courses.css'));
   });
 
+  router.get('/standup.css', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/css/standup.css'));
+  });
   /**
    * ===== INSTRUCTOR CSS =====
    */
