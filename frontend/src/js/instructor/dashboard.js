@@ -1,8 +1,10 @@
-const API_BASE_URL = '/api'; 
+const API_BASE_URL = '/api/postman'; 
 
 async function apiCall(endpoint, options = {}) {
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            credentials: 'include', 
+            
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers
@@ -10,9 +12,14 @@ async function apiCall(endpoint, options = {}) {
             ...options
         });
 
+        if (response.status === 401) {
+            console.warn("Session expired or invalid. Redirecting to login...");
+            return; 
+        }
+
         const data = await response.json();
         if (!response.ok) {
-            throw new Error(data.message || 'API call failed');
+            throw new Error(data.message || data.error || 'API call failed');
         }
         return data;
     } catch (error) {
@@ -21,45 +28,57 @@ async function apiCall(endpoint, options = {}) {
     }
 }
 
+let currentUserId = null;
+
 async function fetchUserInfo() {
-    // return await apiCall('/user/complete');
-    return{
-        succsee: true,
-        data: {
-            profile: {
-                id: "user_123",
-                name: "John Doe",
-                email: "john.doe@university.edu",
-                phone: "+1-234-567-8900",
-                major: "Computer Science"
-            },
-            preferences: {
-                pronouns: "he/him",
-                freeTime: "Weekday evenings and weekends",
-                socialMedia: "@johndoe"
+    try {
+        const userData = await apiCall('/user'); 
+        currentUserId = userData.user_id;
+
+        return {
+            success: true,
+            data: {
+                profile: {
+                    id: userData.user_id,
+                    name: userData.name,
+                    email: userData.email,
+                    phone: userData.phone || "Not set",
+                    major: userData.major || "Computer Science", 
+                },
+                preferences: {
+                    pronouns: userData.pronouns || "Not set",
+                    freeTime: userData.availability || "Not set", 
+                    socialMedia: userData.slack || "Not set"      
+                }
             }
-        }
+        };
+    } catch (error) {
+        console.error("Failed to fetch user info", error);
+        throw error;
     }
 }
 
 async function updateUserPreferences(preferences) {
-    // return await apiCall('/user/preferences', {
-    //     method: 'PUT',
-    //     body: JSON.stringify(preferences)
-    // });
-    
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                success: true,
-                message: "Preferences updated successfully",
-                data: {
-                    ...preferences,
-                    updatedAt: new Date().toISOString()
-                }
-            });
-        }, 500);
+    const backendPayload = {
+        user_id: currentUserId
+    };
+    if (preferences.pronouns) backendPayload.pronouns = preferences.pronouns;
+    if (preferences.freeTime) backendPayload.availability = preferences.freeTime; // freeTime -> availability
+    if (preferences.socialMedia) backendPayload.slack = preferences.socialMedia;  // socialMedia -> slack
+
+    const result = await apiCall('/user', {
+        method: 'POST',
+        body: JSON.stringify(backendPayload)
     });
+
+    return {
+        success: true,
+        message: "Preferences updated successfully",
+        data: {
+            ...preferences,
+            updatedAt: new Date().toISOString()
+        }
+    };
 }
 
 function renderUserInfo(userData) {
@@ -177,51 +196,19 @@ function editField(element, fieldLabel) {
 
 /* Courses */
 async function fetchUserCourses() {
-    // const response = await apiCall('/user/courses');
-    // return response.data;
-    
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve([
-                { 
-                    id: 1, 
-                    name: 'Introduction to Computer Science', 
-                    code: 'CS101',
-                    semester: '2024-Fall',
-                    instructor: 'Dr. Smith',
-                    schedule: 'MWF 10:00-11:00'
-                },
-                { 
-                    id: 2, 
-                    name: 'Data Structures and Algorithms', 
-                    code: 'CS201',
-                    semester: '2024-Fall',
-                    schedule: 'TTh 14:00-15:30'
-                },
-                { 
-                    id: 3, 
-                    name: 'Web Development', 
-                    code: 'CS301',
-                    semester: '2024-Fall',
-                    schedule: 'MWF 13:00-14:00'
-                },
-                { 
-                    id: 4, 
-                    name: 'Database Systems', 
-                    code: 'CS401',
-                    semester: '2024-Fall',
-                    schedule: 'TTh 10:00-11:30'
-                },
-                { 
-                    id: 5, 
-                    name: 'Machine Learning', 
-                    code: 'CS501',
-                    semester: '2024-Fall',
-                    schedule: 'MWF 15:00-16:00'
-                }
-            ]);
-        }, 800);
-    });
+    if (!currentUserId) {
+        console.warn("User ID not set, skipping fetch courses");
+        return [];
+    }
+    const coursesData = await apiCall(`/courses?user_id=${currentUserId}`);
+    return coursesData.map(c => ({
+        id: c.course_id,
+        name: c.name,
+        code: c.code || 'N/A',
+        semester: c.semester || 'Current',
+        instructor: 'TBD', 
+        schedule: 'TBD'   
+    }));
 }
 
 function renderCourses(courses) {
@@ -321,18 +308,22 @@ async function handleCreateCourse(event) {
 }
 
 async function createCourse(courseData) {
+    const payload = {
+        name: courseData.name,
+        code: courseData.code,
+        semester: courseData.semester,
+        description: courseData.detail 
+    };
+
     try {
-        // const response = await apiCall('/courses', {
-        //     method: 'POST',
-        //     body: JSON.stringify(courseData)
-        // });
+        const response = await apiCall('/course', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        console.log("Created Course with Detail:", courseData); 
-
+        console.log("Created Course:", response);
         showNotification('Course created successfully!', 'success');
-
+        
         await initCourses();
 
     } catch (error) {
@@ -394,19 +385,19 @@ async function initCourses() {
     }
 }
 
-function initSettings() {
-    const settingsBtn = document.querySelector('.icon-btn.settings');
-    if (settingsBtn) {
-        settingsBtn.addEventListener('click', () => {
-            showNotification('Settings page coming soon!', 'info');
+function initLogout() {
+    const logoutBtn = document.querySelector('.icon-btn.logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            window.location.href = '/login'; 
         });
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initUserInfo();
+document.addEventListener('DOMContentLoaded', async () => {
+    await initUserInfo();
     initCourses();
-    initSettings();
+    initLogout();
     const joinClassBtn = document.querySelector('.top-bar .join-class-btn');
     if (joinClassBtn) {
         joinClassBtn.addEventListener('click', showCreateCourseModal);

@@ -23,7 +23,7 @@ export function makeAuthController() {
 
         // Save minimal info in the session
         req.session.user = {
-          id: response.id,
+          user_id: response.id,
           name: response.name,
           role: response.role,
           email: response.email,
