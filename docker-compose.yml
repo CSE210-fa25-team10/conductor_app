@@ -8,7 +8,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./conductor-server/schema.sql:/docker-entrypoint-initdb.d/schema.sql   # Autorun the database schema on start.
+      - ./conductor-server/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql   # Autorun the database schema on start.
+      # README: Sample users should not be included in prod!
+      - ./conductor-server/sample.sql:/docker-entrypoint-initdb.d/02-sample.sql   # Insert sample students/instructors. 
     ports:
       # Expose locally for psql/GUI; remove in prod
       - "5432:5432"
