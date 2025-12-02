@@ -22,7 +22,7 @@ export function requireAuth(requiredRole = null) {
 }
 
 /**
- * Optional: Role-based instructor/TA auth
+ * Role-based instructor/TA auth
  * Requires course_users.role to be 'instructor' or 'ta'
  * (You can use this later for instructor-only actions)
  */

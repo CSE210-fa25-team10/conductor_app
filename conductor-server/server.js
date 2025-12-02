@@ -19,26 +19,26 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 const app = express();
 
-// --- NEW CORS CONFIGURATION ---
-const allowedOrigins = [
-  // Localhost aliases for development
-  'http://localhost:5500', // Frontend running on 5500 (VS Code Live Server?)
-  'http://127.0.0.1:5500', // Frontend running on 5500 (what the browser shows)
-];
+// // --- NEW CORS CONFIGURATION ---
+// const allowedOrigins = [
+//   // Localhost aliases for development
+//   'http://localhost:5500', // Frontend running on 5500 (VS Code Live Server?)
+//   'http://127.0.0.1:5500', // Frontend running on 5500 (what the browser shows)
+// ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl) and allowed origins
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true, // IMPORTANT: Allows cookies/sessions (req.session) to be sent
-  })
-);
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       // Allow requests with no origin (like mobile apps or curl) and allowed origins
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error('Not allowed by CORS'));
+//       }
+//     },
+//     credentials: true, // IMPORTANT: Allows cookies/sessions (req.session) to be sent
+//   })
+// );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -57,7 +57,7 @@ app.use(
     // Store the session somewhere if we want
   })
 );
-
+app.use(cors());
 // API routes
 // app.use('/api', apiRoutes);
 
