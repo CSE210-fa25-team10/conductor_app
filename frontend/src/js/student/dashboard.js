@@ -250,7 +250,7 @@ function renderCourses(courses) {
 
 function goToCourse(courseId) {
     console.log('Going to course:', courseId);
-    // window.location.href = `/course/${courseId}`;
+    window.location.href = `/course/${courseId}`;
     showNotification(`Navigating to course ${courseId}...`, 'info');
 }
 
