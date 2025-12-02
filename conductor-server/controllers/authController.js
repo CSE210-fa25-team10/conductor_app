@@ -41,10 +41,9 @@ export function makeAuthController() {
         // return res.redirect('/');
       } catch (err) {
         console.error(err);
-        if (err.message == 'Invalid password') {
+        if (err.message === 'Invalid password') {
           return res.status(401).json({ error: 'invalid_password' });
         }
-
         return res.status(400).json({ error: 'login_failed' });
       }
     },
@@ -55,7 +54,10 @@ export function makeAuthController() {
         res.status(201).json({ user: response });
       } catch (err) {
         console.error(err);
-        res.send('Register failed');
+        if (err.message === 'Email already exists') {
+          return res.status(409).json({ error: 'email_exists' });
+        }
+        return res.status(400).json({ error: 'register_failed' });
       }
     },
 
