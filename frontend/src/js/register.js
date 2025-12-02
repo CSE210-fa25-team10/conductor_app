@@ -26,6 +26,7 @@ function attachRegisterHandlers() {
   const lastName = document.getElementById("lastName");
   const pronunciation = document.getElementById("pronunciation");
   const email = document.getElementById("email");
+  const phone = document.getElementById("phone");
   const role = document.getElementById("role");
   const password = document.getElementById("password");
   const confirmPassword = document.getElementById("confirmPassword");
@@ -85,6 +86,7 @@ function attachRegisterHandlers() {
           password: password.value,
           role: role.value,
           pronunciation: pronunciation.value.trim() || undefined,
+          phone: phone.value.trim() || undefined,
         }),
       });
 
