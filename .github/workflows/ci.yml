@@ -122,4 +122,4 @@ jobs:
 
       - name: Run frontend unit tests
         working-directory: frontend
-        run: npm test
+        run: npm test:unit
