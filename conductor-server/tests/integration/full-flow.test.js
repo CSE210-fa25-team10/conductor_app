@@ -196,11 +196,11 @@ describe('Full User Flow Integration Tests', () => {
   });
 
   it('should reject registration with duplicate email', async () => {
-  //   const res = await request(app).post('/api/auth/register').send(testUser);
+    //   const res = await request(app).post('/api/auth/register').send(testUser);
 
-  //   expect(res.statusCode).toBeGreaterThanOrEqual(400);
-  //   console.log('✅ Duplicate email correctly rejected');
+    //   expect(res.statusCode).toBeGreaterThanOrEqual(400);
+    //   console.log('✅ Duplicate email correctly rejected');
 
-  console.log('FIXME: Complete test for dupe login attempt.');
+    console.log('FIXME: Complete test for dupe login attempt.');
   });
 });
