@@ -102,7 +102,7 @@ function attachRegisterHandlers() {
       showSuccess("Account created successfully! Redirecting to login…");
 
       setTimeout(() => {
-        window.location.href = "login.html?registered=1";
+        window.location.href = "login";
       }, 900);
     } catch (err) {
       console.error(err);

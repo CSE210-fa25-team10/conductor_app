@@ -4,9 +4,12 @@
 
 import { makeAuthRouter } from './authRoutes.js';
 import { makeQueryRouter } from './queryRoutes.js';
+import { makeFrontendRouter } from './frontendRoutes.js';
 import { makePageRouter } from './pageRouter.js';
 import { makeAttendanceRouter } from './attendanceRoutes.js';
 import { makeStandUpRouter } from './standupRoutes.js';
+import { makeCssRouter } from './cssRouter.js';
+import { makeJsRouter } from './jsRouter.js';
 
 export function mountRoutes(app, container) {
   // Auth APIs
@@ -15,8 +18,8 @@ export function mountRoutes(app, container) {
   // Query APIs
   app.use('/api/queries', makeQueryRouter({ queryService: container.queryController }));
 
-  // Modification APIs
-  // frontendRoutes here...
+  // Postman APIs
+  app.use('/api/postman', makeFrontendRouter());
 
   // Attendance APIs
   app.use(
@@ -29,6 +32,11 @@ export function mountRoutes(app, container) {
     '/api/standup',
     makeStandUpRouter({ standupController: container.standupController })
   );
+  // CSS routes
+  app.use('/css', makeCssRouter());
+
+  // JS routes
+  app.use('/js', makeJsRouter());
 
   // HTML pages
   app.use('/', makePageRouter());
