@@ -136,4 +136,16 @@
 </div>
 <script src="courses.js"></script>
 </body>
+<script src="../../js/auth.js"></script>
+<script>
+    (function(){
+        const a = window.__ConductorAuth;
+        if (a) {
+            const u = a.getAuth();
+            if (!u || u.role !== 'student') {
+                a.requireRole('student', true);
+            }
+        }
+    })();
+</script>
 </html>

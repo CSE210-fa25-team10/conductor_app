@@ -1,6 +1,9 @@
 {
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start:static": "npx http-server ./ -p 3000",
+    "e2e:install": "npx playwright install --with-deps",
+    "e2e": "npx playwright test --config=src/tests/e2e/playwright.config.js"
   },
   "jest": {
     "testEnvironment": "jsdom",

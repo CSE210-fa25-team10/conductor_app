@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    <link rel="stylesheet" href="/css/student/dashboard.css">
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <div class="content-box">
@@ -17,7 +17,9 @@
             </div>
 
             <div class="icon">
-                <a href="/student/manual_checkin" class="attendance-btn" style="margin-left:15px;">
+                <a href="../shared/profile.html" class="nav-link" style="margin-right:8px;">Profile</a>
+                <button id="logoutBtn" class="nav-logout" title="Log out">Log out</button>
+                <a href="manual_checkin.html" class="attendance-btn" style="margin-left:15px;">
                     Record My Attendance
                 </a>
 
@@ -182,6 +184,23 @@
         </div>
     </div>
     
-    <script src="/js/student/dashboard.js"></script>
+        <script src="../../js/auth.js"></script>
+        <script>
+            (function(){
+                const auth = window.__ConductorAuth;
+                if (auth) {
+                    const u = auth.getAuth();
+                    if (!u) {
+                        auth.requireAuth(true);
+                        return;
+                    }
+                    const nameEl = document.querySelector('.user-greeting');
+                    if (nameEl) nameEl.textContent = `Hi, ${u.name || 'User'}`;
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) logoutBtn.addEventListener('click', () => { auth.clearAuth(); window.location.href = '../auth/login.html'; });
+                }
+            })();
+        </script>
+        <script src="dashboard.js"></script>
 </body>
 </html>

@@ -75,6 +75,18 @@ function attachLoginHandlers() {
       }
 
       const user = data.user || {};
+      // persist auth state for navigation across pages (works in tests & browser)
+      try {
+        // prefer module import when running under test/require
+        if (typeof require === "function") {
+          const auth = require("./auth.js");
+          if (auth && typeof auth.setAuth === "function") auth.setAuth(user);
+        } else if (typeof window !== "undefined" && window.__ConductorAuth) {
+          window.__ConductorAuth.setAuth(user);
+        }
+      } catch (e) {
+        // ignore in environments where require isn't available
+      }
       showSuccess("Login successful. Redirecting…");
 
       setTimeout(() => {
@@ -101,8 +113,10 @@ if (typeof window !== "undefined") {
 }
 
 // export for tests if they want to call attachLoginHandlers manually
+
 module.exports = {
   attachLoginHandlers,
   showError,
   showSuccess,
+  // no redirect helper exported — use direct navigation in browser
 };

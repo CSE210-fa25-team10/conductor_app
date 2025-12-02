@@ -1,22 +1,52 @@
-/* Profile-specific styling layered on top of db_styles.css + styles.css */
+/* Profile-specific styling - Clean, modern design */
+
+/* ====== Global Reset ====== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f5f5;
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* ====== Header ====== */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
 
 .back-btn {
-  padding: 8px 16px;
+  padding: 10px 20px;
   background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   display: flex;
   align-items: center;
   gap: 8px;
   transition: all 0.2s ease;
-  color: #374151;
+  color: #333;
+  font-family: inherit;
 }
 
 .back-btn:hover {
-  background-color: #f9fafb;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  background-color: #f9f9f9;
+  border-color: #5e4e99;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .back-btn svg {
@@ -25,128 +55,141 @@
 }
 
 .profile-header-title {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
-  color: #1f2937;
+  color: #333;
 }
+
+/* ====== Profile Grid ====== */
 
 .profile-grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   gap: 24px;
-  margin-top: 10px;
 }
 
 .profile-card {
   background-color: #ffffff;
-  border-radius: 10px;
-  padding: 22px 24px;
-  border: 1.5px solid #e5e7eb;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  border-radius: 12px;
+  padding: 24px 28px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .profile-card-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  color: #111827;
-  margin-bottom: 16px;
+  color: #333;
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .profile-card-title .icon-dot,
 .calendar-title-text .icon-dot {
   width: 8px;
   height: 8px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  border-radius: 50%;
+  background: #5e4e99;
+  flex-shrink: 0;
 }
 
-/* Form */
+/* ====== Form Styles ====== */
 
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 6px;
-  color: #4b5563;
-  font-size: 13px;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 14px;
   font-weight: 500;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 9px 12px;
+  padding: 12px 16px;
   border-radius: 8px;
-  border: 1.5px solid #e5e7eb;
-  font-size: 14px;
+  border: 1px solid #ddd;
+  font-size: 15px;
   font-family: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
-    background-color 0.2s ease;
+  background: #fff;
+  color: #333;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #999;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.12);
-  background-color: #f9fafb;
+  border-color: #5e4e99;
+  box-shadow: 0 0 0 3px rgba(94, 78, 153, 0.1);
 }
 
 .form-group input:disabled {
-  background-color: #f9fafb;
-  color: #9ca3af;
+  background-color: #f9f9f9;
+  color: #666;
   cursor: not-allowed;
 }
 
 .info-note {
-  font-size: 11px;
-  color: #6b7280;
-  margin-top: 3px;
+  font-size: 12px;
+  color: #666;
+  margin-top: 6px;
   font-style: italic;
 }
 
-/* Buttons */
+/* ====== Buttons ====== */
 
 .save-btn {
   width: 100%;
-  margin-top: 10px;
-  padding: 10px 14px;
-  border-radius: 999px;
+  margin-top: 12px;
+  padding: 12px 20px;
+  border-radius: 8px;
   border: none;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  background: #5e4e99;
   color: white;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
+  font-family: inherit;
   transition: all 0.2s ease;
 }
 
 .save-btn:hover {
+  background: #4d3d7f;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 4px 8px rgba(94, 78, 153, 0.25);
+}
+
+.save-btn:active {
+  transform: translateY(0);
 }
 
 .save-btn:disabled {
-  background: #e5e7eb;
-  color: #9ca3af;
+  background: #ccc;
+  color: #666;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
 }
 
 .success-message {
-  padding: 10px 12px;
-  background: #ecfdf5;
-  color: #047857;
+  padding: 12px 16px;
+  background: #d4edda;
+  color: #155724;
   border-radius: 8px;
-  font-size: 13px;
-  border: 1px solid #bbf7d0;
-  margin-bottom: 10px;
+  font-size: 14px;
+  border: 1px solid #c3e6cb;
+  margin-bottom: 16px;
   display: none;
 }
 
@@ -154,26 +197,26 @@
   display: block;
 }
 
-/* Profile photo */
+/* ====== Profile Photo ====== */
 
 .profile-photo-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .photo-upload-wrapper {
   position: relative;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .profile-photo {
-  width: 110px;
-  height: 110px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  border: 3px solid #e5e7eb;
-  background: #f9fafb;
+  border: 3px solid #e5e5e5;
+  background: #f9f9f9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -187,30 +230,30 @@
 }
 
 .profile-photo svg {
-  width: 46px;
-  height: 46px;
-  color: #9ca3af;
+  width: 50px;
+  height: 50px;
+  color: #999;
 }
 
 .photo-upload-btn {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: 2px solid #ffffff;
-  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  background: #5e4e99;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .photo-upload-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(139, 92, 246, 0.35);
+  background: #4d3d7f;
+  transform: scale(1.08);
 }
 
 .photo-upload-btn svg {
@@ -224,25 +267,24 @@
 }
 
 .photo-info {
-  font-size: 11px;
-  color: #6b7280;
+  font-size: 12px;
+  color: #666;
   text-align: center;
 }
 
-/* Availability */
+/* ====== Availability ====== */
 
 .availability-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  margin-top: 6px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .day-checkbox {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
 }
 
 .day-checkbox input[type="checkbox"] {
@@ -251,33 +293,34 @@
 
 .day-label {
   width: 100%;
-  padding: 8px 0;
+  padding: 10px 8px;
   text-align: center;
-  border-radius: 999px;
-  border: 1.5px solid #e5e7eb;
-  font-size: 11px;
+  border-radius: 8px;
+  border: 1.5px solid #ddd;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  color: #4b5563;
+  color: #333;
   background: #ffffff;
   transition: all 0.2s ease;
+  user-select: none;
 }
 
 .day-checkbox input[type="checkbox"]:checked + .day-label {
-  background: #8b5cf6;
-  border-color: #8b5cf6;
+  background: #5e4e99;
+  border-color: #5e4e99;
   color: #ffffff;
-  box-shadow: 0 3px 6px rgba(139, 92, 246, 0.4);
 }
 
 .day-label:hover {
-  border-color: #8b5cf6;
-  background: #f5f3ff;
+  border-color: #5e4e99;
+  background: #f9f7fe;
 }
 
-/* Teams */
+/* ====== Teams ====== */
 
 .teams-section {
-  margin-top: 18px;
+  margin-top: 24px;
 }
 
 .teams-section.hidden {
@@ -285,56 +328,60 @@
 }
 
 .team-card {
-  margin-top: 10px;
-  padding: 12px 14px;
+  margin-top: 12px;
+  padding: 16px 18px;
   border-radius: 10px;
-  background-color: #f9fafb;
-  border: 1.5px solid #e5e7eb;
+  background-color: #f9f9f9;
+  border: 1px solid #e5e5e5;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .team-card:hover {
-  border-color: #8b5cf6;
-  background: #f5f3ff;
-  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.15);
+  border-color: #5e4e99;
+  background: #f9f7fe;
+  box-shadow: 0 2px 6px rgba(94, 78, 153, 0.12);
 }
 
 .team-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .team-name {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  color: #111827;
+  color: #333;
 }
 
 .team-course {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
 }
 
 .member-count {
-  font-size: 11px;
-  padding: 2px 8px;
+  font-size: 12px;
+  padding: 4px 12px;
   border-radius: 999px;
   background: #eef2ff;
   color: #4f46e5;
+  font-weight: 500;
 }
 
 .view-members-btn {
-  margin-top: 6px;
-  font-size: 12px;
-  padding: 6px 10px;
-  background: #111827;
+  margin-top: 8px;
+  font-size: 13px;
+  padding: 8px 16px;
+  background: #333;
   color: #ffffff;
-  border-radius: 999px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
   transition: all 0.2s ease;
 }
 
@@ -344,43 +391,47 @@
 
 .no-teams {
   text-align: center;
-  padding: 18px 10px;
-  color: #6b7280;
-  font-size: 13px;
+  padding: 32px 16px;
+  color: #666;
+  font-size: 14px;
 }
 
 .no-teams svg {
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   color: #d1d5db;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
 }
 
-/* Calendar */
+/* ====== Calendar ====== */
 
 .calendar-card {
-  margin-top: 18px;
+  margin-top: 0;
 }
 
 .calendar-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .calendar-title-text {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .calendar-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 .calendar-nav {
@@ -389,67 +440,69 @@
 }
 
 .calendar-nav button {
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  font-size: 12px;
-  color: #374151;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #ffffff;
+  font-size: 14px;
+  color: #333;
   cursor: pointer;
+  font-family: inherit;
   transition: all 0.2s ease;
 }
 
 .calendar-nav button:hover {
-  background: #eef2ff;
-  border-color: #8b5cf6;
+  background: #f9f7fe;
+  border-color: #5e4e99;
 }
 
 .calendar-month {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
-  background: #e5e7eb;
+  background: #ddd;
   border-radius: 10px;
   overflow: hidden;
+  border: 1px solid #ddd;
 }
 
 .calendar-day-header {
-  background: #f9fafb;
-  padding: 6px 0;
+  background: #f9f9f9;
+  padding: 10px 0;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: #6b7280;
+  color: #666;
 }
 
 .calendar-day {
   background: #ffffff;
-  min-height: 72px;
-  padding: 6px;
-  font-size: 11px;
+  min-height: 80px;
+  padding: 8px;
+  font-size: 13px;
   cursor: pointer;
   position: relative;
   transition: background 0.15s ease;
 }
 
 .calendar-day:hover {
-  background: #f9fafb;
+  background: #f9f9f9;
 }
 
 .calendar-day.other-month {
-  background: #f9fafb;
-  color: #9ca3af;
+  background: #fafafa;
+  color: #999;
 }
 
 .calendar-day.today {
-  box-shadow: inset 0 0 0 1.5px #6366f1;
   background: #eef2ff;
+  box-shadow: inset 0 0 0 2px #5e4e99;
 }
 
 .calendar-day.has-event {
@@ -458,19 +511,20 @@
 
 .day-number {
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  font-size: 14px;
 }
 
 .day-events {
-  font-size: 10px;
-  color: #4b5563;
+  font-size: 11px;
+  color: #666;
 }
 
 .event-dot {
   width: 6px;
   height: 6px;
-  border-radius: 999px;
-  background: #6b7280;
+  border-radius: 50%;
+  background: #666;
   display: inline-block;
   margin-right: 4px;
 }
@@ -488,36 +542,38 @@
 }
 
 .google-calendar-btn {
-  padding: 8px 12px;
-  border-radius: 999px;
+  padding: 10px 18px;
+  border-radius: 8px;
   border: none;
   background: #4285f4;
   color: white;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
+  font-family: inherit;
   transition: all 0.2s ease;
 }
 
 .google-calendar-btn:hover {
   background: #357ae8;
-  box-shadow: 0 4px 8px rgba(66, 133, 244, 0.35);
+  box-shadow: 0 4px 8px rgba(66, 133, 244, 0.25);
 }
 
 .google-calendar-btn svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
-/* Modals */
+/* ====== Modals ====== */
 
 .modal {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.45);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 9999;
   align-items: center;
   justify-content: center;
@@ -530,44 +586,45 @@
 .modal-content {
   background: #ffffff;
   border-radius: 12px;
-  padding: 20px 22px;
+  padding: 24px 28px;
   width: 90%;
-  max-width: 520px;
+  max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.35);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 }
 
 .modal-title {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  color: #333;
 }
 
 .close-btn {
   border: none;
   background: transparent;
-  font-size: 20px;
+  font-size: 28px;
   cursor: pointer;
-  color: #6b7280;
-  padding: 0 4px;
+  color: #666;
+  padding: 0;
+  line-height: 1;
 }
 
 .close-btn:hover {
-  color: #111827;
+  color: #333;
 }
 
 .event-item {
-  padding: 10px 0;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 13px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 14px;
 }
 
 .event-item:last-child {
@@ -576,39 +633,42 @@
 
 .event-title {
   font-weight: 600;
-  color: #111827;
-  margin-bottom: 3px;
+  color: #333;
+  margin-bottom: 6px;
+  font-size: 15px;
 }
 
 .event-meta {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
 }
 
-/* Member cards */
+/* ====== Member Cards ====== */
 
 .member-card {
-  padding: 10px;
-  border-radius: 8px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #f9f9f9;
+  border: 1px solid #e5e5e5;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 14px;
+  margin-bottom: 10px;
 }
 
 .member-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #5e4e99;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
 .member-info {
@@ -616,32 +676,36 @@
 }
 
 .member-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: #333;
+  margin-bottom: 3px;
 }
 
 .member-email {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #666;
 }
 
 .contact-btn {
-  padding: 6px 10px;
-  border-radius: 999px;
+  padding: 8px 16px;
+  border-radius: 8px;
   border: none;
-  background: #111827;
+  background: #333;
   color: #ffffff;
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   text-decoration: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
 }
 
 .contact-btn:hover {
   background: #000000;
 }
 
-/* Responsive tweaks */
+/* ====== Responsive Design ====== */
 
 @media (max-width: 900px) {
   .profile-grid {
@@ -650,7 +714,36 @@
 }
 
 @media (max-width: 640px) {
+  .container {
+    padding: 24px 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .profile-header-title {
+    font-size: 24px;
+  }
+
   .availability-grid {
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  .calendar-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .calendar-day {
+    min-height: 60px;
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .profile-card {
+    padding: 20px 18px;
   }
 }

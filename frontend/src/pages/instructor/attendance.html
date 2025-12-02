@@ -177,6 +177,18 @@
         </div>
     </div>
 
-    <script src="/js/instructor/attendance.js"></script>
+        <script src="../../js/auth.js"></script>
+        <script>
+            (function(){
+                const a = window.__ConductorAuth;
+                if (a) {
+                    const u = a.getAuth();
+                    if (!u || u.role !== 'instructor') {
+                        a.requireRole('instructor', true);
+                    }
+                }
+            })();
+        </script>
+        <script src="./attendance.js"></script>
 </body>
 </html>

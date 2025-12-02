@@ -1,126 +1,172 @@
-// src/js/register.js
-
-function showError(msg) {
-  const el = document.getElementById("registerError");
-  if (!el) return;
-  el.textContent = msg;
-  el.style.display = "block";
-
-  const success = document.getElementById("registerSuccess");
-  if (success) success.style.display = "none";
+// basic helpers
+function showRegisterError(message) {
+  const errorBox = document.getElementById("registerError");
+  if (!errorBox) return;
+  errorBox.textContent = message;
+  errorBox.style.display = message ? "block" : "none";
 }
 
-function showSuccess(msg) {
-  const el = document.getElementById("registerSuccess");
-  if (!el) return;
-  el.textContent = msg;
-  el.style.display = "block";
-
-  const error = document.getElementById("registerError");
-  if (error) error.style.display = "none";
+function clearRegisterError() {
+  showRegisterError("");
 }
 
+function redirectAfterRegister(user) {
+  if (!user || !user.role) {
+    window.location.href = "../auth/login.html";
+    return;
+  }
+
+  if (user.role === "instructor") {
+    window.location.href = "../instructor/dashboard.html";
+  } else {
+    // default to student dashboard
+    window.location.href = "../student/dashboard.html";
+  }
+}
+
+// DOM ready
 function attachRegisterHandlers() {
   const form = document.getElementById("registerForm");
-  const firstName = document.getElementById("firstName");
-  const lastName = document.getElementById("lastName");
-  const pronunciation = document.getElementById("pronunciation");
-  const email = document.getElementById("email");
-  const role = document.getElementById("role");
-  const password = document.getElementById("password");
-  const confirmPassword = document.getElementById("confirmPassword");
-  const button = document.getElementById("registerButton");
-  const toggleButton = document.getElementById("togglePassword");
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const togglePasswordBtn = document.getElementById("togglePassword");
+  const googleRegisterBtn = document.getElementById("googleRegisterBtn");
+  const roleOptions = document.querySelectorAll(".role-option");
 
   if (!form) return;
 
-  if (toggleButton && password) {
-    toggleButton.addEventListener("click", function () {
-      const isHidden = password.type === "password";
-      password.type = isHidden ? "text" : "password";
-      toggleButton.textContent = isHidden ? "Hide" : "Show";
+  // Handle role selection button clicks
+  roleOptions.forEach(option => {
+    option.addEventListener("click", function() {
+      // Remove selected class from all options
+      roleOptions.forEach(opt => opt.classList.remove("selected"));
+      
+      // Add selected class to clicked option
+      this.classList.add("selected");
+      
+      // Update hidden input with selected role
+      const selectedRole = this.getAttribute("data-role");
+      const roleInput = document.getElementById("role");
+      if (roleInput) {
+        roleInput.value = selectedRole;
+      }
+    });
+  });
+
+  // password show / hide toggle
+  if (togglePasswordBtn && passwordInput) {
+    togglePasswordBtn.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      togglePasswordBtn.textContent = isPassword ? "🙈" : "👁";
+      togglePasswordBtn.setAttribute(
+        "aria-label",
+        isPassword ? "Hide password" : "Show password"
+      );
     });
   }
 
-  form.addEventListener("submit", async function (e) {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    clearRegisterError();
 
-    if (
-      !firstName.value.trim() ||
-      !lastName.value.trim() ||
-      !email.value.trim() ||
-      !role.value ||
-      !password.value ||
-      !confirmPassword.value
-    ) {
-      showError("Please fill in all required fields.");
+    const firstName = document.getElementById("firstName").value.trim();
+    const lastName = document.getElementById("lastName").value.trim();
+    const pronunciation = document.getElementById("pronunciation").value.trim();
+    const email = document.getElementById("email").value.trim();
+    
+    // Get the selected role from hidden input
+    const role = document.getElementById("role").value;
+    
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    // basic client-side validation
+    if (!firstName || !lastName || !email || !role || !password || !confirmPassword) {
+      showRegisterError("Please fill out all required fields.");
       return;
     }
 
-    if (password.value.length < 6) {
-      showError("Password should be at least 6 characters long.");
+    if (password.length < 8) {
+      showRegisterError("Password must be at least 8 characters.");
       return;
     }
 
-    if (password.value !== confirmPassword.value) {
-      showError("Passwords do not match.");
+    if (password !== confirmPassword) {
+      showRegisterError("Passwords do not match.");
       return;
     }
 
-    if (button) {
-      button.disabled = true;
-      button.textContent = "Creating account…";
-    }
+    // Disable submit button during request
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Creating account...";
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
-          name: `${firstName.value.trim()} ${lastName.value.trim()}`,
-          email: email.value.trim(),
-          password: password.value,
-          role: role.value,
-          pronunciation: pronunciation.value.trim() || undefined,
+          first_name: firstName,
+          last_name: lastName,
+          pronunciation: pronunciation || null,
+          email,
+          password,
+          role,
         }),
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        showError(data.error || "Account creation failed. Please try again.");
-        if (button) {
-          button.disabled = false;
-          button.textContent = "Create account";
-        }
+        const msg = data.error || "Registration failed. Please try again.";
+        showRegisterError(msg);
+        
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
         return;
       }
 
-      showSuccess("Account created successfully! Redirecting to login…");
-
-      setTimeout(() => {
-        window.location.href = "login";
-      }, 900);
+      // success — persist auth and redirect
+      try {
+        if (typeof require === "function") {
+          const auth = require("./auth.js");
+          if (auth && typeof auth.setAuth === "function") auth.setAuth(data.user || {});
+        } else if (typeof window !== "undefined" && window.__ConductorAuth) {
+          window.__ConductorAuth.setAuth(data.user || {});
+        }
+      } catch (e) {}
+      redirectAfterRegister(data.user);
     } catch (err) {
-      console.error(err);
-      showError("An unexpected error occurred. Please try again.");
-      if (button) {
-        button.disabled = false;
-        button.textContent = "Create account";
-      }
+      console.error("Register error:", err);
+      showRegisterError("Network error. Please try again.");
+      
+      // Re-enable submit button
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
     }
   });
+
+  // hook up Google button using your helper (if present)
+  if (googleRegisterBtn && typeof attachGoogleAuth === "function") {
+    attachGoogleAuth(googleRegisterBtn, "register");
+  }
 }
 
+// run automatically in browser
 if (typeof window !== "undefined") {
   window.addEventListener("DOMContentLoaded", attachRegisterHandlers);
 }
 
+// export for tests so they can bind handlers directly
 module.exports = {
   attachRegisterHandlers,
-  showError,
-  showSuccess,
+  showRegisterError,
+  clearRegisterError,
+  redirectAfterRegister,
 };
