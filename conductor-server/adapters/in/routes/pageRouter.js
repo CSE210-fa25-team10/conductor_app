@@ -39,5 +39,8 @@ export function makePageRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/manual_checkin.html'));
   });
 
+  router.get('/course/:id', requireAuth('student'), (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/courses.html'));
+  });
   return router;
 }

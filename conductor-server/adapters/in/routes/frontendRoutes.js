@@ -13,7 +13,7 @@ export function makeFrontendRouter() {
    * In production, should use proper authentication middleware.
    */
   router.get('/user', async (req, res) => {
-    const userId = req.session?.user?.user_id || req.query.user_id;
+    const userId = req.session?.user?.id || req.query.user_id;
 
     if (!userId) {
       return res.status(401).json({ error: 'Authentication required' });
