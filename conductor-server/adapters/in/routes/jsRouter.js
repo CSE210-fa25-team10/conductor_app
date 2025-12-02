@@ -31,11 +31,11 @@ export function makeJsRouter() {
   router.get('/student/courses.js', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/js/student/courses.js'));
   });
-  
+
   router.get('/standup.js', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/js/standup.js'));
   });
-  
+
   // FIXME: WE HAVE CHECKIN.JS AND MANUAL_CHECKIN.JS --- which one do we need?
   router.get('/student/manual_checkin.js', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/js/student/manual_checkin.js'));

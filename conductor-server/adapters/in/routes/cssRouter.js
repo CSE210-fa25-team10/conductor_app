@@ -19,7 +19,7 @@ export function makeCssRouter() {
   router.get('/student/dashboard.css', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/css/student/dashboard.css'));
   });
-  
+
   router.get('/student/courses.css', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/css/student/courses.css'));
   });
