@@ -163,11 +163,26 @@
             color: #dc2626 !important;
         }
 
+        .result-message:empty {
+            display: none;
+        }
+
         @media (max-width: 480px) {
             .card-box {
                 padding: 20px;
                 margin: 20px;
             }
+        }
+        #backBtn {
+            background-color: #f3f4f6; 
+            color: #4b5563;          
+            margin-top: 15px;        
+        }
+
+        #backBtn:hover {
+            background-color: #e5e7eb; 
+            transform: translateY(0); 
+            box-shadow: none;
         }
     </style>
 </head>
@@ -203,6 +218,8 @@
     <button id="submitBtn">Submit Check-In</button>
 
     <div id="result" class="result-message"></div>
+    
+    <button id="backBtn" onclick="window.location.href='/student'">Back to Dashboard</button>
 
     <script src="/js/student/manual_checkin.js"></script>
 </div>

@@ -146,6 +146,17 @@
         #sessionInfo:empty {
             display: none;
         }
+        #backBtn {
+            background-color: #f3f4f6; 
+            color: #4b5563;          
+            margin-top: 15px;         
+        }
+
+        #backBtn:hover {
+            background-color: #e5e7eb; 
+            transform: translateY(0);  
+            box-shadow: none;
+        }
 
     </style>
 </head>
@@ -174,7 +185,9 @@
             <p id="pinCode"></p>
 
             <p id="sessionInfo"></p>
+            
         </div>
+        <button id="backBtn" onclick="window.location.href='/instructor'">Back to Dashboard</button>
     </div>
 
     <script src="/js/instructor/attendance.js"></script>
