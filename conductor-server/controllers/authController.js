@@ -4,6 +4,7 @@ import {
   login as loginService,
   register as registerService,
 } from '../services/authService.js';
+import { pool } from '../db.js';
 
 export function makeAuthController() {
   return {
@@ -78,6 +79,41 @@ export function makeAuthController() {
         if (err) console.error(err);
         res.redirect('/api/auth/login');
       });
+    },
+
+    async getMe(req, res) {
+      try {
+        const user = req.session?.user;
+        if (!user || !user.id) {
+          return res.status(401).json({ error: 'Not authenticated' });
+        }
+        
+        // Get full user data from database
+        const query = 'SELECT user_id, name, email, phone, pronunciation, pronouns, role, availability, slack FROM users WHERE user_id = $1';
+        const result = await pool.query(query, [user.id]);
+        
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+        
+        const userData = result.rows[0];
+        return res.json({ 
+          user: {
+            id: userData.user_id,
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone,
+            pronunciation: userData.pronunciation,
+            pronouns: userData.pronouns,
+            role: userData.role,
+            availability: userData.availability,
+            slack: userData.slack
+          }
+        });
+      } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Failed to get user data' });
+      }
     },
   };
 }

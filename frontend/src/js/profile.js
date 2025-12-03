@@ -130,7 +130,7 @@ async function loadUserProfile() {
       }
     } else {
       // redirect to login if not authenticated
-      window.location.href = "../auth/login.html";
+      window.location.href = "/login";  // Changed from "../auth/login.html"
     }
   } catch (error) {
     console.error("Error loading profile:", error);
@@ -146,12 +146,14 @@ function populateForm(user) {
   const lastNameEl = document.getElementById("lastName");
   const pronEl = document.getElementById("pronunciation");
   const emailEl = document.getElementById("email");
+  const phoneEl = document.getElementById("phone");
   const roleEl = document.getElementById("role");
 
   if (firstNameEl) firstNameEl.value = firstName;
   if (lastNameEl) lastNameEl.value = lastName;
   if (pronEl) pronEl.value = user.pronunciation || "";
   if (emailEl) emailEl.value = user.email || "";
+  if (phoneEl) phoneEl.value = user.phone || "";
   if (roleEl)
     roleEl.value = user.role
       ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
@@ -346,13 +348,21 @@ function showSuccessMessage() {
 function handleProfileSubmit(e) {
   e.preventDefault();
 
-  fetch("/api/user/pronunciation", {
-    method: "PUT",
+  const formData = new FormData(e.target);
+  const data = {};
+  formData.forEach((value, key) => {
+    if (key === "pronunciation") {
+      data.pronunciation = value;
+    } else if (key === "phone") {
+      data.phone = value;
+    }
+  });
+
+  fetch("/api/user", {
+    method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      pronunciation: document.getElementById("pronunciation").value,
-    }),
+    body: JSON.stringify(data),
   })
     .then((response) =>
       response.json().then((data) => ({
@@ -363,6 +373,8 @@ function handleProfileSubmit(e) {
     .then(({ ok, data }) => {
       if (ok) {
         showSuccessMessage();
+        currentUser = data.user; // Update currentUser with new data
+        populateForm(currentUser);
       } else {
         alert("Error: " + data.error);
       }
@@ -382,8 +394,9 @@ function handleAvailabilitySubmit(e) {
       selectedDays.push(cb.value);
     });
 
-  fetch("/api/user/availability", {
-    method: "PUT",
+  // server exposes a POST /api/user endpoint that accepts availability updates
+  fetch("/api/user", {
+    method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

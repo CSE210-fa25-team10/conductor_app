@@ -41,14 +41,14 @@ app.use(cors());
 // API routes
 // app.use('/api', apiRoutes);
 
-// serve static assets (CSS, JS, images)
-app.use(express.static(path.join(__dirname, '../frontend')));
-
 // build dependencies (repos, use-cases, controllers, etc.)
 const container = buildContainer(process.env);
 
-// mount all HTTP routes
+// mount all HTTP routes FIRST (before static)
 mountRoutes(app, container);
+
+// serve static assets (CSS, JS, images) AFTER routes
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Health check endpoints
 app.get('/healthz', (_req, res) => res.status(200).send('OK'));
