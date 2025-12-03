@@ -58,7 +58,8 @@ export function makeAttendanceController() {
   // - returns everything instructor needs to display
   //
   async function startAttendanceSession(req, res) {
-    const { course_id, name, type = 'lecture' } = req.body || {};
+    const course_id = req.params.course_id;
+    const { name, type = 'lecture' } = req.body || {};
 
     const courseIdNum = Number.parseInt(course_id, 10);
     if (!Number.isInteger(courseIdNum)) {
@@ -143,8 +144,21 @@ export function makeAttendanceController() {
    */
   // POST /api/attendance/checkin
   async function checkinAttendance(req, res) {
+    const course_id = req.params.course_id;
     try {
-      const { activity_id, course_id, pin, email, roll_id } = req.body || {};
+      const { activity_id, pin, email, roll_id } = req.body || {};
+      let userId = req.user?.id || req.session?.user?.id; // Assuming requireAuth attaches req.user or you check req.session
+
+      if (!userId) {
+          // FALLBACK LOGIC: If no session, require email/roll_id to find user
+          if (!email || typeof email !== 'string') {
+              return res.status(400).json({ error: 'email is required' });
+          }
+          userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
+          if (!userId) {
+              return res.status(404).json({ error: 'user_not_found_for_email' });
+          }
+      }
 
       if (!email || typeof email !== 'string') {
         return res.status(400).json({ error: 'email is required' });
@@ -154,11 +168,11 @@ export function makeAttendanceController() {
         return res.status(400).json({ error: 'pin must be a 6-digit string' });
       }
 
-      // Resolve student user_id from email
-      const userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
-      if (!userId) {
-        return res.status(404).json({ error: 'user_not_found_for_email' });
-      }
+      // // Resolve student user_id from email
+      // const userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
+      // if (!userId) {
+      //   return res.status(404).json({ error: 'user_not_found_for_email' });
+      // }
 
       // Resolve the activity
       let activity;
@@ -183,8 +197,9 @@ export function makeAttendanceController() {
         activity = rows[0];
       } else if (course_id) {
         // Manual case: course_id + pin, find currently-active activity
-        const courseIdNum =
-          typeof course_id === 'string' ? Number.parseInt(course_id, 10) : course_id;
+        const courseIdNum = Number.parseInt(course_id, 10);
+        // const courseIdNum =
+        //   typeof course_id === 'string' ? Number.parseInt(course_id, 10) : course_id;
         if (!Number.isInteger(courseIdNum)) {
           return res.status(400).json({ error: 'course_id must be an integer' });
         }
@@ -256,6 +271,7 @@ export function makeAttendanceController() {
   // - For when a student participates / answered a question, or retro-fix.
   //
   async function manualMarkAttendance(req, res) {
+    const course_id = req.params.course_id;
     const { activity_id, user_id, present } = req.body || {};
 
     const activityIdNum =

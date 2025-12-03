@@ -1,9 +1,11 @@
 console.log('Instructor attendance script loaded');
 
-const API_BASE = 'http://localhost:3000';
+// const API_BASE = 'http://localhost:3000';
+const API_BASE = '';
 
 async function startAttendanceSession() {
   const courseId = document.getElementById('courseIdInput').value.trim();
+  console.log("in attendance.js",courseId);
   const name = document.getElementById('nameInput').value.trim();
 
   if (!courseId || !name) {
@@ -11,13 +13,13 @@ async function startAttendanceSession() {
     return;
   }
 
-  try {
-    const res = await fetch(`${API_BASE}/api/attendance/session/start`, {
+  try {//Update the URL to include /courses/:courseId/
+    const res = await fetch(`${API_BASE}/api/attendance/courses/${courseId}/session/start`, {
+    // const res = await fetch(`${API_BASE}/api/attendance/session/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({
-        course_id: Number(courseId),
         name
       })
     });
