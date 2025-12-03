@@ -17,8 +17,8 @@ export function mountRoutes(app, container) {
   // Query APIs
   app.use('/api/queries', makeQueryRouter({ queryService: container.queryController }));
 
-  // Postman APIs
-  app.use('/api/postman', makeFrontendRouter());
+  // Frontend/test APIs (mounted under /api to match client expectations)
+  app.use('/api', makeFrontendRouter());
 
   // Attendance APIs
   app.use(

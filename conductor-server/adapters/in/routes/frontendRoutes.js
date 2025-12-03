@@ -13,7 +13,10 @@ export function makeFrontendRouter() {
    * In production, should use proper authentication middleware.
    */
   router.get('/user', async (req, res) => {
-    const userId = req.session?.user?.user_id || req.query.user_id;
+    console.log('[frontendRoutes] GET /api/user hit - session user:', Boolean(req.session?.user));
+    // session may store user as { id } (authController) or { user_id } in older code
+    const sessionUser = req.session?.user || {};
+    const userId = sessionUser.id || sessionUser.user_id || req.query.user_id;
 
     if (!userId) {
       return res.status(401).json({ error: 'Authentication required' });
@@ -47,7 +50,9 @@ export function makeFrontendRouter() {
    * In production, should use proper authentication middleware.
    */
   router.post('/user', async (req, res) => {
-    const userId = req.session?.user?.user_id || req.body.user_id;
+    console.log('[frontendRoutes] POST /api/user hit - body:', req.body);
+    const sessionUser = req.session?.user || {};
+    const userId = sessionUser.id || sessionUser.user_id || req.body.user_id;
 
     if (!userId) {
       return res.status(401).json({ error: 'Authentication required' });
