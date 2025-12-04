@@ -23,20 +23,22 @@ export function makePageRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/dashboard.html'));
   });
 
-    // Instructor Course Detail View (Fixed)
+  // Instructor Course Detail View (Fixed)
   router.get('/instructor/courses/:courseId', requireAuth('instructor'), (req, res) => {
-      res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/courses.html'));
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/courses.html'));
   });
 
   // Instructor: Mark Class Attendance Manually (New Route)
   router.get('/instructor/courses/:courseId/manual', requireAuth('instructor'), (req, res) => {
-     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/team_attendance.html'));
-   });
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/team_attendance.html'));
+  });
 
-   // Instructor: View Class Attendance Overview 
-    router.get('/instructor/courses/:courseId/overview', requireAuth('instructor'), (req, res) => {
-      res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/attendance_overview.html'));
-    });
+  // Instructor: View Class Attendance Overview
+  router.get('/instructor/courses/:courseId/overview', requireAuth('instructor'), (req, res) => {
+    res.sendFile(
+      path.join(process.cwd(), 'frontend/src/pages/instructor/attendance_overview.html')
+    );
+  });
 
   router.get('/instructor/attendance', requireAuth('instructor'), (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/attendance.html'));
@@ -55,15 +57,13 @@ export function makePageRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/checkin.html'));
   });
 
-
   router.get('/student/manual_checkin', requireAuth('student'), (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/manual_checkin.html'));
   });
 
   router.get('/student/attendance', (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/my_attendance.html'));
-});
-
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/my_attendance.html'));
+  });
 
   router.get('/course/:id', requireAuth('student'), (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/courses.html'));

@@ -147,14 +147,14 @@ export function makeAttendanceController() {
       let userId = req.user?.user_id || req.session?.user?.user_id; // Assuming requireAuth attaches req.user or you check req.session
 
       if (!userId) {
-          // FALLBACK LOGIC: If no session, require email/roll_id to find user
-          if (!email || typeof email !== 'string') {
-              return res.status(400).json({ error: 'email is required' });
-          }
-          userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
-          if (!userId) {
-              return res.status(404).json({ error: 'user_not_found_for_email' });
-          }
+        // FALLBACK LOGIC: If no session, require email/roll_id to find user
+        if (!email || typeof email !== 'string') {
+          return res.status(400).json({ error: 'email is required' });
+        }
+        userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
+        if (!userId) {
+          return res.status(404).json({ error: 'user_not_found_for_email' });
+        }
       }
 
       // if (!email || typeof email !== 'string') {

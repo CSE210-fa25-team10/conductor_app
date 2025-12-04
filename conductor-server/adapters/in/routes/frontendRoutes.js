@@ -142,7 +142,7 @@ export function makeFrontendRouter() {
    * Query params: user_id (optional) - if provided, returns courses for that user
    */
   router.get('/courses', async (req, res) => {
-    const userid = req.session?.user?.user_id || req.query.user_id
+    const userid = req.session?.user?.user_id || req.query.user_id;
     const userId = userid ? Number.parseInt(userid, 10) : null;
 
     if (req.query.user_id && !Number.isInteger(userId)) {

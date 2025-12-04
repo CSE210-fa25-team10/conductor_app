@@ -30,7 +30,7 @@ import { pool } from '../db.js';
 
 export function requireInstructorOrTA(req, res, next) {
   const user = req.session?.user;
-  console.log("user in auth middleware", user);
+  console.log('user in auth middleware', user);
   const courseId = Number(req.params.courseId || req.body.course_id);
 
   if (!user || !user.user_id) {
