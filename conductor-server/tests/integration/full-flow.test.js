@@ -147,7 +147,7 @@ describe('Full User Flow Integration Tests', () => {
     console.log('FIXME: Complete implementation of course API fetching.');
   });
 
-  it('should fetch student attendance overview (GET /api/attendance/courses/:id/student/:user/overview)', async () => {
+  it('should fetch student attendance overview (GET /api/attendance/courses/:id/student/overview)', async () => {
     // // Create a test activity for the course
     // const activityResult = await testPool.query(
     //   `INSERT INTO activities (course_id, name, starts_at, type)

@@ -42,6 +42,8 @@ async function getCourseInfoById() {
         // alert('Error fetching course: ' + e.message);
     }
 }
+
+
 getCourseInfoById()
     .then(course => {
         document.getElementById('course-title').textContent = course.name + " " + course.code;
@@ -105,6 +107,18 @@ function renderGroupInfo() {
         `;
     }
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const pathParts = window.location.pathname.split('/');
+    const courseId = pathParts[pathParts.length - 1];
+
+    const btn = document.getElementById("view-attendance-btn");
+    if (btn) {
+        btn.addEventListener("click", () => {
+            window.location.href = `/student/attendance?course_id=${courseId}`;
+        });
+    }
+});
 
 // 页面加载时渲染
 document.addEventListener('DOMContentLoaded', renderGroupInfo);

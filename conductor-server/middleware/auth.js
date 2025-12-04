@@ -22,7 +22,7 @@ export function requireAuth(requiredRole = null) {
 }
 
 /**
- * Optional: Role-based instructor/TA auth
+ * Role-based instructor/TA auth
  * Requires course_users.role to be 'instructor' or 'ta'
  * (You can use this later for instructor-only actions)
  */
@@ -30,9 +30,10 @@ import { pool } from '../db.js';
 
 export function requireInstructorOrTA(req, res, next) {
   const user = req.session?.user;
+  console.log('user in auth middleware', user);
   const courseId = Number(req.params.courseId || req.body.course_id);
 
-  if (!user || !user.id) {
+  if (!user || !user.user_id) {
     return res.status(401).json({ error: 'not_authenticated' });
   }
   if (!Number.isInteger(courseId)) {
@@ -44,7 +45,7 @@ export function requireInstructorOrTA(req, res, next) {
       `SELECT role
        FROM course_users
       WHERE user_id = $1 AND course_id = $2`,
-      [user.id, courseId]
+      [user.user_id, courseId]
     )
     .then((result) => {
       const row = result.rows[0];
