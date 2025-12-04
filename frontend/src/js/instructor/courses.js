@@ -62,8 +62,45 @@ function hideModal() {
     document.getElementById('attendance-modal').classList.remove('active');
 }
 
+
+// --- Helper to get Course ID from the URL path (/instructor/courses/:courseId) ---
+function getCourseIdFromPath() {
+    const pathParts = window.location.pathname.split('/');
+    // The Course ID is the last part of the URL when on /instructor/courses/:courseId
+    const courseId = pathParts[pathParts.length - 1]; 
+    const courseIdInt = Number.parseInt(courseId, 10);
+
+    if (Number.isInteger(courseIdInt) && courseIdInt > 0) {
+         return courseIdInt;
+     }
+    console.error("Could not retrieve a valid courseId from the URL.");
+     return null; // Return null if invalid
+}
+
+// --- Function to set up the manual attendance button ---
+function setupAttendanceButtons() {
+    const courseId = getCourseIdFromPath();
+    if (!courseId) return;
+
+    // Assuming you updated your HTML to use these IDs:
+    const manualMarkBtn = document.getElementById('mark-manual-btn'); 
+    const overviewBtn = document.getElementById('view-overview-btn');
+
+    if (manualMarkBtn) {
+        manualMarkBtn.addEventListener('click', () => {
+         window.location.href = `/instructor/courses/${courseId}/manual`;
+        });
+    }
+
+    if (overviewBtn) {
+         overviewBtn.addEventListener('click', () => {
+         window.location.href = `/instructor/courses/${courseId}/overview`;
+        });
+    }
+}
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', function() {
+    setupAttendanceButtons();
     renderGroups();
 });
 

@@ -16,7 +16,8 @@ async function getMyEntries(req, res) {
     console.log("[GET /api/standup] Incoming request...");
     console.log("Query params:", req.query);
   try {
-    const user_id = Number(req.query.user_id);
+    const userid = req.session?.user?.user_id || req.query.user_id
+    const user_id = Number(userid);
      console.log("Parsed user_id:", user_id);
 
     // const { user_id } = req.body; // read user_id from frontend

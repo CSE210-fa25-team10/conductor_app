@@ -33,7 +33,7 @@ export function requireInstructorOrTA(req, res, next) {
   console.log("user in auth middleware", user);
   const courseId = Number(req.params.courseId || req.body.course_id);
 
-  if (!user || !user.id) {
+  if (!user || !user.user_id) {
     return res.status(401).json({ error: 'not_authenticated' });
   }
   if (!Number.isInteger(courseId)) {
@@ -45,7 +45,7 @@ export function requireInstructorOrTA(req, res, next) {
       `SELECT role
        FROM course_users
       WHERE user_id = $1 AND course_id = $2`,
-      [user.id, courseId]
+      [user.user_id, courseId]
     )
     .then((result) => {
       const row = result.rows[0];

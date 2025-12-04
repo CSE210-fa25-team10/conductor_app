@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>course detail - Professor View</title>
-    <link rel="stylesheet" href="courses.css">
-    <link rel="stylesheet" href="../shared/standup.css">
+    <link rel="stylesheet" href="/css/instructor/courses.css">
+    <link rel="stylesheet" href="/css/instructor/standup.css">
 </head>
 <body>
 <div class="header">
@@ -69,6 +69,18 @@
                 </div>
             </div>
         </div>
+
+       <!-- Added 2 new attendance buttons -->
+        <div class="attendance-actions" style="margin-top: 16px;">
+            <button class="btn" id="view-overview-btn">
+                View Class Attendance Overview
+            </button>
+            <button class="btn" id="mark-manual-btn">
+                Mark Class Attendance Manually
+            </button>
+        </div>
+
+
     </div>
     <div id="group-info-section"></div>
     <div class="section">
@@ -193,9 +205,9 @@
     </div>
 </div>
 
-<script src="courses.js">
+<script src="/js/instructor/courses.js">
 </script>
-<script src="../shared/standup.js">
+<script src="/js/instructor/standup.js">
 </script>
 </body>
 </html>

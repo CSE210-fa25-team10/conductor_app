@@ -15,12 +15,13 @@ export function makeAttendanceRouter({ attendanceController }) {
   router.post('/courses/:courseId/session/start', requireInstructorOrTA, attendanceController.startAttendanceSession);
 
   // 2. Student: check-in via QR or PIN (needs basic auth)
-  router.post('/courses/:courseId/checkin', requireAuth, attendanceController.checkinAttendance);
+  router.post('/checkin', attendanceController.checkinAttendance);
 
   // 3. Instructor/TA: manual mark
   router.post('/courses/:courseId/manual', requireInstructorOrTA, attendanceController.manualMarkAttendance);
   router.get(
     '/courses/:courseId/groups/:groupId/students',
+    requireInstructorOrTA,
     attendanceController.getStudentsInGroup
   );
 
@@ -34,7 +35,7 @@ export function makeAttendanceRouter({ attendanceController }) {
   // 5. Team (group) attendance over time
   router.get(
     '/courses/:courseId/groups',
-    requireAuth,
+    requireInstructorOrTA,
     attendanceController.getCourseGroupAttendanceSummary
   );
 
@@ -47,8 +48,8 @@ export function makeAttendanceRouter({ attendanceController }) {
 
   // 7. Student: personal + team attendance across all activities
   router.get(
-    '/courses/:courseId/student/:userId/overview',
-    requireAuth,
+    '/courses/:courseId/student/overview',
+    requireAuth('student'),
     attendanceController.getStudentCourseAttendanceOverview
   );
 

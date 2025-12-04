@@ -14,8 +14,8 @@ async function startAttendanceSession() {
   }
 
   try {//Update the URL to include /courses/:courseId/
-    const res = await fetch(`${API_BASE}/api/attendance/courses/${courseId}/session/start`, {
-    // const res = await fetch(`${API_BASE}/api/attendance/session/start`, {
+    const res = await fetch(`/api/attendance/courses/${courseId}/session/start`, {
+    // const res = await fetch(`/api/attendance/session/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

@@ -142,7 +142,8 @@ export function makeFrontendRouter() {
    * Query params: user_id (optional) - if provided, returns courses for that user
    */
   router.get('/courses', async (req, res) => {
-    const userId = req.query.user_id ? Number.parseInt(req.query.user_id, 10) : null;
+    const userid = req.session?.user?.user_id || req.query.user_id
+    const userId = userid ? Number.parseInt(userid, 10) : null;
 
     if (req.query.user_id && !Number.isInteger(userId)) {
       return res.status(400).json({ error: 'user_id must be an integer' });

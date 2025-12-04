@@ -82,6 +82,28 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+.top-right-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.attendance-btn {
+    padding: 8px 14px;
+    border: none;
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.attendance-btn:hover {
+    background-color: #2563eb;
+}
+
+
 .card-icon {
     width: 120px;
     height: 100px;
