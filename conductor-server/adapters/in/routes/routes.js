@@ -28,10 +28,7 @@ export function mountRoutes(app, container) {
   );
 
   // Standup Tool APIs
-  app.use(
-    '/api/standup',
-    makeStandUpRouter({ standupController: container.standupController })
-  );
+  app.use('/api/standup', makeStandUpRouter({ standupController: container.standupController }));
   // CSS routes
   app.use('/css', makeCssRouter());
 

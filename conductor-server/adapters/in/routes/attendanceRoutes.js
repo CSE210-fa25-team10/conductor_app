@@ -12,13 +12,21 @@ export function makeAttendanceRouter({ attendanceController }) {
   // }
 
   // 1. Instructor: start a session (creates activity, returns PIN + QR)
-  router.post('/courses/:courseId/session/start', requireInstructorOrTA, attendanceController.startAttendanceSession);
+  router.post(
+    '/courses/:courseId/session/start',
+    requireInstructorOrTA,
+    attendanceController.startAttendanceSession
+  );
 
   // 2. Student: check-in via QR or PIN (needs basic auth)
   router.post('/checkin', attendanceController.checkinAttendance);
 
   // 3. Instructor/TA: manual mark
-  router.post('/courses/:courseId/manual', requireInstructorOrTA, attendanceController.manualMarkAttendance);
+  router.post(
+    '/courses/:courseId/manual',
+    requireInstructorOrTA,
+    attendanceController.manualMarkAttendance
+  );
   router.get(
     '/courses/:courseId/groups/:groupId/students',
     requireInstructorOrTA,

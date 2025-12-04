@@ -8,8 +8,8 @@ export function StandupEntry({
   time,
   content,
   sentiment_personal,
-  sentiment_team,     
-  sentiment_course   
+  sentiment_team,
+  sentiment_course,
 }) {
   return Object.freeze({
     standup_id,
@@ -19,7 +19,6 @@ export function StandupEntry({
     content,
     sentiment_personal,
     sentiment_team,
-    sentiment_course
+    sentiment_course,
   });
 }
-

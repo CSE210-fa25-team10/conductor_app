@@ -6,40 +6,37 @@ const queryService = makeQueryService({ pool });
 
 export async function getUserStandupEntries(userId) {
   // We use a clean query to fetch only the necessary columns
-    const sql = `
+  const sql = `
       SELECT standup_id, user_id, name, time, content, sentiment_personal, sentiment_team, sentiment_course
       FROM standup_entries
       WHERE user_id = $1
       ORDER BY time DESC;
     `;
-    const rows = await queryService.executeRawQuery(sql, [userId]);
-//   const rows = await pool.query(sql, [userId]);
+  const rows = await queryService.executeRawQuery(sql, [userId]);
+  //   const rows = await pool.query(sql, [userId]);
   return rows.map((row) => StandupEntry(row));
 }
 
 export async function createAnonymousFeedback({ course_id, type, message }) {
-    const sql = `
+  const sql = `
       INSERT INTO standup_feedback (course_id, type, message)
       VALUES ($1, $2, $3)
       RETURNING feedback_id, course_id, type, message, created_at;
     `;
-    const result = await queryService.executeRawQuery(sql, [course_id, type, message]);
-    return result[0]|| null;
-  }
+  const result = await queryService.executeRawQuery(sql, [course_id, type, message]);
+  return result[0] || null;
+}
 
 export async function createStandupEntry({
   user_id,
   name,
   content,
-  sentiment_personal, 
-  sentiment_team,     
-  sentiment_course,  
+  sentiment_personal,
+  sentiment_team,
+  sentiment_course,
 }) {
-
-    if (!user_id || !name || !content) {
-    throw new Error(
-      'Missing required standup fields: user_id, name, content.'
-    );
+  if (!user_id || !name || !content) {
+    throw new Error('Missing required standup fields: user_id, name, content.');
   }
 
   const rows = await queryService.executeRawQuery(

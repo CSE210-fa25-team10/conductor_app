@@ -12,9 +12,8 @@ export function makeStandUpRouter({ standupController }) {
   }
 
   function requireInstructorOrTA(_req, _res, next) {
-  return next();
+    return next();
   }
-
 
   // User standup routes
   router.get('/', requireAuth, standupController.getMyEntries);
@@ -23,12 +22,8 @@ export function makeStandUpRouter({ standupController }) {
   //Anonymous Feedback Endpoint
   router.post('/feedback', requireAuth, standupController.postAnonymousFeedback);
 
-//   // Instructor/TA view
-//   router.get('/course/:courseId', requireAuth, requireInstructorOrTA, standupController.getCourseEntries);
+  //   // Instructor/TA view
+  //   router.get('/course/:courseId', requireAuth, requireInstructorOrTA, standupController.getCourseEntries);
 
   return router;
 }
-
-
-
-
