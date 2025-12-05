@@ -51,6 +51,79 @@ getCourseInfoById()
     .catch(err => {
         console.error('Error fetching course:', err);
     });
+async function getAssignmentsByCourseId() {
+    const pathParts = window.location.pathname.split('/');
+    const courseId = pathParts[pathParts.length - 1];
+    try {
+        const res = await fetch(`/api/postman/assignment?course_id=${courseId}`, {
+            method: "GET",
+            credentials: "include",
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to fetch assignments');
+        }
+
+        const assignmentsData = await res.json();
+        console.log('assignments data:', assignmentsData);
+        return assignmentsData;
+    } catch (e) {
+        console.error('Error fetching assignments:', e);
+        return [];
+    }
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    };
+    const formatted = date.toLocaleString('en-US', options);
+    return formatted.replace(',', ' @');
+}
+
+function renderAssignments(assignments) {
+    const container = document.querySelector('.section');
+
+    const existingCards = container.querySelectorAll('.card');
+    existingCards.forEach(card => card.remove());
+
+    assignments.forEach(assignment => {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const dueDate = formatDate(assignment.due_date);
+
+        card.innerHTML = `
+            <div class="card-icon">🏔️</div>
+            <div class="card-content">
+                <div class="card-title">${assignment.name}</div>
+                <div class="card-due">Due ${dueDate}</div>
+                <div class="card-status">
+                    <span class="status-icon"></span>
+                    <span>(Status) Not Submitted • No Submission</span>
+                </div>
+            </div>
+            <div class="card-grade">Grade: --/--</div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+async function initAssignments() {
+    const assignments = await getAssignmentsByCourseId();
+    if (assignments && assignments.length > 0) {
+        renderAssignments(assignments);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initAssignments);
 // 根据角色渲染内容
 function renderGroupInfo() {
     const groupInfoSection = document.getElementById('group-info-section');
