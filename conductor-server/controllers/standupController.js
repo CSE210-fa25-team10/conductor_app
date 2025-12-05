@@ -18,10 +18,10 @@ export function makeStandUpController() {
     const userid = req.session?.user?.user_id;
     const user_id = Number(userid);
     if (!user_id) {
-    return res.status(401).json({ error: "not_authenticated" });
-  }
+      return res.status(401).json({ error: 'not_authenticated' });
+    }
 
-    try {  
+    try {
       const entries = await getUserStandupEntries(user_id);
       res.json({ entries });
     } catch (err) {
@@ -46,7 +46,6 @@ export function makeStandUpController() {
 
     try {
       const { content, sentiment_personal, sentiment_team, sentiment_course } = req.body;
-
 
       console.log(' [POST /api/standup] Incoming request...');
       console.log('Request body:', req.body);
@@ -147,6 +146,6 @@ export function makeStandUpController() {
     createEntry,
     postAnonymousFeedback,
     getAnonymousFeedback,
-    getAnonymousFeedbackTeamLead
+    getAnonymousFeedbackTeamLead,
   });
 }
