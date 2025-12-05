@@ -1,29 +1,18 @@
 import { Router } from 'express';
 
-// import { requireAuth, requireInstructorOrTA } from '../../../middleware/auth.js'; #--> need oauth to be done
+import { requireAuth, requireInstructorOrTA } from '../../../middleware/auth.js';
 
 export function makeStandUpRouter({ standupController }) {
   const router = Router();
 
-  //Removing this TEMP section, you should replace 'requireAuth' with 'requireInstructorOrTA' in all router.posts
-  // ⚠️ TEMP: disable auth while we test
-  function requireAuth(_req, _res, next) {
-    return next();
-  }
-
-  function requireInstructorOrTA(_req, _res, next) {
-    return next();
-  }
-
   // User standup routes
-  router.get('/', requireAuth, standupController.getMyEntries);
-  router.post('/', requireAuth, standupController.createEntry);
+  router.get('/:courseId', requireAuth('student'), standupController.getMyEntries);
+  router.post('/:courseId', requireAuth('student'), standupController.createEntry);
 
   //Anonymous Feedback Endpoint
-  router.post('/feedback', requireAuth, standupController.postAnonymousFeedback);
-
-  //   // Instructor/TA view
-  //   router.get('/course/:courseId', requireAuth, requireInstructorOrTA, standupController.getCourseEntries);
+  router.post('/:courseId/feedback', requireAuth('student'), standupController.postAnonymousFeedback);
+  router.get('/instructor/:courseId/feedback', requireInstructorOrTA, standupController.getAnonymousFeedback);
+  router.get('/teamlead/:courseId/feedback', requireAuth('teamlead'), standupController.getAnonymousFeedbackTeamLead);
 
   return router;
 }

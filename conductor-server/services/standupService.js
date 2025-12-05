@@ -1,5 +1,6 @@
 import { makeQueryService } from './queryService.js';
 import { StandupEntry } from '../domain/entities/StandupEntry.js';
+import { AnonymousFeedback } from '../domain/entities/AnonymousFeedback.js'; // NEW IMPORT
 import { pool } from '../db.js';
 
 const queryService = makeQueryService({ pool });
@@ -35,8 +36,8 @@ export async function createStandupEntry({
   sentiment_team,
   sentiment_course,
 }) {
-  if (!user_id || !name || !content) {
-    throw new Error('Missing required standup fields: user_id, name, content.');
+  if (!user_id || !content) {
+    throw new Error('Missing required standup fields: user_id, content.');
   }
 
   const rows = await queryService.executeRawQuery(
@@ -48,18 +49,26 @@ export async function createStandupEntry({
   return StandupEntry(rows[0]);
 }
 
-// Optional: Get all entries for a course for instructor view
-export async function getCourseStandupEntries(courseId) {
+// Get all anonymous feedback entries for a course for instructor view
+export async function getAnonymousFeedbackEntries(courseId) {
   const rows = await queryService.executeRawQuery(
-    `SELECT se.standup_id, se.user_id, se.name, se.time, se.content, 
-          se.sentiment_personal, se.sentiment_team, se.sentiment_course,
-          u.name AS user_name
-     FROM standup_entries se
-     JOIN users u ON u.user_id = se.user_id
-     JOIN course_users cu ON cu.user_id = u.user_id
-     WHERE cu.course_id = $1
-     ORDER BY se.time DESC;`,
+    `SELECT feedback_id, course_id, type, message, created_at
+        FROM standup_feedback
+        WHERE course_id = $1 AND type = 'COURSE'
+        ORDER BY created_at DESC;`,
     [courseId]
   );
-  return rows.map((row) => StandupEntry(row));
+  return rows.map((row) => AnonymousFeedback(row));
+}
+
+// Get all anonymous feedback entries for a course for team lead view
+export async function getAnonymousFeedbackEntriesTeamLead(courseId) {
+  const rows = await queryService.executeRawQuery(
+    `SELECT feedback_id, course_id, type, message, created_at
+        FROM standup_feedback
+        WHERE course_id = $1 AND type = 'TEAM'
+        ORDER BY created_at DESC;`,
+    [courseId]
+  );
+  return rows.map((row) => AnonymousFeedback(row));
 }

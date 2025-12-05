@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>course detail - Professor View</title>
     <link rel="stylesheet" href="/css/instructor/courses.css">
-    <link rel="stylesheet" href="/css/instructor/standup.css">
+    <link rel="stylesheet" href="/css/standup.css">
 </head>
 <body>
 <div class="header">
@@ -80,94 +80,14 @@
             </button>
         </div>
 
+        <div class="feedback-actions">
+            <button class="btn-feedback" id="view-feedback-btn">
+                View Feedback from Students
+            </button>
+        </div>
 
     </div>
     <div id="group-info-section"></div>
-    <div class="section">
-            <div class="section-header">
-                <span>Standup Tool</span>
-            </div>
-
-            <div class="standup-card">
-                <!-- Status Report Input -->
-                <div class="standup-input-section">
-                    <textarea class="standup-textarea" placeholder="Add text..."></textarea>
-                </div>
-
-                <!-- Pulse Section -->
-                <div class="pulse-section">
-                    <h3 class="pulse-title">Sentiment</h3>
-
-                    <!-- Personal Row -->
-                    <div class="pulse-row">
-                        <span class="pulse-label">Personal</span>
-                        <div class="pulse-emojis">
-                            <button class="emoji-btn" data-value="1">😰</button>
-                            <button class="emoji-btn" data-value="2">😞</button>
-                            <button class="emoji-btn" data-value="3">😐</button>
-                            <button class="emoji-btn" data-value="4">😊</button>
-                            <button class="emoji-btn" data-value="5">😄</button>
-                        </div>
-                    </div>
-
-                    <!-- Team Row -->
-                    <div class="pulse-row">
-                        <span class="pulse-label">Team</span>
-                        <div class="pulse-emojis">
-                            <button class="emoji-btn" data-value="1">😰</button>
-                            <button class="emoji-btn" data-value="2">😞</button>
-                            <button class="emoji-btn" data-value="3">😐</button>
-                            <button class="emoji-btn" data-value="4">😊</button>
-                            <button class="emoji-btn" data-value="5">😄</button>
-                        </div>
-                    </div>
-
-                    <!-- Course Row -->
-                    <div class="pulse-row">
-                        <span class="pulse-label">Course</span>
-                        <div class="pulse-emojis">
-                            <button class="emoji-btn" data-value="1">😰</button>
-                            <button class="emoji-btn" data-value="2">😞</button>
-                            <button class="emoji-btn" data-value="3">😐</button>
-                            <button class="emoji-btn" data-value="4">😊</button>
-                            <button class="emoji-btn" data-value="5">😄</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Save Button -->
-                <div class="standup-actions">
-                    <button class="save-btn">Save</button>
-                </div>
-            </div>
-
-            <!-- Work Journal Section -->
-            <div class="section-header" style="margin-top: 32px;">
-                <span>History</span>
-            </div>
-
-            <div class="journal-grid">
-                <!-- Left: Dates -->
-                <div class="journal-dates">
-                    <a href="#" class="journal-date-link">Nov 23, 2025</a>
-                    <a href="#" class="journal-date-link">More...</a>
-                </div>
-
-                <!-- Right: Pulses -->
-                <div class="journal-pulses">
-                    <div class="pulse-title">Sentiment</div>
-                    <div class="journal-pulse-entry">
-                        <span class="pulse-date">Jan 16, 2024</span>
-                        <span class="pulse-emoji">😞</span>
-                    </div>
-                    <div class="journal-pulse-entry">
-                        <span class="pulse-date">Jan 15, 2024</span>
-                        <span class="pulse-emoji">😄</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-</div>
 
 
 <!-- Modal Overlay -->
@@ -215,9 +135,20 @@
         <p>Loading attendance details...</p>
     </div>
 </div>
-<script src="/js/instructor/courses.js">
-</script>
-<script src="/js/standup.js">
-</script>
+
+<div id="feedback-overview-modal" class="modal">
+    <div class="modal-header">
+        <h3>Anonymous Student Feedback</h3>
+        <button class="close-btn" onclick="closeFeedbackModal()">⊗</button>
+    </div>
+    <div class="modal-body">
+        <div id="feedback-list-content">
+            <p class="text-gray-500">Click View Feedback to load entries...</p>
+        </div>
+    </div>
+</div>
+
+<script src="/js/instructor/courses.js"></script>
+<script src="/js/instructor/standup.js"></script>
 </body>
 </html>
