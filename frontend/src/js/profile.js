@@ -118,19 +118,22 @@ async function loadGoogleCalendarEvents() {
 // ===== User profile =====
 async function loadUserProfile() {
   try {
-    const response = await fetch("/api/auth/me", { credentials: "include" });
+    const response = await fetch("/api/user", { credentials: "include" });
 
     if (response.ok) {
       const data = await response.json();
-      currentUser = data.user;
+      // /api/user returns the user object directly
+      currentUser = data;
       populateForm(currentUser);
 
       if (currentUser.role === "student") {
         await loadUserTeams();
       }
-    } else {
+    } else if (response.status === 401) {
       // redirect to login if not authenticated
-      window.location.href = "/login";  // Changed from "../auth/login.html"
+      window.location.href = "/login";
+    } else {
+      console.error('Failed to load user profile:', response.status);
     }
   } catch (error) {
     console.error("Error loading profile:", error);
@@ -373,10 +376,11 @@ function handleProfileSubmit(e) {
     .then(({ ok, data }) => {
       if (ok) {
         showSuccessMessage();
-        currentUser = data.user; // Update currentUser with new data
+        // server returns updated user object directly
+        currentUser = data;
         populateForm(currentUser);
       } else {
-        alert("Error: " + data.error);
+        alert("Error: " + (data.error || data.message));
       }
     })
     .catch((error) => {
@@ -694,11 +698,8 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
   const backBtn = document.getElementById("backToDashboard");
   if (backBtn) {
     backBtn.addEventListener("click", function () {
-      if (currentUser && currentUser.role === "instructor") {
-        window.location.href = "../instructor/instructor_dashboard.html";
-      } else {
-        window.location.href = "../student/dashboard.html";
-      }
+      // Always navigate back to the student dashboard URL
+      window.location.href = "/student";
     });
   }
 
