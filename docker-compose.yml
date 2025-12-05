@@ -33,6 +33,8 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       CORS_ORIGIN: ${CORS_ORIGIN}
       SESSION_SECRET: ${SESSION_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
     ports:
       - "3000:3000"
     healthcheck:

@@ -19,8 +19,18 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Increase body size limits to allow base64 image uploads from the frontend
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Handle payload-too-large errors from body parsers and return JSON instead of HTML
+app.use((err, req, res, next) => {
+  if (err && (err.type === 'entity.too.large' || err.status === 413)) {
+    console.error('Payload too large error:', err.message || err);
+    return res.status(413).json({ error: 'Payload too large' });
+  }
+  next(err);
+});
 app.use(
   session({
     name: 'conductor.sid',

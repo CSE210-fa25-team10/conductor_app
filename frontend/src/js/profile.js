@@ -16,35 +16,56 @@ const DISCOVERY_DOCS = [
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 // ===== Google API init =====
-function initializeGoogleAPI() {
-  if (typeof gapi === "undefined") {
-    // In tests or environments without gapi, just skip
-    return;
+async function initializeGoogleAPI() {
+  try {
+    const resp = await fetch('/api/config/google');
+    if (!resp.ok) {
+      console.warn('No Google config available from server');
+      return;
+    }
+    const cfg = await resp.json();
+    const clientId = cfg.clientId;
+    const apiKey = cfg.apiKey;
+
+    if (!clientId || !apiKey) {
+      console.warn('Google API keys not configured on server; skipping Google Calendar initialization.');
+      return;
+    }
+
+    if (typeof gapi === 'undefined') {
+      console.warn('gapi not loaded in this environment');
+      return;
+    }
+
+    gapi.load('client:auth2', () => {
+      gapi.client
+        .init({
+          apiKey: apiKey,
+          clientId: clientId,
+          discoveryDocs: DISCOVERY_DOCS,
+          scope: SCOPES,
+        })
+        .then(() => {
+          gapiInitialized = true;
+        })
+        .catch((err) => {
+          console.error('Error initializing Google API:', err);
+        });
+    });
+  } catch (err) {
+    console.error('Failed to initialize Google API config fetch:', err);
   }
-  gapi.load("client:auth2", () => {
-    gapi.client
-      .init({
-        apiKey: GOOGLE_API_KEY,
-        clientId: GOOGLE_CLIENT_ID,
-        discoveryDocs: DISCOVERY_DOCS,
-        scope: SCOPES,
-      })
-      .then(() => {
-        gapiInitialized = true;
-      })
-      .catch((err) => {
-        console.error("Error initializing Google API:", err);
-      });
-  });
 }
 
 async function handleSyncCalendarClick() {
+  // If keys not set, inform user how to enable Google Calendar
+  if (GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID') || GOOGLE_API_KEY.includes('YOUR_API_KEY')) {
+    alert('Google Calendar is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_API_KEY in the frontend to enable sync.');
+    return;
+  }
+
   if (typeof gapi === "undefined") {
-    // In tests / non-browser, bail out
-    alert &&
-      alert(
-        "Google Calendar is not available in this environment. (gapi not loaded)"
-      );
+    alert && alert("Google Calendar is not available in this environment. (gapi not loaded)");
     return;
   }
 
@@ -198,27 +219,43 @@ function handlePhotoChange(e) {
     }
   };
   reader.readAsDataURL(file);
-
-  const formData = new FormData();
-  formData.append("profile_photo", file);
-
-  fetch("/api/user/profile-photo", {
-    method: "PUT",
-    credentials: "include",
-    body: formData,
-  })
-    .then((response) => {
-      if (response.ok) {
-        showSuccessMessage();
-      } else {
-        return response.json().then((data) => {
-          alert("Error uploading photo: " + data.error);
-        });
-      }
+  // Send as base64 JSON so server can parse without multipart middleware
+  reader.onloadend = function (ev) {
+    const dataUrl = ev.target.result; // data:image/...;base64,AAAA
+    fetch("/api/user/profile-photo", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ profile_photo: dataUrl }),
     })
-    .catch((error) => {
-      alert("Error uploading photo: " + error.message);
-    });
+      .then(async (response) => {
+        if (response.ok) {
+          try {
+            const data = await response.json();
+            showSuccessMessage();
+            return;
+          } catch (err) {
+            // ok but invalid json
+            const text = await response.text();
+            alert("Uploaded but unexpected response: " + text);
+            return;
+          }
+        }
+        // not ok - attempt to read json, fallback to text
+        const text = await response.text();
+        let errMsg = text;
+        try {
+          const parsed = JSON.parse(text);
+          errMsg = parsed.error || parsed.message || JSON.stringify(parsed);
+        } catch (e) {
+          // text remains
+        }
+        alert("Error uploading photo: " + response.status + " " + errMsg);
+      })
+      .catch((error) => {
+        alert("Error uploading photo: " + error.message);
+      });
+  };
 }
 
 // ===== Teams =====
