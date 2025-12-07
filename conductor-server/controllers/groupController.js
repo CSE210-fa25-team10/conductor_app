@@ -69,8 +69,8 @@ export function makeGroupController() {
       res.status(500).json({ error: 'Failed to delete group' });
     }
   }
-  
-  /** 
+
+  /**
    * GET /api/groups/:courseId/my-group
    * Get the group of the authenticated student in a course
    */
