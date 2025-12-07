@@ -66,3 +66,15 @@ Contributing
 - Keep scripts small and DOM-centric; prefer progressive enhancement since pages are static HTML.
 
 If you want, I can expand this README with a file-by-file reference or add a small developer checklist for running/debugging the frontend.
+
+Next steps / Future work
+- Google Calendar integration is not fully enabled by default in this development environment. To enable and test it:
+  1. Add your frontend origin (e.g. `http://localhost:3000`) to the OAuth 2.0 Client's Authorized JavaScript origins in Google Cloud Console.
+  2. Ensure `GOOGLE_CLIENT_ID` and `GOOGLE_API_KEY` are set in the API container environment (e.g. via `docker-compose.yml` or `.env`) so `/api/config/google` returns real values.
+  3. Reload the frontend and confirm `gapi` initializes without `idpiframe_initialization_failed` errors.
+  4. Test sign-in and calendar sync flows from the profile page.
+
+Other possible improvements:
+- Client-side image resizing before upload to avoid hitting server payload limits.
+- Support a multipart/form-data upload endpoint to avoid base64 expansion when storing images.
+- Add automated smoke tests for login/register/profile flows.
