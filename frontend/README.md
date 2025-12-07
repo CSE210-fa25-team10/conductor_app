@@ -1,80 +1,240 @@
 # Frontend — Conductor App
 
-This document summarizes the frontend layout, workflow, and the important pages and scripts used during development.
+A static HTML/CSS/vanilla JavaScript frontend for the Conductor collaborative learning platform.
 
-Overview
-- The frontend is a static site (HTML/CSS/vanilla JS) mounted into the API container in development.
-- Primary development path: edit files under `frontend/src/` and reload the browser.
+## Table of Contents
 
-How to run (dev)
-- The app is usually run with Docker Compose from the repository root. From the repo root:
-  - Rebuild and start API only:
-    ```bash
-    docker compose build api
-    docker compose up -d api
-    ```
-  - Rebuild and start both frontend and API (if you want the frontend container):
-    ```bash
-    docker compose up -d --build api frontend
-    ```
+- [Security](#security)
+- [Background](#background)
+- [Install](#install)
+- [Usage](#usage)
+- [API](#api)
+- [Contributing](#contributing)
+- [License](#license)
 
-Project layout (important paths)
-- `frontend/src/pages/` — HTML pages grouped by area (auth, instructor, student, shared).
-  - `pages/auth/` contains `login.html`, `register.html`.
-  - `pages/shared/profile.html` is the user profile page.
-  - `pages/instructor/` and `pages/student/` contain area-specific pages.
-- `frontend/src/js/` — client-side JS modules for each page.
-  - `login.js` — attaches handlers for login form and redirects on success.
-  - `register.js` — attaches handlers for registration form and validation.
-  - `profile.js` — profile page logic: loads `/api/user`, populates form fields, handles profile photo preview/upload, availability, and calendar rendering.
-  - `instructor/` and `student/` subfolders hold area-specific JS.
-- `frontend/src/css/` — CSS files for pages and shared styles.
+## Security
 
-Key behaviors and integration points
-- Authentication
-  - Login and register forms POST to `/api/auth/login` and `/api/auth/register` respectively (JSON payloads). The API uses cookie-based sessions; client requests include `credentials: 'include'`.
+- All API requests include `credentials: 'include'` to send authentication cookies.
+- Sensitive data (passwords) are sent only over HTTPS in production.
+- Form inputs are validated client-side; server-side validation is required.
+- Profile photos are base64-encoded for JSON transport; consider limiting file size or resizing client-side.
+- Avoid storing sensitive tokens or secrets in localStorage; use secure, httpOnly cookies.
+- Content Security Policy (CSP) headers should be set server-side to prevent injection attacks.
 
-- Profile photo
-  - Client reads the selected file as a Data URL and PUTs JSON `{ profile_photo: 'data:image/..;base64,...' }` to `/api/user/profile-photo`.
-  - The server stores the photo (bytea) and the frontend expects `profile_photo` as a base64 string to render inside an `<img src="data:image/jpeg;base64,<base64>" />`.
-  - To avoid large payloads, the client limits files (e.g., 5MB). Consider client-side resize or multipart upload if needed.
+## Background
 
-- Google Calendar
-  - The frontend calls `/api/config/google` to fetch `clientId` and `apiKey` before initializing `gapi`.
-  - Ensure the OAuth Client in Google Cloud Console includes the frontend origin (e.g., `http://localhost:3000`) in Authorized JavaScript origins.
+The frontend provides a user interface for:
+- User authentication (login/register).
+- Role-based dashboards (student/instructor).
+- Profile management (name, phone, availability, profile photo).
+- Course browsing and team management.
+- Attendance check-in and history.
+- Calendar view for course events and Google Calendar integration.
 
-Debugging tips
-- If CSS/JS doesn't load, check that HTML uses absolute `/css/...` and `/js/...` paths and that the API serves static assets.
-- If you see `data:image/...;base64,[object Object]` in the `img` src, inspect the JSON returned by `GET /api/user` to confirm `profile_photo` is a base64 string, not an object.
-- For server logs:
-  ```bash
-  docker compose logs -f api
-  ```
+The frontend is mounted into the API container in development and uses relative/absolute asset paths for CSS and JS.
 
-Testing and quick checks
-- Check Google config endpoint:
-  ```bash
-  curl -sS http://localhost:3000/api/config/google | jq .
-  ```
-- Check current user JSON (requires login session cookie):
-  ```bash
-  curl -sS -b cookiejar.txt http://localhost:3000/api/user | jq .
-  ```
+## Install
 
-Contributing
-- Edit files under `frontend/src/`. Commit to your feature branch and open a PR when ready.
-- Keep scripts small and DOM-centric; prefer progressive enhancement since pages are static HTML.
+### Prerequisites
 
-If you want, I can expand this README with a file-by-file reference or add a small developer checklist for running/debugging the frontend.
+- Node.js 18+ (optional; Docker runs Node internally).
+- Docker Compose (for running with the full stack).
 
-Next steps / Future work
-- Google Calendar integration is not fully enabled by default in this development environment. To enable and test it:
-  1. Add your frontend origin (e.g. `http://localhost:3000`) to the OAuth 2.0 Client's Authorized JavaScript origins in Google Cloud Console.
-  2. Ensure `GOOGLE_CLIENT_ID` and `GOOGLE_API_KEY` are set in the API container environment (e.g. via `docker-compose.yml` or `.env`) so `/api/config/google` returns real values.
-  3. Reload the frontend and confirm `gapi` initializes without `idpiframe_initialization_failed` errors.
-  4. Test sign-in and calendar sync flows from the profile page.
+### Quick Start with Docker
 
-Other possible improvements:
-- Client-side image resizing before upload to avoid hitting server payload limits.
-- Support a multipart/form-data upload endpoint to avoid base64 expansion when storing images.
-- Add automated smoke tests for login/register/profile flows.
+From the repository root:
+
+```bash
+docker compose up -d --build frontend
+```
+
+The frontend will be served by nginx at `http://localhost:3000`.
+
+### Local Development (without Docker)
+
+1. Install dependencies (if using a local development server):
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. Serve static files with a local HTTP server (e.g., `http-server`):
+   ```bash
+   npx http-server src
+   ```
+
+3. Open `http://localhost:8080` in your browser.
+
+### Development with Backend
+
+To run frontend + API + database:
+
+```bash
+docker compose up -d --build api frontend
+```
+
+Access the app at `http://localhost:3000`.
+
+## Usage
+
+### Project Structure
+
+```
+frontend/
+├── public/
+│   └── index.html
+├── src/
+│   ├── pages/
+│   │   ├── auth/
+│   │   │   ├── login.html
+│   │   │   └── register.html
+│   │   ├── shared/
+│   │   │   └── profile.html
+│   │   ├── instructor/
+│   │   │   ├── dashboard.html
+│   │   │   ├── courses.html
+│   │   │   ├── attendance.html
+│   │   │   └── ...
+│   │   └── student/
+│   │       ├── dashboard.html
+│   │       ├── courses.html
+│   │       ├── checkin.html
+│   │       └── ...
+│   ├── js/
+│   │   ├── login.js
+│   │   ├── register.js
+│   │   ├── profile.js
+│   │   ├── instructor/
+│   │   │   ├── dashboard.js
+│   │   │   └── ...
+│   │   └── student/
+│   │       ├── dashboard.js
+│   │       └── ...
+│   └── css/
+│       ├── auth.css
+│       ├── profile.css
+│       ├── instructor/
+│       │   └── ...
+│       └── student/
+│           └── ...
+├── jest.config.mjs
+├── jest.setup.js
+├── package.json
+└── README.md
+```
+
+### Key Pages
+
+- **Login** (`/login`) — Authenticate with email/password.
+- **Register** (`/register`) — Create a new account.
+- **Profile** (`/profile`) — Manage user info, phone, availability, and profile photo.
+- **Student Dashboard** (`/student`) — View courses, check in, and manage teams.
+- **Instructor Dashboard** (`/instructor`) — Manage courses, view attendance, grade.
+
+### Key Scripts
+
+- `login.js` — Handles login form submission and role-based redirect.
+- `register.js` — Handles user registration with validation.
+- `profile.js` — Loads user profile, handles photo upload, calendar rendering, and field updates.
+- `dashboard.js` (student/instructor) — Loads user info and course data.
+
+## API
+
+The frontend communicates with the backend via these endpoints:
+
+### Authentication
+
+- `POST /api/auth/login` — Login (email, password).
+- `POST /api/auth/register` — Register (name, email, password, role, optional phone).
+- `GET /api/auth/google` — Google OAuth redirect.
+- `GET /api/auth/callback` — OAuth callback.
+
+### User
+
+- `GET /api/user` — Get current user profile.
+- `POST /api/user` — Update profile (phone, pronunciation, availability, pronouns, slack).
+- `PUT /api/user/profile-photo` — Upload profile photo (base64 JSON).
+
+### Configuration
+
+- `GET /api/config/google` — Get Google API keys (clientId, apiKey).
+
+### Courses
+
+- `GET /api/courses` — List user courses.
+- `POST /api/course` — Create course (instructor).
+
+### Attendance
+
+- `GET /api/attendance` — Get attendance records.
+- `POST /api/attendance` — Mark attendance.
+
+See `conductor-server/ENDPOINTS_SUMMARY.md` for full API documentation.
+
+## Contributing
+
+### Local Development Workflow
+
+1. Create a feature branch:
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+
+2. Edit files in `src/pages/` and `src/js/` as needed.
+
+3. Test locally:
+   ```bash
+   docker compose up -d api frontend
+   docker compose logs -f frontend
+   ```
+
+4. Commit and push:
+   ```bash
+   git add .
+   git commit -m "feat(frontend): describe your changes"
+   git push origin feature/your-feature
+   ```
+
+5. Open a Pull Request.
+
+### Code Style
+
+- Use vanilla JavaScript (no frameworks); keep scripts simple and event-driven.
+- Write JSDoc comments for functions.
+- Use consistent indentation (2 spaces).
+- Separate concerns: HTML (pages), CSS (styling), JS (behavior).
+- Add `name` attributes to form inputs so FormData collects them properly.
+
+### Testing
+
+Run unit tests:
+```bash
+npm test
+```
+
+Manual smoke tests:
+- Log in at `/login`.
+- Register at `/register`.
+- Update profile at `/profile`.
+- Check dashboard loads without errors.
+
+### Debugging Tips
+
+- **CSS not loading?** — Check that HTML uses absolute paths `/css/...` and server maps them correctly.
+- **Form data not sending?** — Ensure form inputs have `name` attributes and FormData is used in JS.
+- **Profile photo shows `[object Object]`?** — Verify the API returns `profile_photo` as a base64 string, not a Buffer object.
+- **API calls fail?** — Check browser console for CORS errors or 401 auth errors; ensure `credentials: 'include'` is set.
+
+View logs:
+```bash
+docker compose logs -f frontend
+docker compose logs -f api
+```
+
+## License
+
+This project is licensed under the MIT License — see `LICENSE` file in the repository root for details.
+
+---
+
+**Questions or issues?** Open a GitHub issue or contact the maintainers.
