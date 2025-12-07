@@ -32,11 +32,10 @@ export function makeJsRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/js/student/courses.js'));
   });
 
-  router.get('/standup.js', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'frontend/src/js/standup.js'));
+  router.get('/student/standup.js', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/js/student/standup.js'));
   });
 
-  // FIXME: WE HAVE CHECKIN.JS AND MANUAL_CHECKIN.JS --- which one do we need?
   router.get('/student/manual_checkin.js', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/js/student/manual_checkin.js'));
   });
@@ -79,6 +78,10 @@ export function makeJsRouter() {
 
   router.get('/instructor/team_attendance.js', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/js/instructor/team_attendance.js'));
+  });
+
+  router.get('/instructor/standup.js', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/js/instructor/standup.js'));
   });
 
   return router;

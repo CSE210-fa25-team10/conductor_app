@@ -57,6 +57,7 @@ export function makePageRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/checkin.html'));
   });
 
+  // PIN-based checkin route
   router.get('/student/manual_checkin', requireAuth('student'), (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/manual_checkin.html'));
   });
