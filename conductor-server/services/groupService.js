@@ -166,4 +166,4 @@ export async function deleteCourseGroup(courseId, groupId) {
   if (result.rowCount === 0) {
     throw new Error('Group not found or does not belong to this course');
   }
-};
+}
