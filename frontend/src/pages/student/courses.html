@@ -1,15 +1,23 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>course detail</title>
-    <link rel="stylesheet" href="courses.css">
-    <link rel="stylesheet" href="../shared/standup.css">
+    <link rel="stylesheet" href="/css/student/courses.css">
+    <link rel="stylesheet" href="/css/standup.css">
+
 </head>
 <body>
+
 <div class="header">
-    <h1>CSE 210</h1>
+    <h1 id="course-title">CSE 210</h1>
+</div>
+
+<div class="top-right-menu">
+    <button id="view-attendance-btn" class="attendance-btn">
+        View My Attendance
+    </button>
 </div>
 
 <div class="container">
@@ -42,7 +50,7 @@
                     <span>(Status) Not Submitted • No Submission .</span>
                 </div>
             </div>
-            <div class="card-grade">Grade: 30/40</div>
+            <div class="card-grade">Grade: --/40</div>
         </div>
     </div>
     <!-- Group Info Section - 根据角色动态显示 -->
@@ -55,7 +63,7 @@
         <div class="standup-card">
             <!-- Status Report Input -->
             <div class="standup-input-section">
-                <textarea class="standup-textarea" placeholder="Add text..."></textarea>
+                <textarea id="standup-textarea" class="standup-textarea" placeholder="What did you work on, what's blocking you, and what's next?"></textarea>
             </div>
 
             <!-- Pulse Section -->
@@ -63,7 +71,7 @@
                 <h3 class="pulse-title">Sentiment</h3>
 
                 <!-- Personal Row -->
-                <div class="pulse-row">
+                <div class="pulse-row" data-category="personal">
                     <span class="pulse-label">Personal</span>
                     <div class="pulse-emojis">
                         <button class="emoji-btn" data-value="1">😰</button>
@@ -75,7 +83,7 @@
                 </div>
 
                 <!-- Team Row -->
-                <div class="pulse-row">
+                <div class="pulse-row" data-category="team">
                     <span class="pulse-label">Team</span>
                     <div class="pulse-emojis">
                         <button class="emoji-btn" data-value="1">😰</button>
@@ -87,7 +95,7 @@
                 </div>
 
                 <!-- Course Row -->
-                <div class="pulse-row">
+                <div class="pulse-row" data-category="course">
                     <span class="pulse-label">Course</span>
                     <div class="pulse-emojis">
                         <button class="emoji-btn" data-value="1">😰</button>
@@ -101,7 +109,7 @@
 
             <!-- Save Button -->
             <div class="standup-actions">
-                <button class="save-btn">Save</button>
+                <button id="save-standup-btn" class="save-btn">Save</button>
             </div>
         </div>
 
@@ -113,27 +121,80 @@
         <div class="journal-grid">
             <!-- Left: Dates -->
             <div class="journal-dates">
-                <a href="#" class="journal-date-link">Nov 23, 2025</a>
-                <a href="#" class="journal-date-link">More...</a>
+                <h3 class="font-medium mb-2 text-gray-700">Recent Reports</h3>
+                    <div id="journal-dates-content">
+                        <!-- History links will be inserted here -->
+                        <p class="text-gray-500 text-sm">Loading history...</p>
+                    </div>
+                <!-- <a href="#" class="journal-date-link">Nov 23, 2025</a>
+                <a href="#" class="journal-date-link">More...</a> -->
             </div>
 
             <!-- Right: Pulses -->
             <div class="journal-pulses">
-                <div class="pulse-title">Sentiment</div>
-                <div class="journal-pulse-entry">
+                <div class="pulse-title">Daily CheckIn</div>
+                <div id="journal-pulses-content">
+                        <!-- History entries will be inserted here -->
+                        <p class="text-gray-500 text-sm">Loading pulses...</p>
+                    </div>
+
+                <!-- <div class="journal-pulse-entry">
                     <span class="pulse-date">Jan 16, 2024</span>
                     <span class="pulse-emoji">😞</span>
                 </div>
                 <div class="journal-pulse-entry">
                     <span class="pulse-date">Jan 15, 2024</span>
                     <span class="pulse-emoji">😄</span>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
 
-    <script src="../shared/standup.js"></script>
 </div>
-<script src="courses.js"></script>
+
+    <!-- Anonymous Feedback Floating Button -->
+    <button id="feedback-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        </svg>
+        <span>Anonymous Feedback</span>
+    </button>
+
+    <!-- Anonymous Feedback Modal (using Tailwind for structure) -->
+    <div id="feedback-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center p-4 z-50" role="dialog" aria-modal="true">    
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Post Anonymous Feedback</h3>
+            <p class="text-sm text-gray-500 mb-4">This feedback is anonymous and helps improve the course or team process.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="feedback-type" class="block text-sm font-medium text-gray-700">Recipient</label>
+                    <select id="feedback-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md border">
+                        <option value="COURSE">Course/Instructor</option>
+                        <option value="TEAM">Team Lead/Process</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="feedback-message" class="block text-sm font-medium text-gray-700">Message</label>
+                    <textarea id="feedback-message" rows="4" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg resize-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="close-feedback-modal" type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                    Cancel
+                </button>
+                <button id="submit-feedback-btn" type="button" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition">
+                    Submit Anonymously
+                </button>
+            </div>
+            <div id="feedback-status" class="text-sm mt-3 hidden text-center"></div>
+        </div>
+    </div>
+
+
+<script src="/js/student/courses.js"></script>
+<script src="/js/student/standup.js"></script>
 </body>
 </html>
+

@@ -31,6 +31,29 @@ app.use((err, req, res, next) => {
   }
   next(err);
 });
+// // --- NEW CORS CONFIGURATION ---
+// const allowedOrigins = [
+//   // Localhost aliases for development
+//   'http://localhost:5500', // Frontend running on 5500 (VS Code Live Server?)
+//   'http://127.0.0.1:5500', // Frontend running on 5500 (what the browser shows)
+// ];
+
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       // Allow requests with no origin (like mobile apps or curl) and allowed origins
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error('Not allowed by CORS'));
+//       }
+//     },
+//     credentials: true, // IMPORTANT: Allows cookies/sessions (req.session) to be sent
+//   })
+// );
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     name: 'conductor.sid',
@@ -47,7 +70,6 @@ app.use(
   })
 );
 app.use(cors());
-
 // API routes
 // app.use('/api', apiRoutes);
 
@@ -63,8 +85,13 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 // Health check endpoints
 app.get('/healthz', (_req, res) => res.status(200).send('OK'));
 
-// Start server
-console.log('Running server.js from:', process.cwd());
-app.listen(PORT, () => {
-  console.log(` Server listening on http://localhost:${PORT}`);
-});
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  console.log('Running server.js from:', process.cwd());
+  app.listen(PORT, () => {
+    console.log(` Server listening on http://localhost:${PORT}`);
+  });
+}
+
+// Export app for testing
+export default app;

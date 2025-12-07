@@ -26,11 +26,8 @@ export function makeAttendanceController() {
 
   function buildCheckinUrl(activityId, pin) {
     // Base for your static frontend (adjust path to match your repo)
-    const base = process.env.FRONTEND_BASE_URL || 'http://127.0.0.1:5500';
-
-    return `${base}/conductor_app/frontend/src/pages/student/checkin.html?activity_id=${encodeURIComponent(
-      activityId
-    )}&pin=${encodeURIComponent(pin)}`;
+    const base = 'http://localhost:3000';
+    return `${base}/student/checkin?activity_id=${encodeURIComponent(activityId)}&pin=${encodeURIComponent(pin)}`;
   }
 
   // Insert or update attendance row
@@ -58,7 +55,8 @@ export function makeAttendanceController() {
   // - returns everything instructor needs to display
   //
   async function startAttendanceSession(req, res) {
-    const { course_id, name, type = 'lecture' } = req.body || {};
+    const course_id = req.params.courseId;
+    const { name, type = 'lecture' } = req.body || {};
 
     const courseIdNum = Number.parseInt(course_id, 10);
     if (!Number.isInteger(courseIdNum)) {
@@ -143,22 +141,35 @@ export function makeAttendanceController() {
    */
   // POST /api/attendance/checkin
   async function checkinAttendance(req, res) {
+    const course_id = req.body.course_id;
     try {
-      const { activity_id, course_id, pin, email, roll_id } = req.body || {};
+      const { activity_id, pin, email, roll_id } = req.body || {};
+      let userId = req.user?.user_id || req.session?.user?.user_id; // Assuming requireAuth attaches req.user or you check req.session
 
-      if (!email || typeof email !== 'string') {
-        return res.status(400).json({ error: 'email is required' });
+      if (!userId) {
+        // FALLBACK LOGIC: If no session, require email/roll_id to find user
+        if (!email || typeof email !== 'string') {
+          return res.status(400).json({ error: 'email is required' });
+        }
+        userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
+        if (!userId) {
+          return res.status(404).json({ error: 'user_not_found_for_email' });
+        }
       }
+
+      // if (!email || typeof email !== 'string') {
+      //   return res.status(400).json({ error: 'email is required' });
+      // }
 
       if (!pin || typeof pin !== 'string' || pin.length !== 6) {
         return res.status(400).json({ error: 'pin must be a 6-digit string' });
       }
 
-      // Resolve student user_id from email
-      const userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
-      if (!userId) {
-        return res.status(404).json({ error: 'user_not_found_for_email' });
-      }
+      // // Resolve student user_id from email
+      // const userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
+      // if (!userId) {
+      //   return res.status(404).json({ error: 'user_not_found_for_email' });
+      // }
 
       // Resolve the activity
       let activity;
@@ -183,8 +194,9 @@ export function makeAttendanceController() {
         activity = rows[0];
       } else if (course_id) {
         // Manual case: course_id + pin, find currently-active activity
-        const courseIdNum =
-          typeof course_id === 'string' ? Number.parseInt(course_id, 10) : course_id;
+        const courseIdNum = Number.parseInt(course_id, 10);
+        // const courseIdNum =
+        //   typeof course_id === 'string' ? Number.parseInt(course_id, 10) : course_id;
         if (!Number.isInteger(courseIdNum)) {
           return res.status(400).json({ error: 'course_id must be an integer' });
         }
@@ -250,12 +262,13 @@ export function makeAttendanceController() {
 
   // ---------- 3. Manual / retroactive mark (Instructor / TA) ----------
   //
-  // POST /api/attendance/manual
+  // POST /api/attendance//instructor/courses/:courseId/manual
   // body: { activity_id, user_id, present }
   //
   // - For when a student participates / answered a question, or retro-fix.
   //
   async function manualMarkAttendance(req, res) {
+    const course_id = req.params.courseId;
     const { activity_id, user_id, present } = req.body || {};
 
     const activityIdNum =
@@ -613,7 +626,7 @@ export function makeAttendanceController() {
 
   // ---------- 7. Student: personal + team overview ----------
   //
-  // GET /api/attendance/courses/:courseId/student/:userId/overview
+  // GET /api/attendance/courses/:courseId/student/overview
   //
   // Returns:
   // {
@@ -627,7 +640,7 @@ export function makeAttendanceController() {
   //
   async function getStudentCourseAttendanceOverview(req, res) {
     const courseId = Number.parseInt(req.params.courseId, 10);
-    const userId = Number.parseInt(req.params.userId, 10);
+    const userId = Number.parseInt(req.params.userId || req.session?.user?.user_id, 10);
 
     if (!Number.isInteger(courseId) || !Number.isInteger(userId)) {
       return res.status(400).json({ error: 'course_id and user_id must be integers' });

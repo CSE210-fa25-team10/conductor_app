@@ -7,6 +7,7 @@ import { makeQueryRouter } from './queryRoutes.js';
 import { makeFrontendRouter } from './frontendRoutes.js';
 import { makePageRouter } from './pageRouter.js';
 import { makeAttendanceRouter } from './attendanceRoutes.js';
+import { makeStandUpRouter } from './standupRoutes.js';
 import { makeCssRouter } from './cssRouter.js';
 import { makeJsRouter } from './jsRouter.js';
 
@@ -26,6 +27,8 @@ export function mountRoutes(app, container) {
     makeAttendanceRouter({ attendanceController: container.attendanceController })
   );
 
+  // Standup Tool APIs
+  app.use('/api/standup', makeStandUpRouter({ standupController: container.standupController }));
   // CSS routes
   app.use('/css', makeCssRouter());
 

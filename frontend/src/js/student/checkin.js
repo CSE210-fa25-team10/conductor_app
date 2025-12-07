@@ -2,6 +2,7 @@ const API_BASE = 'http://localhost:3000';
 
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
+  console.log('Query params:', params.toString());  
   const activityId = params.get('activity_id');
   const pinFromUrl = params.get('pin');
 
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/attendance/checkin`, {
+      const res = await fetch(`/api/attendance/checkin`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

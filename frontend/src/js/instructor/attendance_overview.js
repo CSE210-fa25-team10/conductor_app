@@ -1,9 +1,34 @@
 const API_BASE = "http://localhost:3000";
-const courseId = 101; // TODO: wire from URL / dropdown
+// const courseId = 101; // TODO: wire from URL / dropdown
+// const params = new URLSearchParams(window.location.search);
+// const courseId = Number(params.get("course_id"));
+
+// Function to get courseId from the URL path
+function getCourseIdFromPath() {
+    const pathParts = window.location.pathname.split('/');
+    // The courseId is the second-to-last part in a path like /instructor/courses/:courseId/manual
+    const id = pathParts[pathParts.length - 2]; 
+    const courseIdInt = Number.parseInt(id, 10);
+    
+    if (Number.isInteger(courseIdInt) && courseIdInt > 0) {
+        return courseIdInt;
+    }
+    console.error("Invalid Course ID in path.");
+    return null;
+}
+
+const courseId = getCourseIdFromPath();
+
+if (!courseId) {
+    // Graceful exit if ID is missing
+    document.getElementById("sessionName").innerText = "Error: Invalid Course ID.";
+    document.getElementById("teamsContainer").innerHTML = "<p>Cannot load attendance without a valid Course ID.</p>";
+    throw new Error("Invalid Course ID.");
+}
 
 async function loadOverview() {
   const res = await fetch(
-    `${API_BASE}/api/attendance/courses/${courseId}/instructor-overview`
+    `/api/attendance/courses/${courseId}/instructor-overview`
   );
   const data = await res.json();
 
