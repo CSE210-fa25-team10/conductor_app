@@ -3,16 +3,25 @@ import { pool } from '../db.js';
 
 const queryService = makeQueryService({ pool });
 
+/**
+ * 
+ * @param {string} courseId - The ID of the course
+ * @returns {Promise<Array>} - A promise that resolves to an array of groups for the course
+ */
 export async function getCourseGroups(courseId) {
   const sql = `
-      SELECT g.group_id, g.name, g.logo, g.mantra, g.slack, g.repository_link,ARRAY_AGG(gu.user_id) AS members
-      FROM groups g
-      JOIN course_groups cg ON g.group_id = cg.group_id
-      LEFT JOIN group_users gu ON g.group_id = gu.group_id
-      WHERE cg.course_id = $1
-      GROUP BY g.group_id;
-    `;
-    const rows = await queryService.executeRawQuery(sql, [courseId]);
+    SELECT g.group_id, g.name, g.logo, g.mantra, g.slack, g.repository_link,ARRAY_AGG(gu.user_id) AS members
+    FROM groups g
+    JOIN course_groups cg ON g.group_id = cg.group_id
+    LEFT JOIN group_users gu ON g.group_id = gu.group_id
+    WHERE cg.course_id = $1
+    GROUP BY g.group_id;
+  `;
+  const rows = await queryService.executeRawQuery(sql, [courseId]);
+  // if the group doesn't exist, return an empty array
+  if (rows.length === 0) {
+    return [];
+  }
   return rows.map(row => ({
     group_id: row.group_id,
     name: row.name,
@@ -24,6 +33,14 @@ export async function getCourseGroups(courseId) {
   }));
 };
 
+/**
+ * 
+ * @param {string} courseId - The ID of the course
+ * @param {Object} param1 - The group details
+ * @param {string} param1.name - The name of the group
+ * @param {Array} param1.members - The array of user IDs who are members of the group
+ * @returns {Promise<Object>} - A promise that resolves to the newly created group
+ */
 export async function createCourseGroup(courseId, { name, members }) {
   // if the group already exists for the course, throw an error
   const existingGroupQuery = `
@@ -59,6 +76,15 @@ export async function createCourseGroup(courseId, { name, members }) {
   return { ...newGroup, members };
 };
 
+/**
+ * 
+ * @param {string} courseId - The ID of the course
+ * @param {string} groupId - The ID of the group to update
+ * @param {Object} param2 - The group details to update
+ * @param {string} param2.name - The new name of the group
+ * @param {Array} param2.members - The new array of user IDs who are members of the group
+ * @returns {Promise<Object>} - A promise that resolves to the updated group
+ */
 export async function updateCourseGroup(courseId, groupId, { name, members }) {
   if (!groupId) {
     throw new Error('Group ID is required for updating a group');
@@ -115,6 +141,12 @@ export async function updateCourseGroup(courseId, groupId, { name, members }) {
   return updatedGroupResult[0];
 };
 
+/**
+ * 
+ * @param {string} courseId - The ID of the course
+ * @param {string} groupId - The ID of the group to delete
+ * @returns {Promise<void>} - A promise that resolves when the group is deleted
+ */
 export async function deleteCourseGroup(courseId, groupId) {
   // First, remove the association with the course
   const deleteGroupQuery = `
