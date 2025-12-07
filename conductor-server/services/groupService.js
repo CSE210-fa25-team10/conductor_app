@@ -29,7 +29,7 @@ export async function getCourseGroups(courseId) {
     mantra: row.mantra,
     slack: row.slack,
     repository_link: row.repository_link,
-    members: row.members.filter((member) => member !== null) // Remove nulls if no members
+    members: row.members.filter((member) => member !== null), // Remove nulls if no members
   }));
 }
 
@@ -105,8 +105,8 @@ export async function updateCourseGroup(courseId, groupId, { name, members }) {
       WHERE group_id = $1 AND course_id = $2;
   `;
   const courseGroupRows = await queryService.executeRawQuery(courseGroupCheckQuery, [
-    groupId, 
-    courseId
+    groupId,
+    courseId,
   ]);
   if (courseGroupRows.length === 0) {
     const insertCourseGroupQuery = `
@@ -142,10 +142,10 @@ export async function updateCourseGroup(courseId, groupId, { name, members }) {
   `;
   const updatedGroupResult = await queryService.executeRawQuery(getUpdatedGroupQuery, [groupId]);
   return updatedGroupResult[0];
-};
+}
 
 /**
- * 
+ *
  * @param {string} courseId - The ID of the course
  * @param {string} groupId - The ID of the group to delete
  * @returns {Promise<void>} - A promise that resolves when the group is deleted
@@ -162,9 +162,8 @@ export async function deleteCourseGroup(courseId, groupId) {
           );
       `;
   const result = await queryService.executeRawQuery(deleteGroupQuery, [groupId, courseId]);
-    
+
   if (result.rowCount === 0) {
     throw new Error('Group not found or does not belong to this course');
   }
-
 };
