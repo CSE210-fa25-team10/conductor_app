@@ -409,6 +409,18 @@ function showSuccessMessage() {
 }
 
 /**
+ * Format phone number to (XXX) XXX-XXXX format.
+ * @param {string} value - Raw phone input.
+ * @returns {string} Formatted phone number or empty string if invalid.
+ */
+function formatPhoneNumber(value) {
+  if (!value) return "";
+  const cleaned = value.replace(/\D/g, "");
+  if (cleaned.length !== 10) return value;
+  return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+}
+
+/**
  * Handle profile form submission and send updates to the API.
  * @param {Event} e - Form submit event.
  */
@@ -424,6 +436,16 @@ function handleProfileSubmit(e) {
       data.phone = value;
     }
   });
+
+  const phoneInput = document.getElementById("phone");
+  if (phoneInput && data.phone) {
+    const cleaned = data.phone.replace(/\D/g, "");
+    if (cleaned.length > 0 && cleaned.length !== 10) {
+      alert("Phone number must be 10 digits.");
+      return;
+    }
+    data.phone = formatPhoneNumber(data.phone);
+  }
 
   fetch("/api/user", {
     method: "POST",
@@ -791,6 +813,13 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
   const profileForm = document.getElementById("profileForm");
   if (profileForm) {
     profileForm.addEventListener("submit", handleProfileSubmit);
+  }
+
+  const phoneInput = document.getElementById("phone");
+  if (phoneInput) {
+    phoneInput.addEventListener("blur", function () {
+      this.value = formatPhoneNumber(this.value);
+    });
   }
 
   const availabilityForm = document.getElementById("availabilityForm");
