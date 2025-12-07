@@ -447,6 +447,8 @@ function handleProfileSubmit(e) {
     data.phone = formatPhoneNumber(data.phone);
   }
 
+  console.log('[profile.js] Sending data to POST /api/user:', data);
+
   fetch("/api/user", {
     method: "POST",
     credentials: "include",
