@@ -1,5 +1,9 @@
 // src/js/register.js
 
+/**
+ * Show an error message on the registration form.
+ * @param {string} msg - The error message to display.
+ */
 function showError(msg) {
   const el = document.getElementById("registerError");
   if (!el) return;
@@ -10,6 +14,10 @@ function showError(msg) {
   if (success) success.style.display = "none";
 }
 
+/**
+ * Show a success message on the registration form.
+ * @param {string} msg - The success message to display.
+ */
 function showSuccess(msg) {
   const el = document.getElementById("registerSuccess");
   if (!el) return;
@@ -20,6 +28,10 @@ function showSuccess(msg) {
   if (error) error.style.display = "none";
 }
 
+/**
+ * Attach event handlers for the registration form.
+ * Validates input and submits registration to the API.
+ */
 function attachRegisterHandlers() {
   const form = document.getElementById("registerForm");
   const firstName = document.getElementById("firstName");

@@ -8,11 +8,21 @@ import { pool } from '../db.js';
 
 export function makeAuthController() {
   return {
+    /**
+     * Redirect to Google OAuth authorization URL.
+     * @param {import('express').Request} req - Express request object
+     * @param {import('express').Response} res - Express response object
+     */
     googleLogin(req, res) {
       const url = generateAuthUrl();
       res.redirect(url);
     },
 
+    /**
+     * Handle local login. Validates credentials and sets session user.
+     * @param {import('express').Request} req - Express request object
+     * @param {import('express').Response} res - Express response object
+     */
     async login(req, res) {
       try {
         const response = await loginService(req.body);
@@ -50,6 +60,11 @@ export function makeAuthController() {
       }
     },
 
+    /**
+     * Register a new user.
+     * @param {import('express').Request} req - Express request object
+     * @param {import('express').Response} res - Express response object
+     */
     async register(req, res) {
       try {
         const response = await registerService(req.body);
@@ -60,6 +75,12 @@ export function makeAuthController() {
       }
     },
 
+    /**
+     * OAuth callback handler for Google sign-in.
+     * Exchanges code for user info and sets session.
+     * @param {import('express').Request} req - Express request object
+     * @param {import('express').Response} res - Express response object
+     */
     async callback(req, res) {
       const code = req.query.code;
       if (!code) return res.redirect('/api/auth/login');
@@ -74,6 +95,11 @@ export function makeAuthController() {
       }
     },
 
+    /**
+     * Log the user out by destroying the session.
+     * @param {import('express').Request} req - Express request object
+     * @param {import('express').Response} res - Express response object
+     */
     logout(req, res) {
       req.session.destroy((err) => {
         if (err) console.error(err);
@@ -81,6 +107,12 @@ export function makeAuthController() {
       });
     },
 
+    /**
+     * Return the current authenticated user's full profile from the DB.
+     * Requires an active session.
+     * @param {import('express').Request} req - Express request object
+     * @param {import('express').Response} res - Express response object
+     */
     async getMe(req, res) {
       try {
         const user = req.session?.user;
