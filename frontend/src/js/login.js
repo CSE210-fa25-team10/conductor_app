@@ -113,8 +113,10 @@ if (typeof window !== "undefined") {
 }
 
 // export for tests if they want to call attachLoginHandlers manually
-module.exports = {
-  attachLoginHandlers,
-  showError,
-  showSuccess,
-};
+if (typeof module !== "undefined") {
+  module.exports = {
+    attachLoginHandlers,
+    showError,
+    showSuccess,
+  };
+}
