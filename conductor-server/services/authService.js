@@ -14,6 +14,13 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/conductor',
 });
 
+/**
+ *
+ * @param {Object} loginData - The login data
+ * @param {string} loginData.email - The user's email
+ * @param {string} loginData.password - The user's password
+ * @returns {Promise<Object>} - A promise that resolves to the logged-in user
+ */
 export const login = async (loginData) => {
   const { email, password } = loginData;
   const query = 'SELECT user_id, name, email, password, role FROM users WHERE email = $1';
@@ -37,6 +44,15 @@ export const login = async (loginData) => {
   };
 };
 
+/**
+ *
+ * @param {Object} userData - The user data for registration
+ * @param {string} userData.name - The user's name
+ * @param {string} userData.email - The user's email
+ * @param {string} userData.password - The user's password
+ * @param {string} userData.role - The user's role (e.g., 'student' or 'instructor')
+ * @returns {Promise<Object>} - A promise that resolves to the registered user
+ */
 export const register = async (userData) => {
   const { name, email, password, role } = userData;
   // check to see if the email exists, if so, throw an error
@@ -62,6 +78,10 @@ export const register = async (userData) => {
   };
 };
 
+/**
+ * Generates the Google OAuth2 authentication URL
+ * @returns {string} - The authentication URL
+ */
 export const generateAuthUrl = () => {
   return client.generateAuthUrl({
     access_type: 'offline',
@@ -69,6 +89,11 @@ export const generateAuthUrl = () => {
   });
 };
 
+/**
+ *
+ * @param {string} code - The authorization code from Google
+ * @returns {Promise<Object>} - A promise that resolves to the user information
+ */
 export const getUserFromCode = async (code) => {
   const { tokens } = await client.getToken(code);
   client.setCredentials(tokens);
