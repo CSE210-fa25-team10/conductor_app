@@ -4,7 +4,7 @@ import { pool } from '../db.js';
 const queryService = makeQueryService({ pool });
 
 /**
- * 
+ *
  * @param {string} courseId - The ID of the course
  * @returns {Promise<Array>} - A promise that resolves to an array of groups for the course
  */
@@ -22,19 +22,19 @@ export async function getCourseGroups(courseId) {
   if (rows.length === 0) {
     return [];
   }
-  return rows.map(row => ({
+  return rows.map((row) => ({
     group_id: row.group_id,
     name: row.name,
     logo: row.logo,
     mantra: row.mantra,
     slack: row.slack,
     repository_link: row.repository_link,
-    members: row.members.filter(member => member !== null) // Remove nulls if no members
+    members: row.members.filter((member) => member !== null) // Remove nulls if no members
   }));
-};
+}
 
 /**
- * 
+ *
  * @param {string} courseId - The ID of the course
  * @param {Object} param1 - The group details
  * @param {string} param1.name - The name of the group
@@ -74,10 +74,10 @@ export async function createCourseGroup(courseId, { name, members }) {
   `;
   await queryService.executeRawQuery(courseGroupQuery, [newGroup.group_id, courseId]);
   return { ...newGroup, members };
-};
+}
 
 /**
- * 
+ *
  * @param {string} courseId - The ID of the course
  * @param {string} groupId - The ID of the group to update
  * @param {Object} param2 - The group details to update
@@ -91,12 +91,12 @@ export async function updateCourseGroup(courseId, groupId, { name, members }) {
   }
   // if name is provided, update it
   if (name) {
-      const updateGroupQuery = `
+    const updateGroupQuery = `
           UPDATE groups
           SET name = $1
           WHERE group_id = $2;
       `;
-      await queryService.executeRawQuery(updateGroupQuery, [name, groupId]);
+    await queryService.executeRawQuery(updateGroupQuery, [name, groupId]);
   }
   // Ensure the group is associated with the course
   const courseGroupCheckQuery = `
@@ -104,13 +104,16 @@ export async function updateCourseGroup(courseId, groupId, { name, members }) {
       FROM course_groups
       WHERE group_id = $1 AND course_id = $2;
   `;
-  const courseGroupRows = await queryService.executeRawQuery(courseGroupCheckQuery, [groupId, courseId]);
+  const courseGroupRows = await queryService.executeRawQuery(courseGroupCheckQuery, [
+    groupId, 
+    courseId
+  ]);
   if (courseGroupRows.length === 0) {
-      const insertCourseGroupQuery = `
+    const insertCourseGroupQuery = `
           INSERT INTO course_groups (group_id, course_id)
           VALUES ($1, $2);
       `;
-      await queryService.executeRawQuery(insertCourseGroupQuery, [groupId, courseId]);
+    await queryService.executeRawQuery(insertCourseGroupQuery, [groupId, courseId]);
   }
 
   if (members && members.length > 0) {

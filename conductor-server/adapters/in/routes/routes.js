@@ -33,7 +33,7 @@ export function mountRoutes(app, container) {
 
   // Groups APIs
   app.use('/api/groups', makeGroupRouter({ groupController: container.groupController }));
-  
+
   // CSS routes
   app.use('/css', makeCssRouter());
 

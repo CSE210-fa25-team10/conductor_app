@@ -46,11 +46,11 @@ export function makeGroupController() {
     const groupId = req.params.groupId;
     const { name, members } = req.body;
     try {
-        const updatedGroup = await updateCourseGroup(courseId, groupId, { name, members });
-        res.json({ group: updatedGroup });
+      const updatedGroup = await updateCourseGroup(courseId, groupId, { name, members });
+      res.json({ group: updatedGroup });
     } catch (err) {
-        console.error('updateGroup error:', err);
-        res.status(500).json({ error: 'Failed to update group' });
+      console.error('updateGroup error:', err);
+      res.status(500).json({ error: 'Failed to update group' });
     }
   }
 
@@ -62,11 +62,11 @@ export function makeGroupController() {
     const courseId = req.params.courseId;
     const groupId = req.params.groupId;
     try {
-        await deleteCourseGroup(courseId, groupId);
-        res.status(204).send();
+      await deleteCourseGroup(courseId, groupId);
+      res.status(204).send();
     } catch (err) {
-        console.error('deleteGroup error:', err);
-        res.status(500).json({ error: 'Failed to delete group' });
+      console.error('deleteGroup error:', err);
+      res.status(500).json({ error: 'Failed to delete group' });
     }
   }
   
@@ -79,7 +79,7 @@ export function makeGroupController() {
     const userId = req.user.userId;
     try {
       const groups = await getCourseGroups(courseId);
-      const myGroup = groups.find(group => group.members.includes(userId));
+      const myGroup = groups.find((group) => group.members.includes(userId));
       if (!myGroup) {
         return res.status(404).json({ error: 'Group not found for the student' });
       }
