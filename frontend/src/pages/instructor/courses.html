@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSE 210 - Professor View</title>
-    <link rel="stylesheet" href="courses.css">
+    <title>course detail - Professor View</title>
+    <link rel="stylesheet" href="/css/instructor/courses.css">
+    <link rel="stylesheet" href="/css/standup.css">
 </head>
 <body>
 <div class="header">
-    <div class="header-left">
-        <button class="back-btn">←</button>
-        <h1>CSE 210</h1>
-    </div>
-    <div class="avatar">L</div>
+    <h1>CSE 210</h1>
 </div>
 
 <div class="container">
@@ -72,8 +69,26 @@
                 </div>
             </div>
         </div>
+
+       <!-- Added 2 new attendance buttons -->
+        <div class="attendance-actions" style="margin-top: 16px;">
+            <button class="btn" id="view-overview-btn">
+                View Class Attendance Overview
+            </button>
+            <button class="btn" id="mark-manual-btn">
+                Mark Class Attendance Manually
+            </button>
+        </div>
+
+        <div class="feedback-actions">
+            <button class="btn-feedback" id="view-feedback-btn">
+                View Feedback from Students
+            </button>
+        </div>
+
     </div>
-</div>
+    <div id="group-info-section"></div>
+
 
 <!-- Modal Overlay -->
 <div id="modal-overlay" class="modal-overlay" onclick="hideModal()"></div>
@@ -110,17 +125,30 @@
     </div>
 </div>
 
-<script>
-    function showModal(type) {
-        document.getElementById('modal-overlay').classList.add('active');
-        document.getElementById(type + '-modal').classList.add('active');
-    }
 
-    function hideModal() {
-        document.getElementById('modal-overlay').classList.remove('active');
-        document.getElementById('assignment-modal').classList.remove('active');
-        document.getElementById('attendance-modal').classList.remove('active');
-    }
-</script>
+<div id="group-detail-modal" class="modal">
+    <div class="modal-header">
+        <h3 id="group-detail-title">Group Attendance Details</h3>
+        <button class="close-btn" onclick="hideGroupDetailModal()">⊗</button>
+    </div>
+    <div class="modal-body" id="group-detail-content">
+        <p>Loading attendance details...</p>
+    </div>
+</div>
+
+<div id="feedback-overview-modal" class="modal">
+    <div class="modal-header">
+        <h3>Anonymous Student Feedback</h3>
+        <button class="close-btn" onclick="closeFeedbackModal()">⊗</button>
+    </div>
+    <div class="modal-body">
+        <div id="feedback-list-content">
+            <p class="text-gray-500">Click View Feedback to load entries...</p>
+        </div>
+    </div>
+</div>
+
+<script src="/js/instructor/courses.js"></script>
+<script src="/js/instructor/standup.js"></script>
 </body>
 </html>

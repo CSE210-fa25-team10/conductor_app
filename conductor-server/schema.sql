@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
   token_response VARCHAR,  -- OAuth token response
   slack        VARCHAR,
   phone        VARCHAR, -- changed to VARCHAR
-  availability VARCHAR
+  availability VARCHAR, 
+  role         VARCHAR
 );
 
 -- Ensure users.phone is VARCHAR if it previously existed as an integer
@@ -33,6 +34,10 @@ BEGIN
     END;
   END IF;
 END$$;
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS token_response VARCHAR;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR;
 
 -- GROUPS
 CREATE TABLE IF NOT EXISTS groups (
@@ -66,9 +71,21 @@ CREATE TABLE IF NOT EXISTS standup_entries (
   standup_id SERIAL PRIMARY KEY,
   user_id    INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
   name       VARCHAR,
-  time       TIMESTAMP,       -- "DATETIME" in the diagram
-  content    VARCHAR
-  -- sentiment/etc TBD in diagram -> intentionally omitted
+  time      TIMESTAMPTZ DEFAULT NOW(),      -- "DATETIME" in the diagram
+  content    VARCHAR,
+  sentiment_personal INT,                --  Personal rating (1-5)
+  sentiment_team INT,                -- Team rating (1-5)
+  sentiment_course INT                 -- Course rating (1-5)
+);
+
+-- ANONYMOUS FEEDBACK TABLE
+-- This handles anonymous messages (to Team/Leader or Course)
+CREATE TABLE IF NOT EXISTS standup_feedback (
+    feedback_id SERIAL PRIMARY KEY,
+    course_id INT NOT NULL REFERENCES courses(course_id) ON DELETE CASCADE,
+    type VARCHAR NOT NULL, -- 'TEAM' or 'COURSE'
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- GROUPS <-> USERS (membership)
@@ -99,6 +116,7 @@ CREATE TABLE IF NOT EXISTS attendance (
   user_id    INT NOT NULL REFERENCES users(user_id)       ON DELETE CASCADE,
   activity_id INT NOT NULL REFERENCES activities(activity_id) ON DELETE CASCADE,
   present    BOOLEAN,
+  checked_in_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (user_id, activity_id)
 );
 ALTER TABLE activities
@@ -129,6 +147,10 @@ ON activities (
   name,
   ((date_trunc('minute', (starts_at AT TIME ZONE 'UTC'))) AT TIME ZONE 'UTC')
 );
+
+-- ATTENDANCE (to check if students check in within 15 minute frame of start of attendance)
+ALTER TABLE attendance
+ADD COLUMN IF NOT EXISTS checked_in_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
 
 -- ASSIGNMENTS
 CREATE TABLE IF NOT EXISTS assignments (

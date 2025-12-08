@@ -1,59 +1,85 @@
 import express from 'express';
 import session from 'express-session';
-import apiRoutes from './adapters/in/routes/apiRoutes.js';
-import { pool, dbHealth } from './db.js';
+// import apiRoutes from './adapters/in/routes/apiRoutes.js';
 import dotenv from 'dotenv';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { mountRoutes } from './adapters/in/routes/routes.js';
+import { buildContainer } from './infra/container.js';
 
 const PORT = Number(process.env.PORT) || 3000;
 
-dotenv.config();
+// Get the full path to the current file
+const __filename = fileURLToPath(import.meta.url);
 
+// Get the directory name of the current file
+const __dirname = path.dirname(__filename);
+
+dotenv.config();
 const app = express();
+
+// // --- NEW CORS CONFIGURATION ---
+// const allowedOrigins = [
+//   // Localhost aliases for development
+//   'http://localhost:5500', // Frontend running on 5500 (VS Code Live Server?)
+//   'http://127.0.0.1:5500', // Frontend running on 5500 (what the browser shows)
+// ];
+
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       // Allow requests with no origin (like mobile apps or curl) and allowed origins
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error('Not allowed by CORS'));
+//       }
+//     },
+//     credentials: true, // IMPORTANT: Allows cookies/sessions (req.session) to be sent
+//   })
+// );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
+    name: 'conductor.sid',
     secret: process.env.SESSION_SECRET || 'dev-secret',
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      // maxAge: 1000 * 60 * 60 * 2, // 2 hours
+    },
+    // Store the session somewhere if we want
   })
 );
-
+app.use(cors());
 // API routes
-app.use('/api', apiRoutes);
+// app.use('/api', apiRoutes);
 
-// Root route
-app.get('/', (_req, res) => {
-  res.send(
-    '✅ Express 5.1.0 server running on Node.js v24.11.0 LTS, Postgres + Docker setup running'
-  );
-});
+// serve static assets (CSS, JS, images)
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// build dependencies (repos, use-cases, controllers, etc.)
+const container = buildContainer(process.env);
+
+// mount all HTTP routes
+mountRoutes(app, container);
 
 // Health check endpoints
-app.get('/healthz', (_req, res) => res.status(200).send('ok'));
+app.get('/healthz', (_req, res) => res.status(200).send('OK'));
 
-app.get('/health', async (_req, res) => {
-  try {
-    const { rows } = await pool.query('SELECT now() as db_time');
-    res.json({ ok: true, db_time: rows[0].db_time });
-  } catch (e) {
-    res.status(500).json({ ok: false, error: e.message });
-  }
-});
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  console.log('Running server.js from:', process.cwd());
+  app.listen(PORT, () => {
+    console.log(` Server listening on http://localhost:${PORT}`);
+  });
+}
 
-// DB health check — verifies backend <-> Postgres connectivity
-app.get('/db-check', async (_req, res) => {
-  try {
-    const ok = await dbHealth();
-    res.status(ok ? 200 : 500).json({ db: ok ? 'up' : 'down' });
-  } catch (e) {
-    res.status(500).json({ db: 'down', error: String(e) });
-  }
-});
-
-// Start server
-console.log('Running server.js from:', process.cwd());
-app.listen(PORT, () => {
-  console.log(` Server listening on http://localhost:${PORT}`);
-});
+// Export app for testing
+export default app;
