@@ -30,10 +30,7 @@ export function mountRoutes(app, container) {
   );
 
   //  Courses APIs
-  app.use(
-    '/api/courses',
-    makeCourseRouter({ courseController: container.courseController })
-  );
+  app.use('/api/courses', makeCourseRouter({ courseController: container.courseController }));
   // Standup Tool APIs
   app.use('/api/standup', makeStandUpRouter({ standupController: container.standupController }));
 

@@ -13,19 +13,13 @@ import { pool } from '../db.js';
 // import { makeLoginUser } from '../app/usecases/loginUser.js';
 // import { makeSearchClasses } from '../app/usecases/searchClasses.js';
 
-// REPOSITORIES
-import { makePgClassRepository } from '../adapters/out/db/PgClassRepository.js';
-
-// SERVICES
-import { makeCourseService } from '../services/courseService.js';
-
 // CONTROLLERS
 import { makeAuthController } from '../controllers/authController.js';
 import { makeQueryController } from '../controllers/queryController.js';
 import { makeAttendanceController } from '../controllers/attendanceController.js';
 import { makeStandUpController } from '../controllers/standupController.js';
-import { makeCourseController } from '../controllers/courseController.js';
-
+import { makeGroupController } from '../controllers/groupController.js';
+// import { makeClassController } from '../adapters/in/http/ClassController.js';
 
 // UTILITIES
 // import { makePasswordHasher } from './passwordHasher.js';
@@ -47,16 +41,7 @@ export function buildContainer() {
   //  Driven Adapters
   //  (Repositories)
   // ---------------------
-  const classRepository = makePgClassRepository({ pool });
   const queryController = makeQueryController({ pool });
-
-  //
-  // ---------------------
-  //  Application Layer
-  //  (Services)
-  // ---------------------
-  //
-  const courseService = makeCourseService({ classRepository });
 
   //
   // ---------------------
@@ -76,7 +61,6 @@ export function buildContainer() {
   const authController = makeAuthController();
   const attendanceController = makeAttendanceController({});
   const standupController = makeStandUpController({});
-  const courseController = makeCourseController({ courseService });
   const groupController = makeGroupController({});
   //   const authController = makeAuthController({ loginUser });
   //   const classController = makeClassController({ searchClasses });
@@ -90,7 +74,6 @@ export function buildContainer() {
     authController,
     attendanceController,
     standupController,
-    courseController,
     groupController,
     // classController,
     // loginUser,
