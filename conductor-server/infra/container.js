@@ -25,7 +25,7 @@ import { makeQueryController } from '../controllers/queryController.js';
 import { makeAttendanceController } from '../controllers/attendanceController.js';
 import { makeStandUpController } from '../controllers/standupController.js';
 import { makeCourseController } from '../controllers/courseController.js';
-// import { makeClassController } from '../adapters/in/http/ClassController.js';
+
 
 // UTILITIES
 // import { makePasswordHasher } from './passwordHasher.js';
