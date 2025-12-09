@@ -12,19 +12,26 @@
 
 <div class="header">
     <h1 id="course-title">CSE 210</h1>
+    <button id="backBtn" type="button">Back to Dashboard</button>
 </div>
 
-<div class="top-right-menu">
+<!-- <div class="top-right-menu">
     <button id="view-attendance-btn" class="attendance-btn">
         View My Attendance
     </button>
-</div>
+</div> -->
 
 <div class="container">
     <div class="section">
         <div class="section-header">
             <span>Assignments</span>
             <span>→</span>
+
+            <div class="top-right-menu">
+                <button id="view-attendance-btn" class="attendance-btn">
+                    View My Attendance
+                </button>
+            </div>
         </div>
 
         <div class="card">
@@ -195,6 +202,17 @@
 
 <script src="/js/student/courses.js"></script>
 <script src="/js/student/standup.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const backBtn = document.getElementById('backBtn');
+    if (!backBtn) return;
+
+    backBtn.addEventListener('click', () => {
+      window.location.href = '/student';
+    });
+  });
+</script>
+
 </body>
 </html>
 
