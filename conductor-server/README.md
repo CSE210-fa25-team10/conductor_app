@@ -49,25 +49,25 @@ The backend is mounted under `/api/*`, while `/css`, `/js`, and `/` serve the li
 
 Create `conductor-server/.env` (or export locally) before running scripts:
 
-| Variable | Required | Description | Example |
-| --- | --- | --- | --- |
-| `PORT` | No | HTTP port for Express | `3000` |
-| `NODE_ENV` | No | `development`, `test`, or `production` | `development` |
-| `DATABASE_URL` | Yes | Postgres connection string used by the API and migrations | `postgresql://appuser:apppassword@localhost:5432/conductor` |
-| `SESSION_SECRET` | Yes | Secret for the `conductor.sid` session cookie | `super-secret-change-me` |
-| `ATTENDANCE_PIN_SECRET` | No | Shared secret for deterministic attendance PINs | `pin-secret` |
-| `GOOGLE_CLIENT_ID` | No* | OAuth client for Google login (needed if enabling Google auth flow) | `xxx.apps.googleusercontent.com` |
-| `GOOGLE_CLIENT_SECRET` | No* | OAuth secret matching the above | `xyz` |
-| `CORS_ORIGIN` | No | Optional allowlist origin (default currently allows any origin via `cors()` middleware) | `http://localhost:5173` |
+| Variable                | Required | Description                                                                             | Example                                                     |
+| ----------------------- | -------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `PORT`                  | No       | HTTP port for Express                                                                   | `3000`                                                      |
+| `NODE_ENV`              | No       | `development`, `test`, or `production`                                                  | `development`                                               |
+| `DATABASE_URL`          | Yes      | Postgres connection string used by the API and migrations                               | `postgresql://appuser:apppassword@localhost:5432/conductor` |
+| `SESSION_SECRET`        | Yes      | Secret for the `conductor.sid` session cookie                                           | `super-secret-change-me`                                    |
+| `ATTENDANCE_PIN_SECRET` | No       | Shared secret for deterministic attendance PINs                                         | `pin-secret`                                                |
+| `GOOGLE_CLIENT_ID`      | No\*     | OAuth client for Google login (needed if enabling Google auth flow)                     | `xxx.apps.googleusercontent.com`                            |
+| `GOOGLE_CLIENT_SECRET`  | No\*     | OAuth secret matching the above                                                         | `xyz`                                                       |
+| `CORS_ORIGIN`           | No       | Optional allowlist origin (default currently allows any origin via `cors()` middleware) | `http://localhost:5173`                                     |
 
 Docker Compose also reads these (in the repo root `.env`):
 
-| Variable | Description | Example |
-| --- | --- | --- |
-| `POSTGRES_USER` | Database user created by the `db` service | `appuser` |
-| `POSTGRES_PASSWORD` | Password for the above user | `apppassword` |
-| `POSTGRES_DB` | Default database name | `conductor` |
-| `DATABASE_URL` | Connection string the API container should use | `postgresql://appuser:apppassword@db:5432/conductor` |
+| Variable            | Description                                    | Example                                              |
+| ------------------- | ---------------------------------------------- | ---------------------------------------------------- |
+| `POSTGRES_USER`     | Database user created by the `db` service      | `appuser`                                            |
+| `POSTGRES_PASSWORD` | Password for the above user                    | `apppassword`                                        |
+| `POSTGRES_DB`       | Default database name                          | `conductor`                                          |
+| `DATABASE_URL`      | Connection string the API container should use | `postgresql://appuser:apppassword@db:5432/conductor` |
 
 > Tip: keep development `.env` files out of source control.
 
@@ -119,15 +119,15 @@ Stop the stack with `docker compose down` (add `-v` to wipe the persistent volum
 
 ## Available npm scripts
 
-| Script | Description |
-| --- | --- |
-| `npm start` | Starts Express with the current env (skips listen when `NODE_ENV=test`). |
-| `npm run migrate` | Applies `schema.sql` to `DATABASE_URL`. |
-| `npm run lint` / `lint:fix` | ESLint 9 with Prettier config. |
-| `npm run format` / `format:check` | Run Prettier across JS/JSON/MD. |
-| `npm run test:unit` | Jest unit tests (no DB required). |
-| `npm run test:integration` | Supertest + pg integration suite (requires a reachable DB + migrated schema). |
-| `npm test` | Runs integration tests first, then unit tests. |
+| Script                            | Description                                                                   |
+| --------------------------------- | ----------------------------------------------------------------------------- |
+| `npm start`                       | Starts Express with the current env (skips listen when `NODE_ENV=test`).      |
+| `npm run migrate`                 | Applies `schema.sql` to `DATABASE_URL`.                                       |
+| `npm run lint` / `lint:fix`       | ESLint 9 with Prettier config.                                                |
+| `npm run format` / `format:check` | Run Prettier across JS/JSON/MD.                                               |
+| `npm run test:unit`               | Jest unit tests (no DB required).                                             |
+| `npm run test:integration`        | Supertest + pg integration suite (requires a reachable DB + migrated schema). |
+| `npm test`                        | Runs integration tests first, then unit tests.                                |
 
 ## Architecture Notes
 
