@@ -374,6 +374,17 @@ save-btn {
     margin-bottom: 0;
 }
 
+.journal-date-link {
+    transition: background-color 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+}
+
+/* Hover effect */
+.journal-date-link:hover {
+    background-color: #eef2ff;  
+    color: #1e1b4b;              
+}
+
 /* 2. Fix Date Header Spacing */
 .pulse-user-and-time {
     /* This container holds only the date span now */
