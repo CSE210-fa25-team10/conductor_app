@@ -11,6 +11,7 @@ import { makeStandUpRouter } from './standupRoutes.js';
 import { makeGroupRouter } from './groupRoutes.js';
 import { makeCssRouter } from './cssRouter.js';
 import { makeJsRouter } from './jsRouter.js';
+import { makeCourseRouter } from './courseRoutes.js';
 
 export function mountRoutes(app, container) {
   // Auth APIs
@@ -28,6 +29,8 @@ export function mountRoutes(app, container) {
     makeAttendanceRouter({ attendanceController: container.attendanceController })
   );
 
+  //  Courses APIs
+  app.use('/api/courses', makeCourseRouter({ courseController: container.courseController }));
   // Standup Tool APIs
   app.use('/api/standup', makeStandUpRouter({ standupController: container.standupController }));
 

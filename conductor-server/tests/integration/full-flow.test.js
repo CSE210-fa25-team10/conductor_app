@@ -32,7 +32,7 @@ describe('Full User Flow Integration Tests', () => {
     while (retries > 0) {
       try {
         await testPool.query('SELECT 1');
-        console.log('✅ Test database connected');
+        console.log(' Test database connected');
         break;
       } catch (err) {
         retries--;
@@ -81,7 +81,7 @@ describe('Full User Flow Integration Tests', () => {
     // expect(res.body.user.role).toBe(testUser.role);
 
     // userId = res.body.user.id;
-    // console.log(`✅ User registered with ID: ${userId}`);
+    // console.log(`User registered with ID: ${userId}`);
 
     console.log('FIXME: Complete implementation of registration test.');
   });
@@ -102,7 +102,7 @@ describe('Full User Flow Integration Tests', () => {
     //   authToken = res.body.token;
     // }
 
-    // console.log('✅ User logged in successfully');
+    // console.log(' User logged in successfully');
 
     console.log('FIXME: Complete implementation of login test.');
   });
@@ -116,7 +116,7 @@ describe('Full User Flow Integration Tests', () => {
     // expect(res.body.email).toBe(testUser.email);
     // expect(res.body).not.toHaveProperty('password'); // Password should not be returned
 
-    // console.log('✅ User info fetched successfully');
+    // console.log(' User info fetched successfully');
 
     console.log('FIXME: Complete implementation of user info fetching.');
   });
@@ -142,7 +142,7 @@ describe('Full User Flow Integration Tests', () => {
     // expect(testCourse.name).toBe('Test Course');
     // expect(testCourse.code).toBe('TEST101');
 
-    // console.log('✅ Courses fetched successfully');
+    // console.log(' Courses fetched successfully');
 
     console.log('FIXME: Complete implementation of course API fetching.');
   });
@@ -178,7 +178,7 @@ describe('Full User Flow Integration Tests', () => {
     // expect(res.body).toHaveProperty('course_id');
     // expect(res.body.course_id).toBe(courseId);
 
-    // console.log('✅ Attendance overview fetched successfully');
+    // console.log(' Attendance overview fetched successfully');
 
     console.log('FIXME: Complete test for attendance data retrieval.');
   });
@@ -190,7 +190,7 @@ describe('Full User Flow Integration Tests', () => {
     // });
 
     // expect(res.statusCode).toBeGreaterThanOrEqual(400);
-    // console.log('✅ Invalid password correctly rejected');
+    // console.log(' Invalid password correctly rejected');
 
     console.log('FIXME: Complete test for incorrect login attempt.');
   });
@@ -199,7 +199,7 @@ describe('Full User Flow Integration Tests', () => {
     //   const res = await request(app).post('/api/auth/register').send(testUser);
 
     //   expect(res.statusCode).toBeGreaterThanOrEqual(400);
-    //   console.log('✅ Duplicate email correctly rejected');
+    //   console.log(' Duplicate email correctly rejected');
 
     console.log('FIXME: Complete test for dupe login attempt.');
   });
