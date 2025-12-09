@@ -144,37 +144,70 @@ export function makeAttendanceController() {
     const course_id = req.body.course_id;
     try {
       const { activity_id, pin, email, roll_id } = req.body || {};
-      let userId = req.user?.user_id || req.session?.user?.user_id; // Assuming requireAuth attaches req.user or you check req.session
 
-      if (!userId) {
-        // FALLBACK LOGIC: If no session, require email/roll_id to find user
+      // ---------- Resolve userId ----------
+      let userId = req.user?.user_id || req.session?.user?.user_id; // session user
+      let courseIdNum = null;
+
+      if (userId) {
+        // Check if this session user is actually a student in this course
+        if (!course_id) {
+          const activityIdNum = Number(activity_id);
+          if (!Number.isInteger(activityIdNum)) {
+            return res.status(400).json({ error: 'activity_id must be an integer' });
+          }
+
+          const { rows } = await pool.query(
+            `SELECT course_id FROM activities WHERE activity_id = $1`,
+            [activityIdNum]
+          );
+
+          if (rows.length === 0) {
+            return res.status(404).json({ error: 'activity_not_found' });
+          }
+
+          courseIdNum = rows[0].course_id;
+        }
+
+        const { rows } = await pool.query(
+          `SELECT role FROM course_users WHERE user_id=$1 AND course_id=$2`,
+          [userId, courseIdNum]
+        );
+
+        if (rows.length === 0 || rows[0].role?.toLowerCase() !== 'student') {
+          // Fallback to email lookup if session user is not a student
+          if (!email || typeof email !== 'string') {
+            return res.status(400).json({ error: 'email is required for student check-in' });
+          }
+
+          const studentId = await getStudentUserIdByEmail(email.trim().toLowerCase());
+          if (!studentId) {
+            return res.status(404).json({ error: 'user_not_found_for_email' });
+          }
+          userId = studentId;
+        }
+      } else {
+        // No session user, fallback to email
         if (!email || typeof email !== 'string') {
           return res.status(400).json({ error: 'email is required' });
         }
-        userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
-        if (!userId) {
+        const studentId = await getStudentUserIdByEmail(email.trim().toLowerCase());
+        if (!studentId) {
           return res.status(404).json({ error: 'user_not_found_for_email' });
         }
+        userId = studentId;
       }
 
-      // if (!email || typeof email !== 'string') {
-      //   return res.status(400).json({ error: 'email is required' });
-      // }
+      console.log('Resolved userId for check-in:', userId, 'Email:', email);
 
+      // ---------- Validate PIN ----------
       if (!pin || typeof pin !== 'string' || pin.length !== 6) {
         return res.status(400).json({ error: 'pin must be a 6-digit string' });
       }
 
-      // // Resolve student user_id from email
-      // const userId = await getStudentUserIdByEmail(email.trim().toLowerCase());
-      // if (!userId) {
-      //   return res.status(404).json({ error: 'user_not_found_for_email' });
-      // }
-
-      // Resolve the activity
+      // ---------- Resolve activity ----------
       let activity;
       if (activity_id) {
-        // QR case: we know which activity this is
         const activityIdNum =
           typeof activity_id === 'string' ? Number.parseInt(activity_id, 10) : activity_id;
 
@@ -184,31 +217,29 @@ export function makeAttendanceController() {
 
         const { rows } = await pool.query(
           `SELECT activity_id, course_id, name, type, starts_at
-            FROM activities
-            WHERE activity_id = $1`,
+         FROM activities
+         WHERE activity_id = $1`,
           [activityIdNum]
         );
+
         if (rows.length === 0) {
           return res.status(404).json({ error: 'activity_not_found' });
         }
         activity = rows[0];
       } else if (course_id) {
-        // Manual case: course_id + pin, find currently-active activity
         const courseIdNum = Number.parseInt(course_id, 10);
-        // const courseIdNum =
-        //   typeof course_id === 'string' ? Number.parseInt(course_id, 10) : course_id;
         if (!Number.isInteger(courseIdNum)) {
           return res.status(400).json({ error: 'course_id must be an integer' });
         }
 
         const { rows } = await pool.query(
           `SELECT activity_id, course_id, name, type, starts_at
-            FROM activities
-            WHERE course_id = $1
-              AND starts_at <= (NOW() AT TIME ZONE 'UTC')
-              AND starts_at >= (NOW() AT TIME ZONE 'UTC' - INTERVAL '${ATTENDANCE_WINDOW_MINUTES} minutes')
-            ORDER BY starts_at DESC
-            LIMIT 1`,
+         FROM activities
+         WHERE course_id = $1
+           AND starts_at <= (NOW() AT TIME ZONE 'UTC')
+           AND starts_at >= (NOW() AT TIME ZONE 'UTC' - INTERVAL '${ATTENDANCE_WINDOW_MINUTES} minutes')
+         ORDER BY starts_at DESC
+         LIMIT 1`,
           [courseIdNum]
         );
 
@@ -222,12 +253,12 @@ export function makeAttendanceController() {
           .json({ error: 'either activity_id (QR) or course_id (manual) is required' });
       }
 
-      // Enforce time window around starts_at
+      // ---------- Enforce attendance window ----------
       if (!isWithinWindow(activity.starts_at)) {
         return res.status(400).json({ error: 'outside_attendance_window' });
       }
 
-      // Check that user is a student enrolled in the course
+      // ---------- Check enrollment ----------
       try {
         await assertStudentEnrolled(userId, activity.course_id);
       } catch (e) {
@@ -235,13 +266,13 @@ export function makeAttendanceController() {
         return res.status(status).json({ error: e.message });
       }
 
-      // Validate PIN (deterministic from activity_id)
+      // ---------- Validate PIN ----------
       const expectedPin = computePin(activity.activity_id);
       if (expectedPin !== pin) {
         return res.status(400).json({ error: 'invalid_pin' });
       }
 
-      // Upsert attendance row
+      // ---------- Upsert attendance ----------
       const attendanceRow = await upsertAttendance({
         userId,
         activityId: activity.activity_id,
@@ -252,7 +283,7 @@ export function makeAttendanceController() {
         message: 'checkin_success',
         attendance: attendanceRow,
         activity,
-        roll_id, // just echo back if you want
+        roll_id,
       });
     } catch (e) {
       console.error('checkinAttendance error:', e);
