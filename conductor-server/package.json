@@ -24,10 +24,10 @@
     "test:unit": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit --forceExit",
     "test": "npm run test:integration && npm run test:unit"
   },
-    "jest": {
+  "jest": {
     "testEnvironment": "node",
     "moduleNameMapper": {
-    "/^(.{1,2}\\/.*)\\.js$/": "$1"
+      "/^(.{1,2}\\/.*)\\.js$/": "$1"
     },
     "testMatch": [
       "**/tests/**/*.test.js"
@@ -37,7 +37,10 @@
       "!**/node_modules/**",
       "!**/tests/**"
     ],
-    "moduleFileExtensions": ["js", "json"]
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ]
   },
   "keywords": [],
   "author": "",
