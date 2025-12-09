@@ -10,6 +10,7 @@
 <body>
 <div class="header">
     <h1>CSE 210</h1>
+    <button id="backBtn" type="button">Back to Dashboard</button>
 </div>
 
 <div class="container">
@@ -150,5 +151,16 @@
 
 <script src="/js/instructor/courses.js"></script>
 <script src="/js/instructor/standup.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const backBtn = document.getElementById('backBtn');
+    if (!backBtn) return;
+
+    backBtn.addEventListener('click', () => {
+      window.location.href = '/instructor';
+    });
+  });
+</script>
+
 </body>
 </html>

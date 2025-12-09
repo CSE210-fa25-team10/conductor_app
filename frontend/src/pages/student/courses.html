@@ -12,21 +12,54 @@
 
 <div class="header">
     <h1 id="course-title">CSE 210</h1>
+    <button id="backBtn" type="button">Back to Dashboard</button>
 </div>
 
-<div class="top-right-menu">
+<!-- <div class="top-right-menu">
     <button id="view-attendance-btn" class="attendance-btn">
         View My Attendance
     </button>
-</div>
+</div> -->
 
 <div class="container">
     <div class="section">
         <div class="section-header">
             <span>Assignments</span>
             <span>→</span>
+
+            <div class="top-right-menu">
+                <button id="view-attendance-btn" class="attendance-btn">
+                    View My Attendance
+                </button>
+            </div>
         </div>
         <!--  Assignments loaded by courses.js    -->
+
+        <div class="card">
+            <div class="card-icon">🏔️</div>
+            <div class="card-content">
+                <div class="card-title">Assignment Title 1</div>
+                <div class="card-due">Due 7pm @ Nov 3, 2025</div>
+                <div class="card-status">
+                    <span class="status-icon checked"></span>
+                    <span>(Status) Submitted • at 1:12pm, Oct 30, 2025</span>
+                </div>
+            </div>
+            <div class="card-grade">Grade: 30/40</div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🏔️</div>
+            <div class="card-content">
+                <div class="card-title">Assignment Title 2</div>
+                <div class="card-due">Due 7pm @ Nov 4, 2025</div>
+                <div class="card-status">
+                    <span class="status-icon"></span>
+                    <span>(Status) Not Submitted • No Submission .</span>
+                </div>
+            </div>
+            <div class="card-grade">Grade: --/40</div>
+        </div>
     </div>
     <!-- Group Info Section - 根据角色动态显示 -->
     <div id="group-info-section"></div>
@@ -170,6 +203,17 @@
 
 <script src="/js/student/courses.js"></script>
 <script src="/js/student/standup.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const backBtn = document.getElementById('backBtn');
+    if (!backBtn) return;
+
+    backBtn.addEventListener('click', () => {
+      window.location.href = '/student';
+    });
+  });
+</script>
+
 </body>
 </html>
 

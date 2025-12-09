@@ -112,39 +112,86 @@
     }
     
     .section-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-top: 0;
-        padding-top: 15px;
-        border-top: 1px solid #e5e7eb;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-top: 0;
+      padding-top: 15px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    #backBtn {
+      margin-top: 24px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      background: #8b5cf6;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    }
+
+    #backBtn:hover {
+      background: #7c3aed;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.35);
+    }
+
+    #backBtn:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 4px rgba(124, 58, 237, 0.3);
     }
   </style>
 </head>
 <body>
 
 <div class="main-card">
-    <h2>My Attendance</h2>
+  <h2>My Attendance</h2>
 
-    <div class="summary-info">
-        <strong>Course:</strong> <span id="courseName">CSE 101</span>
+  <div class="summary-info">
+    <strong>Course:</strong> <span id="courseName">CSE 101</span>
+  </div>
+
+  <div id="myCard" class="card">
+    <div class="title">My overall attendance</div>
+    <span id="myStats"></span>
+    
+    <div class="bar">
+      <div id="myBar" class="bar-inner"></div>
     </div>
 
-    <div id="myCard" class="card">
-        <div class="title">My overall attendance</div>
-        <span id="myStats"></span>
-        
-        <div class="bar">
-            <div id="myBar" class="bar-inner"></div>
-        </div>
+    <h3 class="section-title">Team Attendance Records</h3>
+    <ul id="groupList">
+      <li>Loading group data...</li>
+    </ul>
+  </div>
 
-        <h3 class="section-title">Team Attendance Records</h3>
-        <ul id="groupList">
-            <li>Loading group data...</li>
-        </ul>
-    </div>
+  <button id="backBtn" type="button">Back to Course</button>
 </div>
 
 <script src="/js/student/my_attendance.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const backBtn = document.getElementById('backBtn');
+
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        const params = new URLSearchParams(window.location.search);
+        const courseId = params.get('course_id');
+        if (courseId) {
+          window.location.href = `/course/${courseId}`;
+
+        } else {
+          console.error('No course_id in query string');
+          window.location.href = '/student/dashboard';
+        }
+      });
+    }
+  });
+</script>
+
 </body>
 </html>

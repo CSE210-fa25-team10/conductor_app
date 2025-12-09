@@ -18,6 +18,7 @@ import { makeAuthController } from '../controllers/authController.js';
 import { makeQueryController } from '../controllers/queryController.js';
 import { makeAttendanceController } from '../controllers/attendanceController.js';
 import { makeStandUpController } from '../controllers/standupController.js';
+import { makeGroupController } from '../controllers/groupController.js';
 // import { makeClassController } from '../adapters/in/http/ClassController.js';
 
 // UTILITIES
@@ -60,6 +61,7 @@ export function buildContainer() {
   const authController = makeAuthController();
   const attendanceController = makeAttendanceController({});
   const standupController = makeStandUpController({});
+  const groupController = makeGroupController({});
   //   const authController = makeAuthController({ loginUser });
   //   const classController = makeClassController({ searchClasses });
 
@@ -72,6 +74,7 @@ export function buildContainer() {
     authController,
     attendanceController,
     standupController,
+    groupController,
     // classController,
     // loginUser,
     // searchClasses,

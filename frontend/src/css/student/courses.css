@@ -82,10 +82,14 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.top-right-menu {
+/* .top-right-menu {
     position: absolute;
     top: 20px;
     right: 20px;
+} */
+
+.top-right-menu {
+  margin-left: auto;  /* forces the button to the far right */
 }
 
 .attendance-btn {
@@ -374,6 +378,17 @@ save-btn {
     margin-bottom: 0;
 }
 
+.journal-date-link {
+    transition: background-color 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+}
+
+/* Hover effect */
+.journal-date-link:hover {
+    background-color: #eef2ff;  
+    color: #1e1b4b;              
+}
+
 /* 2. Fix Date Header Spacing */
 .pulse-user-and-time {
     /* This container holds only the date span now */
@@ -609,3 +624,23 @@ save-btn {
     margin-top: 0.75rem; 
     text-align: center;
 }
+
+#backBtn{
+      margin-top: 24px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      background: #8b5cf6;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    }
+
+    #backBtn:hover {
+      background: #7c3aed;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.35);
+    }

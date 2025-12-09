@@ -111,6 +111,41 @@ function hideGroupDetailModal() {
     document.getElementById('group-detail-modal').classList.remove('active');
 }
 
+async function getCourseInfoById() {
+    const pathParts = window.location.pathname.split('/');
+    const courseId = pathParts[pathParts.length - 1];
+
+    console.log('Course ID:', courseId);
+
+    try {
+        const res = await fetch(`/api/postman/course?course_id=${courseId}`, {
+            method: "GET",
+            credentials: "include",
+        });
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to fetch course');
+        }
+
+        const courseData = await res.json();
+        console.log('Course data:', courseData);
+        return courseData;
+
+    } catch (e) {
+        console.error('Error fetching course:', e);
+        // alert('Error fetching course: ' + e.message);
+    }
+}
+
+
+getCourseInfoById()
+    .then(course => {
+        document.getElementById('course-title').textContent = course.name + " " + course.code;
+    })
+    .catch(err => {
+        console.error('Error fetching course:', err);
+    });
+    
 function getCourseIdFromPath() {
     const pathParts = window.location.pathname.split('/');
     const courseId = Number.parseInt(pathParts[pathParts.length - 1], 10);
