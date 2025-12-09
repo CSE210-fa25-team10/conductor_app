@@ -26,8 +26,6 @@ import { makeAttendanceController } from '../controllers/attendanceController.js
 import { makeStandUpController } from '../controllers/standupController.js';
 import { makeCourseController } from '../controllers/courseController.js';
 
-import { makeGroupController } from '../controllers/groupController.js';
-// import { makeClassController } from '../adapters/in/http/ClassController.js';
 
 // UTILITIES
 // import { makePasswordHasher } from './passwordHasher.js';
