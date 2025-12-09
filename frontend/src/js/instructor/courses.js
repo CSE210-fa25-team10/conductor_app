@@ -17,6 +17,78 @@ const groupIconSVG = `
 
 const userRole = "prof";
 
+const API_BASE = 'http://localhost:3000';
+
+async function getAssignmentsByCourseId() {
+    const pathParts = window.location.pathname.split('/');
+    const courseId = pathParts[pathParts.length - 1];
+
+    try {
+        const res = await fetch(`${API_BASE}/api/postman/assignment?course_id=${courseId}`, {
+            method: "GET",
+            credentials: "include",
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to fetch assignments');
+        }
+
+        const assignmentsData = await res.json();
+        console.log('assignments data:', assignmentsData);
+        return assignmentsData;
+    } catch (e) {
+        console.error('Error fetching assignments:', e);
+        return [];
+    }
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    };
+    const formatted = date.toLocaleString('en-US', options);
+    return formatted.replace(',', ' @');
+}
+
+function renderAssignments(assignments) {
+    const column = document.querySelector('.column');
+
+    const existingCards = column.querySelectorAll('.item-card');
+    existingCards.forEach(card => card.remove());
+
+    assignments.forEach(assignment => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+
+        const dueDate = assignment.due_date ? formatDate(assignment.due_date) : 'No due date';
+
+        card.innerHTML = `
+      <div class="card-left">
+        <div class="card-icon">🏔️</div>
+        <div class="card-info">
+          <div class="card-title">${assignment.name}</div>
+          <div class="card-meta">Due ${dueDate}</div>
+        </div>
+      </div>
+    `;
+        column.appendChild(card);
+    });
+}
+
+async function initAssignments() {
+    const assignments = await getAssignmentsByCourseId();
+    if (assignments && assignments.length > 0) {
+        renderAssignments(assignments);
+    }
+}
+document.addEventListener('DOMContentLoaded', initAssignments);
 function showModal(type) {
     document.getElementById('modal-overlay').classList.add('active');
     document.getElementById(type + '-modal').classList.add('active');

@@ -44,6 +44,10 @@ export function makePageRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/attendance.html'));
   });
 
+  // Instructor: publish assignments
+  router.get('/instructor/courses/:courseId/assignments', requireAuth('instructor'), (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/instructor/publish_assignment.html'));
+  });
   /**
    * ===== STUDENT ROUTES =====
    */
