@@ -209,13 +209,19 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const backBtn = document.getElementById('backBtn');
+    if (!backBtn) return;
 
-    if (backBtn) {
+    const parts = window.location.pathname.split('/');
+    const id = parts[parts.length - 2];
+    const courseId = Number.parseInt(id, 10);
+
+    if (Number.isInteger(courseId) && courseId > 0) {
       backBtn.addEventListener('click', () => {
-        const parts = window.location.pathname.split('/');
-        const courseId = parts[parts.length - 1];  
         window.location.href = `/instructor/courses/${courseId}`;
       });
+    } else {
+      console.error('Invalid courseId in path:', id);
+      backBtn.disabled = true;
     }
   });
 </script>
