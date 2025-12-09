@@ -8,7 +8,7 @@ export function makeCourseRouter({ courseController }) {
   //    Only instructors can create courses
   router.post(
     '/',
-    requireAuth('instructor'), // 
+    requireAuth('instructor'), //
     (req, res, next) => courseController.create(req, res, next)
   );
 
@@ -16,14 +16,14 @@ export function makeCourseRouter({ courseController }) {
   //    Any authenticated user can join
   router.post(
     '/:courseId/join',
-    requireAuth(), // 
+    requireAuth(), //
     (req, res, next) => courseController.join(req, res, next)
   );
 
   // 3. Logged-in user: list all their courses (+ role)
   router.get(
     '/me',
-    requireAuth(), // 
+    requireAuth(), //
     (req, res, next) => courseController.myCourses(req, res, next)
   );
 

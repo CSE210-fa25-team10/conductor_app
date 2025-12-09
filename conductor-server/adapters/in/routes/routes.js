@@ -14,7 +14,6 @@ import { makeJsRouter } from './jsRouter.js';
 import { makeCourseRouter } from './courseRoutes.js';
 
 export function mountRoutes(app, container) {
-
   // Auth APIs
   app.use('/api/auth', makeAuthRouter({ authController: container.authController }));
 
