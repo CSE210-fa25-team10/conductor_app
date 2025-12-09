@@ -1,5 +1,6 @@
 // conductor-server/tests/helpers/testHelpers.js
 import { pool } from '../../db.js';
+import bcrypt from 'bcrypt'; // <--- ADDED IMPORT
 
 /**
  * Create a test user in the database
@@ -7,11 +8,14 @@ import { pool } from '../../db.js';
 export async function createTestUser(userData) {
   const { name, email, password, role, pronouns, phone, availability, slack } = userData;
 
+  // HASH THE PASSWORD
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   const result = await pool.query(
     `INSERT INTO users (name, email, password, role, pronouns, phone, availability, slack)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      RETURNING user_id, name, email, role, pronouns, phone, availability, slack`,
-    [name, email, password, role, pronouns || null, phone || null, availability || null, slack || null]
+    [name, email, hashedPassword, role, pronouns || null, phone || null, availability || null, slack || null]
   );
 
   return result.rows[0];
@@ -69,8 +73,8 @@ export async function createAttendance(userId, activityId, present = true) {
     `INSERT INTO attendance (user_id, activity_id, present)
      VALUES ($1, $2, $3)
      ON CONFLICT (user_id, activity_id) 
-     DO UPDATE SET present = $3, checked_in_at = NOW()
-     RETURNING user_id, activity_id, present, checked_in_at`,
+     DO UPDATE SET present = $3
+     RETURNING user_id, activity_id, present`,
     [userId, activityId, present]
   );
 
@@ -154,7 +158,6 @@ export async function cleanupTestCourse(courseId) {
   await pool.query('DELETE FROM activities WHERE course_id = $1', [courseId]);
   await pool.query('DELETE FROM course_users WHERE course_id = $1', [courseId]);
   await pool.query('DELETE FROM course_groups WHERE course_id = $1', [courseId]);
-  await pool.query('DELETE FROM standup_feedback WHERE course_id = $1', [courseId]);
   await pool.query('DELETE FROM courses WHERE course_id = $1', [courseId]);
 }
 
@@ -195,7 +198,6 @@ export async function waitForDatabase(maxRetries = 10) {
  * Create a test session cookie for authenticated requests
  */
 export function createSessionCookie(sessionData) {
-  // This would need to match your session configuration
   return `conductor.sid=${encodeURIComponent(JSON.stringify(sessionData))}`;
 }
 
@@ -290,11 +292,7 @@ export async function runConcurrentQueries(queries) {
   };
 }
 
-/**
- * Setup test database with sample data
- */
 export async function setupTestDatabase() {
-  // Create sample users
   const users = await Promise.all([
     createTestUser({
       name: 'John Instructor',
@@ -316,7 +314,6 @@ export async function setupTestDatabase() {
     }),
   ]);
 
-  // Create sample course
   const course = await createTestCourse({
     name: 'Software Engineering',
     code: 'CS401',
@@ -324,12 +321,10 @@ export async function setupTestDatabase() {
     description: 'Advanced software engineering course',
   });
 
-  // Enroll users in course
   await enrollUserInCourse(users[0].user_id, course.course_id, 'instructor');
   await enrollUserInCourse(users[1].user_id, course.course_id, 'student');
   await enrollUserInCourse(users[2].user_id, course.course_id, 'student');
 
-  // Create sample activities
   const activities = await Promise.all([
     createTestActivity({
       courseId: course.course_id,
@@ -343,7 +338,6 @@ export async function setupTestDatabase() {
     }),
   ]);
 
-  // Create sample group
   const group = await createTestGroup({
     name: 'Team Alpha',
     slack: '#team-alpha',
@@ -361,9 +355,6 @@ export async function setupTestDatabase() {
   };
 }
 
-/**
- * Teardown test database
- */
 export async function teardownTestDatabase(testData) {
   const { users, course, group } = testData;
 

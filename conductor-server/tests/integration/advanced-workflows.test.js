@@ -1,5 +1,5 @@
 // conductor-server/tests/integration/advanced-workflows.test.js
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals'; // ADDED beforeEach
 import request from 'supertest';
 import { pool } from '../../db.js';
 import app from '../../server.js';
@@ -269,6 +269,17 @@ describe('Advanced Workflow & Performance Tests', () => {
 
   // ==================== PERFORMANCE BENCHMARKS ====================
   describe('Performance Benchmarks', () => {
+    // FIX: Re-authenticate aggressively to avoid 401 errors using beforeEach
+    beforeEach(async () => {
+      // Reset the agent to ensure clean session
+      instructorAgent = request.agent(app);
+      await instructorAgent.post('/api/auth/login').send({
+        email: instructor.email,
+        password: 'ProfPass123!',
+      });
+      await new Promise(resolve => setTimeout(resolve, 50));
+    });
+
     it('should retrieve user profile efficiently', async () => {
       const { result, executionTime } = await measureQueryTime(() =>
         instructorAgent.get('/api/postman/user')

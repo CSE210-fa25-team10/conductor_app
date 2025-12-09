@@ -1,7 +1,9 @@
 import { OAuth2Client } from 'google-auth-library';
-import { Pool } from 'pg';
+// import { Pool } from 'pg'; // REMOVED: conflicting import
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import { pool } from '../db.js'; // ADDED: Use the shared pool
+
 dotenv.config();
 
 const client = new OAuth2Client(
@@ -10,9 +12,10 @@ const client = new OAuth2Client(
   `http://localhost:3000/api/auth/google/callback`
 );
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/conductor',
-});
+// REMOVED: This block caused the SASL error (missing password) and the SyntaxError (duplicate variable)
+// const pool = new Pool({
+//   connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/conductor',
+// });
 
 export const login = async (loginData) => {
   const { email, password } = loginData;
