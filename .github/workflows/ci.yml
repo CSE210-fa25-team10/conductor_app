@@ -103,7 +103,7 @@ jobs:
           DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
           SESSION_SECRET: ci-test-secret
           NODE_ENV: test
-        run: npm test -- --runTestsByPath tests/unit/ec2Controller.test.js
+        run: npm run test:ec2
         working-directory: conductor-server
 
   frontend-tests:
