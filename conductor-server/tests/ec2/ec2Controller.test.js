@@ -1,10 +1,11 @@
 // conductor-server/tests/unit/ec2Controller.test.js
 
-import { describe, it, jest } from '@jest/globals';
-import { startEc2Instance, stopEc2Instance, getEc2InstanceStatus } from '../../controllers/ec2Controller.js';
-
-// Mock AWS SDK EC2 client (v3 example)
-import { EC2Client, StartInstancesCommand, StopInstancesCommand, DescribeInstancesCommand } from '@aws-sdk/client-ec2';
+import { describe, it, expect, jest } from '@jest/globals';
+import {
+  startEc2Instance,
+  stopEc2Instance,
+  getEc2InstanceStatus,
+} from '../../controllers/ec2Controller.js';
 
 jest.mock('@aws-sdk/client-ec2', () => {
   const mockSend = jest.fn();
@@ -14,6 +15,8 @@ jest.mock('@aws-sdk/client-ec2', () => {
     StopInstancesCommand: jest.fn(),
     DescribeInstancesCommand: jest.fn(),
     __esModule: true,
+    // Export the mock so tests can tweak responses:
+    __mockSend: mockSend,
   };
 });
 
