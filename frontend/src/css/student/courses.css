@@ -334,7 +334,37 @@ body {
     font-size: 14px;
     color: #666;
 }
+.group-details {
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: #f9f9f9;
+    line-height: 1.6;
+}
 
+.group-details p {
+    margin-bottom: 10px;
+    margin-top: 0;
+    color: #333;
+}
+
+.group-details strong {
+    font-weight: 700;
+    color: #5a5a5a;
+    margin-right: 5px;
+    font-size: 1em;
+}
+
+.group-details a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.group-details a:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
 .emoji-btn.selected-emoji {
     /* Use a contrasting color to indicate selection, e.g., an indigo/blue ring */
     box-shadow: 0 0 0 3px #6366f1; /* focus:ring-indigo-500 equivalent */
