@@ -1,5 +1,4 @@
 // controllers/ec2Controller.js
-
 import {
   EC2Client,
   StartInstancesCommand,
@@ -7,143 +6,170 @@ import {
   DescribeInstancesCommand,
 } from '@aws-sdk/client-ec2';
 
+const DEFAULT_REGION = process.env.AWS_REGION || 'us-east-1';
+
 // ---------- Helpers ----------
 
-// Simple instance-id validator (not perfect, but catches obvious mistakes)
-function isValidInstanceId(id) {
-  return typeof id === 'string' && /^i-[a-f0-9]{8,}$/.test(id);
+// Create an EC2 client for a given region (or default)
+function createEc2Client(region) {
+  const finalRegion = region || DEFAULT_REGION;
+  return new EC2Client({ region: finalRegion });
 }
 
-function getRegionFromRequest(req) {
-  return (
-    (req.body && req.body.region) ||
-    (req.query && req.query.region) ||
-    process.env.AWS_REGION ||
-    'us-east-1'
-  );
+// Basic validation for an EC2 instance ID
+function normalizeInstanceId(rawId) {
+  if (!rawId || typeof rawId !== 'string') return null;
+  const id = rawId.trim();
+  // Very simple check: real EC2 IDs are like "i-0123abcd..."
+  const re = /^i-[0-9a-fA-F]+$/;
+  if (!re.test(id)) return null;
+  return id;
 }
 
-function makeDefaultEc2Client(region) {
-  return new EC2Client({ region });
-}
+// Map AWS EC2 errors to HTTP status + error payload
+function mapEc2Error(err) {
+  const name = err?.name || '';
 
-function mapEc2ErrorToHttp(error) {
-  // Map common instance ID issues to 400-level
-  if (
-    error?.name === 'InvalidInstanceID.Malformed' ||
-    error?.name === 'InvalidInstanceID.NotFound'
-  ) {
-    return { status: 400, body: { error: 'invalid_instance_id' } };
+  if (name === 'InvalidInstanceID.Malformed' || name === 'InvalidInstanceID.NotFound') {
+    return {
+      status: 400,
+      body: { error: 'invalid_instance_id', message: err.message },
+    };
   }
 
-  // Fallback: 500 for generic AWS failures
-  return { status: 500, body: { error: 'aws_ec2_error' } };
+  // Fallback: internal error
+  return {
+    status: 500,
+    body: { error: 'aws_ec2_error', message: err.message || 'Unknown EC2 error' },
+  };
 }
 
-// ---------- Factory ----------
+// ---------- 1. Start EC2 instance ----------
 //
-// This mirrors makeAttendanceController: you can inject a custom EC2 client
-// for testing, or let it create a default one.
+// POST /api/ec2/start
+// body: { instanceId, region? }
 //
+export async function startEc2Instance(req, res) {
+  const { instanceId: rawInstanceId, region } = req.body || {};
 
-export function makeEc2Controller({ ec2Client } = {}) {
-  // lazy client: created per-request region if not injected
-  function getClient(region) {
-    return ec2Client || makeDefaultEc2Client(region);
+  const instanceId = normalizeInstanceId(rawInstanceId);
+  if (!instanceId) {
+    return res.status(400).json({ error: 'invalid_instance_id' });
   }
 
-  // ---------- 1. Start EC2 instance ----------
-  //
-  // POST /api/ec2/start
-  // body: { instanceId, region? }
-  //
-  async function startEc2Instance(req, res) {
-    const { instanceId } = req.body || {};
-    const region = getRegionFromRequest(req);
+  try {
+    const client = createEc2Client(region);
+    const cmd = new StartInstancesCommand({
+      InstanceIds: [instanceId],
+    });
 
-    if (!isValidInstanceId(instanceId)) {
-      return res.status(400).json({ error: 'invalid_instance_id' });
-    }
+    const resp = await client.send(cmd);
+    const starting = resp.StartingInstances?.[0];
+    const state = starting?.CurrentState?.Name || 'unknown';
 
-    try {
-      const client = getClient(region);
-      const cmd = new StartInstancesCommand({
-        InstanceIds: [instanceId],
-      });
-      const result = await client.send(cmd);
+    return res.status(200).json({
+      instanceId,
+      state,
+      previousState: starting?.PreviousState?.Name || null,
+      region: region || DEFAULT_REGION,
+    });
+  } catch (err) {
+    console.error('startEc2Instance error:', err);
+    const { status, body } = mapEc2Error(err);
+    return res.status(status).json(body);
+  }
+}
 
-      const first = result.StartingInstances?.[0];
-      const state = first?.CurrentState?.Name || 'unknown';
+// ---------- 2. Stop EC2 instance ----------
+//
+// POST /api/ec2/stop
+// body: { instanceId, region? }
+//
+export async function stopEc2Instance(req, res) {
+  const { instanceId: rawInstanceId, region } = req.body || {};
 
-      return res.status(200).json({
-        instanceId,
-        state,
-        region,
-      });
-    } catch (err) {
-      console.error('startEc2Instance error:', err);
-      const mapped = mapEc2ErrorToHttp(err);
-      return res.status(mapped.status).json(mapped.body);
-    }
+  const instanceId = normalizeInstanceId(rawInstanceId);
+  if (!instanceId) {
+    return res.status(400).json({ error: 'invalid_instance_id' });
   }
 
-  // ---------- 2. Stop EC2 instance ----------
-  //
-  // POST /api/ec2/stop
-  // body: { instanceId, region? }
-  //
-  async function stopEc2Instance(req, res) {
-    const { instanceId } = req.body || {};
-    const region = getRegionFromRequest(req);
+  try {
+    const client = createEc2Client(region);
+    const cmd = new StopInstancesCommand({
+      InstanceIds: [instanceId],
+    });
 
-    if (!isValidInstanceId(instanceId)) {
-      return res.status(400).json({ error: 'invalid_instance_id' });
-    }
+    const resp = await client.send(cmd);
+    const stopping = resp.StoppingInstances?.[0];
+    const state = stopping?.CurrentState?.Name || 'unknown';
 
-    try {
-      const client = getClient(region);
-      const cmd = new StopInstancesCommand({
-        InstanceIds: [instanceId],
-      });
-      const result = await client.send(cmd);
+    return res.status(200).json({
+      instanceId,
+      state,
+      previousState: stopping?.PreviousState?.Name || null,
+      region: region || DEFAULT_REGION,
+    });
+  } catch (err) {
+    console.error('stopEc2Instance error:', err);
+    const { status, body } = mapEc2Error(err);
+    return res.status(status).json(body);
+  }
+}
 
-      const first = result.StoppingInstances?.[0];
-      const state = first?.CurrentState?.Name || 'unknown';
+// ---------- 3. Get EC2 instance status ----------
+//
+// GET /api/ec2/status/:instanceId?region=us-east-1
+//
+export async function getEc2InstanceStatus(req, res) {
+  const rawInstanceId = req.params?.instanceId || req.query?.instanceId;
+  const region = req.query?.region;
 
-      return res.status(200).json({
-        instanceId,
-        state,
-        region,
-      });
-    } catch (err) {
-      console.error('stopEc2Instance error:', err);
-      const mapped = mapEc2ErrorToHttp(err);
-      return res.status(mapped.status).json(mapped.body);
-    }
+  const instanceId = normalizeInstanceId(rawInstanceId);
+  if (!instanceId) {
+    return res.status(400).json({ error: 'invalid_instance_id' });
   }
 
-  // ---------- 3. Get EC2 instance status ----------
-  //
-  // GET /api/ec2/:instanceId/status?region=...
-  //
-  async function getEc2InstanceStatus(req, res) {
-    const instanceId = req.params?.instanceId;
-    const region = getRegionFromRequest(req);
+  try {
+    const client = createEc2Client(region);
+    const cmd = new DescribeInstancesCommand({
+      InstanceIds: [instanceId],
+    });
 
-    if (!isValidInstanceId(instanceId)) {
-      return res.status(400).json({ error: 'invalid_instance_id' });
+    const resp = await client.send(cmd);
+    const reservation = resp.Reservations?.[0];
+    const instance = reservation?.Instances?.[0];
+
+    if (!instance) {
+      return res.status(404).json({ error: 'instance_not_found' });
     }
 
-    try {
-      const client = getClient(region);
-      const cmd = new DescribeInstancesCommand({
-        InstanceIds: [instanceId],
-      });
-      const result = await client.send(cmd);
+    const state = instance.State?.Name || 'unknown';
+    const type = instance.InstanceType || null;
+    const az = instance.Placement?.AvailabilityZone || null;
 
-      const reservation = result.Reservations?.[0];
-      const instance = reservation?.Instances?.[0];
+    return res.status(200).json({
+      instanceId,
+      state,
+      instanceType: type,
+      availabilityZone: az,
+      region: region || DEFAULT_REGION,
+    });
+  } catch (err) {
+    console.error('getEc2InstanceStatus error:', err);
+    const { status, body } = mapEc2Error(err);
+    return res.status(status).json(body);
+  }
+}
 
-      if (!instance) {
-        return res.status(404).json({ error: 'instance_not_found' });
-      }
+// ---------- Factory (similar to makeAttendanceController) ----------
+//
+// This lets you follow the same pattern as the attendance controller:
+//   const { startEc2Instance, stopEc2Instance, getEc2InstanceStatus } = makeEc2Controller();
+//
+export function makeEc2Controller() {
+  return Object.freeze({
+    startEc2Instance,
+    stopEc2Instance,
+    getEc2InstanceStatus,
+  });
+}
