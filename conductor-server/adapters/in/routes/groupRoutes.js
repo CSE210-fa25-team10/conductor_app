@@ -9,7 +9,7 @@ export function makeGroupRouter({ groupController }) {
   router.get('/users/me-id', requireAuth('student'), groupController.getUserIdofCurrentUser);
 
   // to get user names of all users of that group
-  router.get('/users/:userIds', requireAuth('student'), groupController.getUsersByIds); 
+  router.get('/users/:userIds', requireAuth('student'), groupController.getUsersByIds);
 
   // Get all student groups for a course
   router.get('/:courseId', requireInstructorOrTA, groupController.getGroupsByCourse);
