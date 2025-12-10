@@ -106,6 +106,13 @@ jobs:
           NODE_ENV: test
         run: npm run test:integration
         working-directory: conductor-server
+      - name: Run Backend EC2 Unit Tests
+        env:
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+          SESSION_SECRET: ci-test-secret
+          NODE_ENV: test
+        run: npm run test:ec2
+        working-directory: conductor-server
 
   frontend-tests:
     name: Frontend Unit Tests (Jest)
