@@ -106,6 +106,7 @@ jobs:
           NODE_ENV: test
         run: npm run test:integration
         working-directory: conductor-server
+      
       - name: Run Backend EC2 Unit Tests
         env:
           DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
@@ -143,7 +144,6 @@ jobs:
       - name: Run Jest unit tests
         working-directory: frontend
         run: npm run test:unit
-        # Uses jest.config.js which looks for src/tests/unit/**/*.test.js
 
   e2e-tests:
     name: End-to-End Tests (Playwright)
@@ -184,28 +184,29 @@ jobs:
           NODE_ENV: test
           PORT: 3000
           DATABASE_URL: postgresql://appuser:apppassword@db:5432/conductor
-          CORS_ORIGIN: http://localhost:8080
+          CORS_ORIGIN: http://localhost:3000
           SESSION_SECRET: e2e-secret-key
 
       - name: Wait for Services to be Ready
         run: |
-          echo "Waiting for services to start..."
-          sleep 10
+          echo "⏳ Waiting for services to start..."
+          sleep 15
           
-          echo "Checking backend health..."
-          curl -f http://localhost:3000/health || echo "Backend not responding yet"
+          echo "🔍 Checking backend health..."
+          curl -f http://localhost:3000/login -I || echo "⚠️ Backend not responding yet"
           
-          echo "Checking frontend..."
-          curl -f http://localhost:8080 || echo "Frontend not responding yet"
+          echo "🔍 Verifying register endpoint..."
+          curl -f http://localhost:3000/register -I || echo "⚠️ Register endpoint not ready"
           
           echo "✅ Services should be ready"
 
       - name: Run Playwright E2E Tests
         working-directory: frontend
         run: npm run test:e2e
-        # Uses playwright.config.js which looks for src/tests/e2e/**/*.spec.js
         env:
-          BASE_URL: http://localhost:8080
+          BASE_URL: http://localhost:3000
+          # CRITICAL: Backend (port 3000) serves HTML pages via pageRouter.js
+          # nginx (port 8080) only serves static CSS/JS files
 
       - name: Upload Playwright Report
         if: always()

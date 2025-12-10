@@ -18,8 +18,9 @@ test.describe('Profile Workflows', () => {
         await page.fill('#confirmPassword', password);
         await page.click('#registerButton');
         
-        // Wait for redirect to login
-        await expect(page).toHaveURL(/\/login/, { timeout: 5000 });
+        // Wait for success message and redirect to login
+        await expect(page.locator('#registerSuccess')).toBeVisible({ timeout: 5000 });
+        await expect(page).toHaveURL(/\/login/, { timeout: 3000 });
         
         // 2. Login
         await page.fill('#email', email);

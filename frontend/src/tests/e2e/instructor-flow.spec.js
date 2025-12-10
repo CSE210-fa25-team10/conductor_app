@@ -23,8 +23,11 @@ test.describe('Instructor Core Workflows', () => {
         await page.fill('#confirmPassword', instructorPass);
         await page.click('#registerButton');
         
-        // Ensure registration redirects to login
-        await expect(page).toHaveURL(/\/login/, { timeout: 5000 });
+        // Wait for success message to appear (registration succeeded)
+        await expect(page.locator('#registerSuccess')).toBeVisible({ timeout: 5000 });
+        
+        // Then wait for automatic redirect to login (has 900ms setTimeout)
+        await expect(page).toHaveURL(/\/login/, { timeout: 3000 });
         await context.close();
     });
 

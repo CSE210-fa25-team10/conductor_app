@@ -35,11 +35,12 @@ test.describe('E2E Login and Navigation Flow', () => {
         // Submit
         await page.click('#registerButton');
         
-        // Check for success message
+        // Wait for success message (confirms registration succeeded)
+        await expect(page.locator('#registerSuccess')).toBeVisible({ timeout: 5000 });
         await expect(page.locator('#registerSuccess')).toContainText(/created successfully/i);
         
-        // Should redirect to login after success
-        await expect(page).toHaveURL(/\/login/, { timeout: 5000 });
+        // Should redirect to login after success (has 900ms setTimeout in register.js)
+        await expect(page).toHaveURL(/\/login/, { timeout: 3000 });
     });
 
     test('should successfully log in and redirect to student dashboard', async ({ page }) => {
@@ -56,8 +57,9 @@ test.describe('E2E Login and Navigation Flow', () => {
         await page.fill('#confirmPassword', testPass);
         await page.click('#registerButton');
         
-        // Wait for redirect to login
-        await expect(page).toHaveURL(/\/login/, { timeout: 5000 });
+        // Wait for success message and redirect
+        await expect(page.locator('#registerSuccess')).toBeVisible({ timeout: 5000 });
+        await expect(page).toHaveURL(/\/login/, { timeout: 3000 });
         
         // 2. Perform Login
         await page.fill('#email', testEmail);
@@ -82,8 +84,9 @@ test.describe('E2E Login and Navigation Flow', () => {
         await page.fill('#confirmPassword', testPass);
         await page.click('#registerButton');
         
-        // Wait for redirect to login
-        await expect(page).toHaveURL(/\/login/, { timeout: 5000 });
+        // Wait for success message and redirect
+        await expect(page.locator('#registerSuccess')).toBeVisible({ timeout: 5000 });
+        await expect(page).toHaveURL(/\/login/, { timeout: 3000 });
         
         // 2. Login as instructor
         await page.fill('#email', testEmail);
