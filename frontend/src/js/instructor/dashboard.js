@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api/postman'; 
+const API_BASE_URL = '/api'; 
 
 async function apiCall(endpoint, options = {}) {
     try {
