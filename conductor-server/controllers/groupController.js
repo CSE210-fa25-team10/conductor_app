@@ -3,7 +3,7 @@ import {
   createCourseGroup,
   updateCourseGroup,
   deleteCourseGroup,
-  getUserNamesByIds
+  getUserNamesByIds,
 } from '../services/groupService.js';
 
 export function makeGroupController() {
@@ -107,7 +107,7 @@ export function makeGroupController() {
     const userId = req.user?.user_id || req.session?.user?.user_id;
     console.log('current id of user inside group controller', userId);
     if (!userId) {
-        return res.status(401).json({ error: 'User ID not found in session/token' });
+      return res.status(401).json({ error: 'User ID not found in session/token' });
     }
     res.json({ user_id: userId });
   }
