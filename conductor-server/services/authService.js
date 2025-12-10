@@ -54,7 +54,7 @@ export const login = async (loginData) => {
  * @returns {Promise<Object>} - A promise that resolves to the registered user
  */
 export const register = async (userData) => {
-  const { name, email, password, role, phone } = userData;
+  const { name, email, password, role } = userData;
   // check to see if the email exists, if so, throw an error
   const checkQuery = 'SELECT user_id FROM users WHERE email = $1';
   const checkResult = await pool.query(checkQuery, [email]);
@@ -64,10 +64,10 @@ export const register = async (userData) => {
   // hash the password before storing
   const hashedPassword = await bcrypt.hash(password, 10);
   // Insert user into the database
-  const query = `INSERT INTO users (name, email, password, role, phone)
-                 VALUES ($1, $2, $3, $4, $5)
+  const query = `INSERT INTO users (name, email, password, role)
+                 VALUES ($1, $2, $3, $4)
                  RETURNING user_id, name, email, role`;
-  const values = [name, email, hashedPassword, role, phone || null];
+  const values = [name, email, hashedPassword, role];
   const result = await pool.query(query, values);
   console.log('Registered user:', result.rows[0]);
   return {

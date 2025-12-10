@@ -1,9 +1,5 @@
 // src/js/login.js
 
-/**
- * Show an error message on the login form.
- * @param {string} msg - The error message to display.
- */
 function showError(msg) {
   const el = document.getElementById("loginError");
   if (!el) return;
@@ -14,10 +10,6 @@ function showError(msg) {
   if (success) success.style.display = "none";
 }
 
-/**
- * Show a success message on the login form.
- * @param {string} msg - The success message to display.
- */
 function showSuccess(msg) {
   const el = document.getElementById("loginSuccess");
   if (!el) return;
@@ -28,10 +20,6 @@ function showSuccess(msg) {
   if (error) error.style.display = "none";
 }
 
-/**
- * Attach event handlers for the login form.
- * Finds the form and wires submit and toggle-password behavior.
- */
 function attachLoginHandlers() {
   const form = document.getElementById("loginForm");
   const emailInput = document.getElementById("email");
