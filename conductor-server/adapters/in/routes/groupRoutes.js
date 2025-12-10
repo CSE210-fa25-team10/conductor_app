@@ -5,6 +5,12 @@ import { requireAuth, requireInstructorOrTA } from '../../../middleware/auth.js'
 export function makeGroupRouter({ groupController }) {
   const router = Router();
 
+  // To get current user's user_id
+  router.get('/users/me-id', requireAuth('student'), groupController.getUserIdofCurrentUser);
+
+  // to get user names of all users of that group
+  router.get('/users/:userIds', requireAuth('student'), groupController.getUsersByIds); 
+
   // Get all student groups for a course
   router.get('/:courseId', requireInstructorOrTA, groupController.getGroupsByCourse);
 

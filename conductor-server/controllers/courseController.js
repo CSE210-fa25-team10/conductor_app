@@ -43,7 +43,7 @@ export function makeCourseController({ courseService }) {
   async function create(req, res, next) {
     try {
       // TEMP: until auth is wired, allow userId from body
-      const userIdFromAuth = req.user?.user_id;
+      const userIdFromAuth = req.session?.user?.user_id;
       const userIdFromBody = req.body.userId;
       const userId = userIdFromAuth ?? userIdFromBody;
 
@@ -86,7 +86,7 @@ export function makeCourseController({ courseService }) {
    */
   async function join(req, res, next) {
     try {
-      const userIdFromAuth = req.user?.user_id;
+      const userIdFromAuth = req.session?.user?.user_id;
       const userIdFromBody = req.body.userId;
       const userId = userIdFromAuth ?? userIdFromBody;
 
@@ -123,7 +123,7 @@ export function makeCourseController({ courseService }) {
    */
   async function myCourses(req, res, next) {
     try {
-      const userIdFromAuth = req.user?.user_id;
+      const userIdFromAuth = req.session?.user?.user_id;
       const userIdFromQuery = req.query.userId && Number(req.query.userId);
       const userId = userIdFromAuth ?? userIdFromQuery;
 

@@ -61,5 +61,12 @@ export function makeAttendanceRouter({ attendanceController }) {
     attendanceController.getStudentCourseAttendanceOverview
   );
 
+  // 8. Instructor: Get latest 2 attendance activities for dashboard
+  router.get( 
+    '/courses/:courseId/latest-activities',
+    requireInstructorOrTA,
+    attendanceController.getLatestAttendance
+   );
+
   return router;
 }
