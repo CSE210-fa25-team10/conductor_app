@@ -388,6 +388,13 @@ function showSuccessMessage() {
 function handleProfileSubmit(e) {
   e.preventDefault();
 
+  // Clear any previous error messages
+  const phoneError = document.getElementById('phoneError');
+  if (phoneError) {
+    phoneError.style.display = 'none';
+    phoneError.textContent = '';
+  }
+
   const formData = new FormData(e.target);
   const data = {};
   formData.forEach((value, key) => {
@@ -397,6 +404,18 @@ function handleProfileSubmit(e) {
       data.phone = value;
     }
   });
+
+  // Validate phone number if provided
+  if (data.phone && data.phone.trim() !== '') {
+    const cleaned = data.phone.replace(/\D/g, '');
+    if (cleaned.length !== 10) {
+      if (phoneError) {
+        phoneError.textContent = "Phone number must be exactly 10 digits";
+        phoneError.style.display = 'block';
+      }
+      return;
+    }
+  }
 
   fetch("/api/user", {
     method: "POST",
@@ -734,9 +753,22 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
   // navigation
   const backBtn = document.getElementById("backToDashboard");
   if (backBtn) {
-    backBtn.addEventListener("click", function () {
-      // Always navigate back to the student dashboard URL
-      window.location.href = "/student";
+    backBtn.addEventListener("click", async function () {
+      // Fetch user role and navigate to appropriate dashboard
+      try {
+        const response = await fetch('/api/user', { credentials: 'include' });
+        if (response.ok) {
+          const userData = await response.json();
+          const role = userData.role || 'student';
+          window.location.href = role === 'instructor' ? '/instructor' : '/student';
+        } else {
+          // Default to student if fetch fails
+          window.location.href = "/student";
+        }
+      } catch (error) {
+        console.error('Error fetching user role:', error);
+        window.location.href = "/student";
+      }
     });
   }
 
