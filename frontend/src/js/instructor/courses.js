@@ -173,6 +173,63 @@ async function fetchAndCacheOverviewData(courseId) {
     }
 }
 
+async function getLatestAttendancesByCourseId() {
+    const courseId = getCourseIdFromPath();
+    if (!courseId) return [];
+
+    try {
+        const res = await fetch(`/api/attendance/courses/${courseId}/latest-activities`, {
+            method: "GET",
+            credentials: "include",
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to fetch latest attendances');
+        }
+
+        const activitiesData = await res.json();
+        console.log('Latest attendance data:', activitiesData);
+        return activitiesData;
+
+    } catch (e) {
+        console.error('Error fetching latest attendances:', e);
+        return [ 
+             { name: 'Attendance Title 1 (Error)', attended: 19, totalEnrolled: 20 },
+             { name: 'Attendance Title 2 (Error)', attended: 19, totalEnrolled: 20 }
+        ];
+    }
+}
+
+function renderAttendances(attendanceActivities) {
+    // Select the attendance column (assuming it's the second .column)
+    const columns = document.querySelectorAll('.column');
+    if (columns.length < 2) return;
+    const container = columns[1]; 
+
+    // Remove existing mock cards in the Attendance column (skipping the header)
+    const existingCards = container.querySelectorAll('.item-card');
+    existingCards.forEach(card => card.remove());
+    
+    // Add the dynamic content below the header
+    attendanceActivities.forEach(activity => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+
+        const metaText = `${activity.attended}/${activity.totalEnrolled} Attended`;
+
+        card.innerHTML = `
+            <div class="card-left">
+                <div class="card-icon">🏔️</div>
+                <div class="card-info">
+                    <div class="card-title">${activity.name}</div>
+                    <div class="card-meta">${metaText}</div>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
 
 function renderGroups() {
     if (userRole !== "prof") return;
@@ -275,12 +332,20 @@ function setupAttendanceButtons() {
     );
 }
 
+async function initAttendances() {
+    const activities = await getLatestAttendancesByCourseId();
+    // Only keep the latest 2 activities for the cards
+    const latestTwo = activities.slice(0, 2); 
+    if (latestTwo.length > 0) {
+        renderAttendances(latestTwo);
+    }
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     const courseId = getCourseIdFromPath();
 
     if (courseId) await fetchAndCacheOverviewData(courseId);
-
+    await initAttendances();
     setupAttendanceButtons();
     renderGroups();
 });

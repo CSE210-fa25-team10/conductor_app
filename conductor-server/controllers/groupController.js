@@ -3,6 +3,7 @@ import {
   createCourseGroup,
   updateCourseGroup,
   deleteCourseGroup,
+  getUserNamesByIds
 } from '../services/groupService.js';
 
 export function makeGroupController() {
@@ -76,7 +77,7 @@ export function makeGroupController() {
    */
   async function getMyGroup(req, res) {
     const courseId = req.params.courseId;
-    const userId = req.user.userId;
+    const userId = req.user?.user_id || req.session?.user?.user_id;
     try {
       const groups = await getCourseGroups(courseId);
       const myGroup = groups.find((group) => group.members.includes(userId));
@@ -90,11 +91,34 @@ export function makeGroupController() {
     }
   }
 
+  async function getUsersByIds(req, res) {
+    // Expecting a comma-separated list of IDs in the route param
+    const userIds = req.params.userIds.split(',');
+    try {
+      const users = await getUserNamesByIds(userIds);
+      res.json({ users });
+    } catch (err) {
+      console.error('getUsersByIds error:', err);
+      res.status(500).json({ error: 'Failed to fetch user names' });
+    }
+  }
+
+  async function getUserIdofCurrentUser(req, res) {
+    const userId = req.user?.user_id || req.session?.user?.user_id;
+    console.log('current id of user inside group controller', userId);
+    if (!userId) {
+        return res.status(401).json({ error: 'User ID not found in session/token' });
+    }
+    res.json({ user_id: userId });
+  }
+
   return {
     getGroupsByCourse,
     createGroup,
     updateGroup,
     deleteGroup,
     getMyGroup,
+    getUsersByIds,
+    getUserIdofCurrentUser,
   };
 }

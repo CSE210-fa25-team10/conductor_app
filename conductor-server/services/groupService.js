@@ -167,3 +167,31 @@ export async function deleteCourseGroup(courseId, groupId) {
     throw new Error('Group not found or does not belong to this course');
   }
 }
+
+
+/**
+ *
+ * @param {Array<string>} userIds - An array of user IDs
+ * @returns {Promise<Array<{user_id: string, name: string}>>} - A promise that resolves to an array of user objects with id and name
+ */
+export async function getUserNamesByIds(userIds) {
+  if (!userIds || userIds.length === 0) {
+    return [];
+  }
+  
+  // Create a placeholder string for the array parameters: $1, $2, $3, ...
+  const placeholders = userIds.map((_, i) => `$${i + 1}`).join(', ');
+  
+  const sql = `
+    SELECT user_id, name
+    FROM users
+    WHERE user_id IN (${placeholders});
+  `;
+  
+  const rows = await queryService.executeRawQuery(sql, userIds);
+  
+  return rows.map(row => ({
+    userId: row.user_id, // Map user_id to userId for consistency with frontend JS casing
+    name: row.name,
+  }));
+}

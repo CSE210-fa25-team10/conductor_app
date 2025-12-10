@@ -312,14 +312,14 @@ async function handleJoinClass(event) {
 
 
 async function joinCourse(joinData) {   
-    /* const response = await apiCall('/enroll', {
+     const response = await apiCall('/enroll', {
         method: 'POST',
         body: JSON.stringify({
             user_id: currentUserId,
             course_code: joinData.courseCode
         })
     });
-    */
+    
 
     console.warn("Backend missing enroll endpoint");
     showNotification('Enrollment API not implemented yet', 'error');
