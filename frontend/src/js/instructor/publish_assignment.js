@@ -3,7 +3,13 @@ console.log('Assignment script loaded');
 const API_BASE = 'http://localhost:3000';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // courseId 应该从 这里 取得http://localhost:3000/instructor/courses/1/assignments
+  const pathParts = window.location.pathname.split('/');
+  const courseId = pathParts[pathParts.length - 2];
+  console.log("id:", courseId);
   const courseIdInput = document.getElementById('courseIdInput');
+  courseIdInput.value = courseId;
+  courseIdInput.readOnly = true;
   const titleInput = document.getElementById('titleInput');
   const descInput = document.getElementById('descInput');
   const dueDateInput = document.getElementById('dueDateInput');
@@ -15,10 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const courseId = courseIdInput.value.trim();
     const title = titleInput.value.trim();
     const description = descInput.value.trim();
-    const dueAt = dueDateInput.value;
+    const dueDate = dueDateInput.value;
     const points = pointsInput.value.trim();
 
-    if (!courseId || !title || !dueAt || !points) {
+    if (!courseId || !title || !dueDate || !points) {
       showError('Please fill in all required fields (Course ID, Title, Date, Points).');
       return;
     }
@@ -29,15 +35,24 @@ document.addEventListener('DOMContentLoaded', () => {
     resultMsg.className = '';
 
     try {
-      const res = await fetch(`${API_BASE}/api/assignments/create`, {
+      console.log('req',{
+        course_id: Number(courseId),
+        name:title,
+        description: description || null,
+        due_date: dueDate,
+        created_by: null,
+        points_possible: Number(points)
+      });
+      const res = await fetch(`${API_BASE}/api/postman/assignment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
           course_id: Number(courseId),
-          title,
-          description,
-          due_at: dueAt, 
+          name:title,
+          description: description || null,
+          due_date: dueDate, 
+          created_by: null,
           points_possible: Number(points)
         })
       });
@@ -48,12 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(data.error || 'Failed to publish assignment');
       }
 
-      showSuccess(`Assignment "${data.title}" published successfully! (ID: ${data.assignment_id})`);
+      showSuccess(`Assignment "${data.name}" published successfully! (ID: ${data.assignment_id})`);
       
       titleInput.value = '';
       descInput.value = '';
       pointsInput.value = '';
-      // dueDateInput.value = ''; 
+      dueDateInput.value = '';
 
     } catch (err) {
       console.error('Publish error:', err);
