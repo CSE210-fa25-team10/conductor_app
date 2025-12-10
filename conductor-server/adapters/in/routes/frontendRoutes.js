@@ -288,7 +288,10 @@ export function makeFrontendRouter() {
    * Accepts JSON { profile_photo: "base64..." } and updates the user's profile photo (bytea)
    */
   router.put('/user/profile-photo', async (req, res) => {
-    console.log('[frontendRoutes] PUT /api/user/profile-photo hit - content-type:', req.headers['content-type']);
+    console.log(
+      '[frontendRoutes] PUT /api/user/profile-photo hit - content-type:',
+      req.headers['content-type']
+    );
     console.log('[frontendRoutes] session user present:', Boolean(req.session?.user));
     const sessionUser = req.session?.user || {};
     const userId = sessionUser.id || sessionUser.user_id || req.body.user_id;
