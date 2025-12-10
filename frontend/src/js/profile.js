@@ -16,56 +16,35 @@ const DISCOVERY_DOCS = [
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 // ===== Google API init =====
-async function initializeGoogleAPI() {
-  try {
-    const resp = await fetch('/api/config/google');
-    if (!resp.ok) {
-      console.warn('No Google config available from server');
-      return;
-    }
-    const cfg = await resp.json();
-    const clientId = cfg.clientId;
-    const apiKey = cfg.apiKey;
-
-    if (!clientId || !apiKey) {
-      console.warn('Google API keys not configured on server; skipping Google Calendar initialization.');
-      return;
-    }
-
-    if (typeof gapi === 'undefined') {
-      console.warn('gapi not loaded in this environment');
-      return;
-    }
-
-    gapi.load('client:auth2', () => {
-      gapi.client
-        .init({
-          apiKey: apiKey,
-          clientId: clientId,
-          discoveryDocs: DISCOVERY_DOCS,
-          scope: SCOPES,
-        })
-        .then(() => {
-          gapiInitialized = true;
-        })
-        .catch((err) => {
-          console.error('Error initializing Google API:', err);
-        });
-    });
-  } catch (err) {
-    console.error('Failed to initialize Google API config fetch:', err);
+function initializeGoogleAPI() {
+  if (typeof gapi === "undefined") {
+    // In tests or environments without gapi, just skip
+    return;
   }
+  gapi.load("client:auth2", () => {
+    gapi.client
+      .init({
+        apiKey: GOOGLE_API_KEY,
+        clientId: GOOGLE_CLIENT_ID,
+        discoveryDocs: DISCOVERY_DOCS,
+        scope: SCOPES,
+      })
+      .then(() => {
+        gapiInitialized = true;
+      })
+      .catch((err) => {
+        console.error("Error initializing Google API:", err);
+      });
+  });
 }
 
 async function handleSyncCalendarClick() {
-  // If keys not set, inform user how to enable Google Calendar
-  if (GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID') || GOOGLE_API_KEY.includes('YOUR_API_KEY')) {
-    alert('Google Calendar is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_API_KEY in the frontend to enable sync.');
-    return;
-  }
-
   if (typeof gapi === "undefined") {
-    alert && alert("Google Calendar is not available in this environment. (gapi not loaded)");
+    // In tests / non-browser, bail out
+    alert &&
+      alert(
+        "Google Calendar is not available in this environment. (gapi not loaded)"
+      );
     return;
   }
 
@@ -139,22 +118,19 @@ async function loadGoogleCalendarEvents() {
 // ===== User profile =====
 async function loadUserProfile() {
   try {
-    const response = await fetch("/api/user", { credentials: "include" });
+    const response = await fetch("/api/auth/me", { credentials: "include" });
 
     if (response.ok) {
       const data = await response.json();
-      // /api/user returns the user object directly
-      currentUser = data;
+      currentUser = data.user;
       populateForm(currentUser);
 
       if (currentUser.role === "student") {
         await loadUserTeams();
       }
-    } else if (response.status === 401) {
-      // redirect to login if not authenticated
-      window.location.href = "/login";
     } else {
-      console.error('Failed to load user profile:', response.status);
+      // redirect to login if not authenticated
+      window.location.href = "../auth/login.html";
     }
   } catch (error) {
     console.error("Error loading profile:", error);
@@ -170,14 +146,12 @@ function populateForm(user) {
   const lastNameEl = document.getElementById("lastName");
   const pronEl = document.getElementById("pronunciation");
   const emailEl = document.getElementById("email");
-  const phoneEl = document.getElementById("phone");
   const roleEl = document.getElementById("role");
 
   if (firstNameEl) firstNameEl.value = firstName;
   if (lastNameEl) lastNameEl.value = lastName;
   if (pronEl) pronEl.value = user.pronunciation || "";
   if (emailEl) emailEl.value = user.email || "";
-  if (phoneEl) phoneEl.value = user.phone || "";
   if (roleEl)
     roleEl.value = user.role
       ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
@@ -219,43 +193,27 @@ function handlePhotoChange(e) {
     }
   };
   reader.readAsDataURL(file);
-  // Send as base64 JSON so server can parse without multipart middleware
-  reader.onloadend = function (ev) {
-    const dataUrl = ev.target.result; // data:image/...;base64,AAAA
-    fetch("/api/user/profile-photo", {
-      method: "PUT",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ profile_photo: dataUrl }),
+
+  const formData = new FormData();
+  formData.append("profile_photo", file);
+
+  fetch("/api/user/profile-photo", {
+    method: "PUT",
+    credentials: "include",
+    body: formData,
+  })
+    .then((response) => {
+      if (response.ok) {
+        showSuccessMessage();
+      } else {
+        return response.json().then((data) => {
+          alert("Error uploading photo: " + data.error);
+        });
+      }
     })
-      .then(async (response) => {
-        if (response.ok) {
-          try {
-            const data = await response.json();
-            showSuccessMessage();
-            return;
-          } catch (err) {
-            // ok but invalid json
-            const text = await response.text();
-            alert("Uploaded but unexpected response: " + text);
-            return;
-          }
-        }
-        // not ok - attempt to read json, fallback to text
-        const text = await response.text();
-        let errMsg = text;
-        try {
-          const parsed = JSON.parse(text);
-          errMsg = parsed.error || parsed.message || JSON.stringify(parsed);
-        } catch (e) {
-          // text remains
-        }
-        alert("Error uploading photo: " + response.status + " " + errMsg);
-      })
-      .catch((error) => {
-        alert("Error uploading photo: " + error.message);
-      });
-  };
+    .catch((error) => {
+      alert("Error uploading photo: " + error.message);
+    });
 }
 
 // ===== Teams =====
@@ -388,21 +346,13 @@ function showSuccessMessage() {
 function handleProfileSubmit(e) {
   e.preventDefault();
 
-  const formData = new FormData(e.target);
-  const data = {};
-  formData.forEach((value, key) => {
-    if (key === "pronunciation") {
-      data.pronunciation = value;
-    } else if (key === "phone") {
-      data.phone = value;
-    }
-  });
-
-  fetch("/api/user", {
-    method: "POST",
+  fetch("/api/user/pronunciation", {
+    method: "PUT",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      pronunciation: document.getElementById("pronunciation").value,
+    }),
   })
     .then((response) =>
       response.json().then((data) => ({
@@ -413,11 +363,8 @@ function handleProfileSubmit(e) {
     .then(({ ok, data }) => {
       if (ok) {
         showSuccessMessage();
-        // server returns updated user object directly
-        currentUser = data;
-        populateForm(currentUser);
       } else {
-        alert("Error: " + (data.error || data.message));
+        alert("Error: " + data.error);
       }
     })
     .catch((error) => {
@@ -435,9 +382,8 @@ function handleAvailabilitySubmit(e) {
       selectedDays.push(cb.value);
     });
 
-  // server exposes a POST /api/user endpoint that accepts availability updates
-  fetch("/api/user", {
-    method: "POST",
+  fetch("/api/user/availability", {
+    method: "PUT",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -735,8 +681,11 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
   const backBtn = document.getElementById("backToDashboard");
   if (backBtn) {
     backBtn.addEventListener("click", function () {
-      // Always navigate back to the student dashboard URL
-      window.location.href = "/student";
+      if (currentUser && currentUser.role === "instructor") {
+        window.location.href = "../instructor/instructor_dashboard.html";
+      } else {
+        window.location.href = "../student/dashboard.html";
+      }
     });
   }
 

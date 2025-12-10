@@ -2,7 +2,6 @@ SELECT
   user_id,
   name,
   email,
-  profile_photo,
   pronouns,
   phone,
   availability,

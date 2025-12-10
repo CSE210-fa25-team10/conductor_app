@@ -16,14 +16,6 @@ export function makeJsRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/js/register.js'));
   });
 
-  router.get('/google_oauth.js', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'frontend/src/js/google_oauth.js'));
-  });
-
-  router.get('/profile.js', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'frontend/src/js/profile.js'));
-  });
-
   /**
    * ===== STUDENT JS ROUTES =====
    */

@@ -19,18 +19,6 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 const app = express();
 
-// Increase body size limits to allow base64 image uploads from the frontend
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Handle payload-too-large errors from body parsers and return JSON instead of HTML
-app.use((err, req, res, next) => {
-  if (err && (err.type === 'entity.too.large' || err.status === 413)) {
-    console.error('Payload too large error:', err.message || err);
-    return res.status(413).json({ error: 'Payload too large' });
-  }
-  next(err);
-});
 // // --- NEW CORS CONFIGURATION ---
 // const allowedOrigins = [
 //   // Localhost aliases for development
@@ -73,14 +61,14 @@ app.use(cors());
 // API routes
 // app.use('/api', apiRoutes);
 
+// serve static assets (CSS, JS, images)
+app.use(express.static(path.join(__dirname, '../frontend')));
+
 // build dependencies (repos, use-cases, controllers, etc.)
 const container = buildContainer(process.env);
 
-// mount all HTTP routes FIRST (before static)
+// mount all HTTP routes
 mountRoutes(app, container);
-
-// serve static assets (CSS, JS, images) AFTER routes
-app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Health check endpoints
 app.get('/healthz', (_req, res) => res.status(200).send('OK'));
