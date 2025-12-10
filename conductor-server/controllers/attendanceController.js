@@ -268,7 +268,7 @@ export function makeAttendanceController() {
   // - For when a student participates / answered a question, or retro-fix.
   //
   async function manualMarkAttendance(req, res) {
-    const course_id = req.params.courseId;
+    const _course_id = req.params.courseId;
     const { activity_id, user_id, present } = req.body || {};
 
     const activityIdNum =

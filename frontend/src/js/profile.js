@@ -16,9 +16,6 @@ const DISCOVERY_DOCS = [
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 // ===== Google API init =====
-/**
- * Initialize Google API client if server-side config is available.
- */
 async function initializeGoogleAPI() {
   try {
     const resp = await fetch('/api/config/google');
@@ -60,9 +57,6 @@ async function initializeGoogleAPI() {
   }
 }
 
-/**
- * Handle user action to start Google Calendar sync.
- */
 async function handleSyncCalendarClick() {
   // If keys not set, inform user how to enable Google Calendar
   if (GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID') || GOOGLE_API_KEY.includes('YOUR_API_KEY')) {
@@ -97,9 +91,6 @@ async function handleSyncCalendarClick() {
   }
 }
 
-/**
- * Load events from Google Calendar into local event state.
- */
 async function loadGoogleCalendarEvents() {
   if (typeof gapi === "undefined") return;
 
@@ -146,9 +137,6 @@ async function loadGoogleCalendarEvents() {
 }
 
 // ===== User profile =====
-/**
- * Load the current user's profile from the API and populate the form.
- */
 async function loadUserProfile() {
   try {
     const response = await fetch("/api/user", { credentials: "include" });
@@ -173,10 +161,6 @@ async function loadUserProfile() {
   }
 }
 
-/**
- * Populate profile form fields from a user object.
- * @param {Object} user - The user data to use for the form.
- */
 function populateForm(user) {
   const nameParts = (user.name || "").split(" ");
   const firstName = nameParts[0] || "";
@@ -218,10 +202,6 @@ function populateForm(user) {
 }
 
 // ===== Photo upload =====
-/**
- * Handle change on the profile photo input: preview and upload the image.
- * @param {Event} e - File input change event.
- */
 function handlePhotoChange(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -398,9 +378,6 @@ function showMembersModal(members, groupName) {
 }
 
 // ===== Forms =====
-/**
- * Show a short success message on the profile page.
- */
 function showSuccessMessage() {
   const msg = document.getElementById("successMessage");
   if (!msg) return;
@@ -408,22 +385,6 @@ function showSuccessMessage() {
   setTimeout(() => msg.classList.remove("show"), 2500);
 }
 
-/**
- * Format phone number to (XXX) XXX-XXXX format.
- * @param {string} value - Raw phone input.
- * @returns {string} Formatted phone number or empty string if invalid.
- */
-function formatPhoneNumber(value) {
-  if (!value) return "";
-  const cleaned = value.replace(/\D/g, "");
-  if (cleaned.length !== 10) return value;
-  return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-}
-
-/**
- * Handle profile form submission and send updates to the API.
- * @param {Event} e - Form submit event.
- */
 function handleProfileSubmit(e) {
   e.preventDefault();
 
@@ -436,18 +397,6 @@ function handleProfileSubmit(e) {
       data.phone = value;
     }
   });
-
-  const phoneInput = document.getElementById("phone");
-  if (phoneInput && data.phone) {
-    const cleaned = data.phone.replace(/\D/g, "");
-    if (cleaned.length > 0 && cleaned.length !== 10) {
-      alert("Phone number must be 10 digits.");
-      return;
-    }
-    data.phone = formatPhoneNumber(data.phone);
-  }
-
-  console.log('[profile.js] Sending data to POST /api/user:', data);
 
   fetch("/api/user", {
     method: "POST",
@@ -476,10 +425,6 @@ function handleProfileSubmit(e) {
     });
 }
 
-/**
- * Handle availability form submission and update the user's availability.
- * @param {Event} e - Form submit event.
- */
 function handleAvailabilitySubmit(e) {
   e.preventDefault();
 
@@ -815,13 +760,6 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
   const profileForm = document.getElementById("profileForm");
   if (profileForm) {
     profileForm.addEventListener("submit", handleProfileSubmit);
-  }
-
-  const phoneInput = document.getElementById("phone");
-  if (phoneInput) {
-    phoneInput.addEventListener("blur", function () {
-      this.value = formatPhoneNumber(this.value);
-    });
   }
 
   const availabilityForm = document.getElementById("availabilityForm");
