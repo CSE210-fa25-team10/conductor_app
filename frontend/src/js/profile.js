@@ -139,7 +139,7 @@ async function loadGoogleCalendarEvents() {
 // ===== User profile =====
 async function loadUserProfile() {
   try {
-    const response = await fetch("/api/user", { credentials: "include" });
+    const response = await fetch("/api/postman/user", { credentials: "include" });
 
     if (response.ok) {
       const data = await response.json();
@@ -388,18 +388,15 @@ function showSuccessMessage() {
 function handleProfileSubmit(e) {
   e.preventDefault();
 
-  const firstName = document.getElementById("firstName")?.value.trim() || "";
-  const lastName = document.getElementById("lastName")?.value.trim() || "";
-  const email = document.getElementById("email")?.value.trim() || "";
-  const phone = document.getElementById("phone")?.value.trim() || "";
-  const pronunciation = document.getElementById("pronunciation")?.value.trim() || "";
-
-  const data = {
-    name: `${firstName} ${lastName}`.trim(),
-    email: email || undefined,
-    phone: phone || undefined,
-    pronunciation: pronunciation || undefined,
-  };
+  const formData = new FormData(e.target);
+  const data = {};
+  formData.forEach((value, key) => {
+    if (key === "pronunciation") {
+      data.pronunciation = value;
+    } else if (key === "phone") {
+      data.phone = value;
+    }
+  });
 
   fetch("/api/user", {
     method: "POST",
@@ -439,7 +436,7 @@ function handleAvailabilitySubmit(e) {
       });
 
   // server exposes a POST /api/user endpoint that accepts availability updates
-  fetch("/api/user", {
+  fetch("/api/postman/user", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -738,24 +735,15 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
   const backBtn = document.getElementById("backToDashboard");
   if (backBtn) {
     backBtn.addEventListener("click", function () {
-      // Navigate based on user role
-      if (currentUser && currentUser.role === "instructor") {
-        window.location.href = "/instructor";
-      } else {
-        window.location.href = "/student";
-      }
+      // Always navigate back to the student dashboard URL
+      window.location.href = "/student";
     });
   }
 
   const goToCoursesBtn = document.getElementById("goToCourses");
   if (goToCoursesBtn) {
     goToCoursesBtn.addEventListener("click", () => {
-      // Navigate based on user role
-      if (currentUser && currentUser.role === "instructor") {
-        window.location.href = "/instructor/courses";
-      } else {
-        window.location.href = "/student/courses";
-      }
+      window.location.href = "../student/courses.html";
     });
   }
 
