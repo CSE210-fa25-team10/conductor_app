@@ -92,26 +92,42 @@ export function makeFrontendRouter() {
    * Create course (instructor)
    */
   router.post('/course', async (req, res) => {
-    const { name, code, semester, description } = req.body || {};
+  const { name, code, semester, description } = req.body || {};
 
-    if (!name) {
-      return res.status(400).json({ error: 'course name is required' });
+  if (!name) {
+    return res.status(400).json({ error: 'course name is required' });
+  }
+
+  try {
+    // 1. Create the course via queryService
+    const result = await queryService.executeQuery('createCourse', [
+      name,
+      code || null,
+      semester || null,
+      description || null,
+    ]);
+
+    const course = result[0];
+
+    // 2. If a user is logged in, enroll them as instructor
+    const instructor = req.session?.user;
+    if (instructor && course?.course_id) {
+      await pool.query(
+        `
+        INSERT INTO course_users (user_id, course_id, role)
+        VALUES ($1, $2, 'instructor')
+        ON CONFLICT (user_id, course_id) DO NOTHING
+        `,
+        [instructor.user_id, course.course_id]
+      );
     }
 
-    try {
-      const result = await queryService.executeQuery('createCourse', [
-        name,
-        code || null,
-        semester || null,
-        description || null,
-      ]);
-
-      res.status(201).json(result[0]);
-    } catch (error) {
-      console.error('POST /api/course error:', error);
-      res.status(500).json({ error: error.message });
-    }
-  });
+    res.status(201).json(course);
+  } catch (error) {
+    console.error('POST /api/course error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
   /**
    * GET /api/course
@@ -281,62 +297,51 @@ export function makeFrontendRouter() {
       res.status(500).json({ error: error.message });
     }
   });
-router.post('/course', async (req, res, next) => {
-  try {
-    const { name, code, semester, description } = req.body;
-
-    const instructorId = req.session.user.user_id;
-
-    const course = await classRepository.createCourse({
-      name,
-      code,
-      semester,
-      description,
-    });
-
-    
-    await classRepository.addCourseUser({
-      userId: instructorId,
-      courseId: course.course_id,
-      role: 'instructor',
-    });
-
-    res.status(201).json(course);
-  } catch (err) {
-    next(err);
-  }
-});
 
  router.post('/enroll', async (req, res, next) => {
     try {
-      const { user_id, course_code } = req.body;
+      const { course_code } = req.body || {};
+      const sessionUser = req.session?.user;
 
-      if (!user_id || !course_code) {
-        return res.status(400).json({ error: 'user_id and course_code are required' });
+      // Must be logged in
+      if (!sessionUser) {
+        return res.status(401).json({ error: 'Authentication required' });
       }
 
-      // 1. Find the course by its code (e.g. "CS101")
+      // Must provide course_code
+      if (!course_code) {
+        return res.status(400).json({ error: 'course_code is required' });
+      }
+
+      const userId = sessionUser.user_id;
+      const role = sessionUser.role || 'student'; // 'student' or 'instructor'
+
+      // 1. Look up the course by its code (e.g. "CSE210")
       const { rows } = await pool.query(
         'SELECT course_id FROM courses WHERE code = $1',
         [course_code]
       );
-
       const course = rows[0];
+
       if (!course) {
         return res.status(404).json({ error: 'Course not found' });
       }
 
-      // 2. Enroll the user as a student by default
+      // 2. Enroll the current user into this course
       await pool.query(
-        `INSERT INTO course_users (user_id, course_id, role)
-         VALUES ($1, $2, 'student')
-         ON CONFLICT DO NOTHING`,
-        [user_id, course.course_id]
+        `
+        INSERT INTO course_users (user_id, course_id, role)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (user_id, course_id) DO UPDATE
+        SET role = EXCLUDED.role
+        `,
+        [userId, course.course_id, role]
       );
 
-      // 3. Return a simple JSON success response
+      // 3. Return success
       return res.status(200).json({ success: true });
     } catch (err) {
+      console.error('POST /api/postman/enroll error:', err);
       next(err);
     }
   });
