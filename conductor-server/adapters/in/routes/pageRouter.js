@@ -66,6 +66,16 @@ export function makePageRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/manual_checkin.html'));
   });
 
+  router.get('/test-route', (req, res) => {
+    console.log('Test route hit!');
+    res.send('Test route works!');
+  });
+
+  router.get('/profile', (req, res) => {
+    console.log('Profile route hit!');
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/shared/profile.html'));
+  });
+
   router.get('/student/attendance', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/student/my_attendance.html'));
   });
