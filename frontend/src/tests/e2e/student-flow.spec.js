@@ -12,8 +12,8 @@ test.describe('Student Core Workflows', () => {
         const context = await browser.newContext();
         const page = await context.newPage();
         
-        studentEmail = `student.flow.${Date.now()}@example.com`;
-        
+        studentEmail = `student.flow.${Date.now()}.${Math.floor(Math.random() * 10000)}@example.com`;
+
         await page.goto(`${BASE_URL}/register`);
         await page.fill('#firstName', 'E2E');
         await page.fill('#lastName', 'Student');

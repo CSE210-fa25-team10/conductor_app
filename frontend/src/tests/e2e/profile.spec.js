@@ -6,7 +6,8 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 test.describe('Profile Workflows', () => {
     test('should successfully register and access profile', async ({ page }) => {
         // 1. Register a new user
-        const email = `profile.${Date.now()}@example.com`;
+        const email = `profile.${Date.now()}.${Math.floor(Math.random() * 10000)}@example.com`;
+
         const password = 'ProfilePass123!';
         
         await page.goto(`${BASE_URL}/register`);

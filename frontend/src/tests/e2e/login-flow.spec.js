@@ -21,7 +21,7 @@ test.describe('E2E Login and Navigation Flow', () => {
         await page.goto(`${BASE_URL}/register`);
         
         // Generate unique email
-        const testEmail = `e2e.test.${Date.now()}@example.com`;
+        const testEmail = `e2e.test.${Date.now()}.${Math.floor(Math.random() * 10000)}@example.com`;
         const testPass = 'TestPass123!';
         
         // Fill out Registration Form
@@ -46,7 +46,7 @@ test.describe('E2E Login and Navigation Flow', () => {
     test('should successfully log in and redirect to student dashboard', async ({ page }) => {
         // 1. Register a user first
         await page.goto(`${BASE_URL}/register`);
-        const testEmail = `login.test.${Date.now()}@example.com`;
+        const testEmail = `login.test.${Date.now()}.${Math.floor(Math.random() * 10000)}@example.com`;
         const testPass = 'LoginPass123!';
         
         await page.fill('#firstName', 'Login');
@@ -73,7 +73,7 @@ test.describe('E2E Login and Navigation Flow', () => {
     test('should successfully log in as instructor and redirect to instructor dashboard', async ({ page }) => {
         // 1. Register an instructor
         await page.goto(`${BASE_URL}/register`);
-        const testEmail = `instructor.${Date.now()}@example.com`;
+        const testEmail = `instructor.${Date.now()}.${Math.floor(Math.random() * 10000)}@example.com`;
         const testPass = 'InstructorPass123!';
         
         await page.fill('#firstName', 'Professor');

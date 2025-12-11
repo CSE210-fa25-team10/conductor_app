@@ -12,7 +12,8 @@ test.describe('Instructor Core Workflows', () => {
         const context = await browser.newContext();
         const page = await context.newPage();
         
-        instructorEmail = `prof.flow.${Date.now()}@example.com`;
+        instructorEmail = `prof.flow.${Date.now()}.${Math.floor(Math.random() * 10000)}@example.com`;
+
         
         await page.goto(`${BASE_URL}/register`);
         await page.fill('#firstName', 'Professor');
