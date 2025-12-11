@@ -86,10 +86,38 @@ Frontend:
 
 CI typically wires these commands into separate jobs (unit first, then integration/E2E).
 
+## CI/CD Overview
+
+All GitHub Actions workflows live in `.github/workflows`
+
+### Continuous Integration - `ci.yml`
+
+Runs on every push and PR to `main`:
+
+- ESLint + Prettier checks
+- Backend Docker build
+- Backend integration tests (Postgres service)
+- Backend EC2-related unit tests
+- Frontend Jest unit tests
+- Full-stack E2E tests with Docker Compose + Playwright
+- Uploads reports/screenshots on failure
+
+### Continuous Deployment - `cd.yml`
+
+Runs on push to `main`:
+
+- Logs in to Amazon ECR
+- Builds and tags backend Docker image
+- Pushes image → ECR (latest + commit SHA)
+- SSHes into EC2
+- Runs `deploy.sh` to pull + restart the backend container
+
+Secrets are configured in GitHub Actions (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `EC2_HOST`, `EC2_USER`, `SSH_PRIVATE_KEY`).
 
 ## Additional Docs
 
 - [`conductor-server/README.md`](conductor-server/README.md) - backend deep dive, architecture, troubleshooting.
+- [`conductor-server/infra/documentation.md`](conductor-server/infra/documentation.md) - testing + CI/CD deep dive
 - `admin/` and `spec/adr/` - organizational notes, meeting decks, and architectural decisions.
 
 Questions or missing info? Reach out in the project channel or add to this README as the repo evolves.

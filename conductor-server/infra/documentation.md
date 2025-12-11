@@ -217,6 +217,65 @@ test('user can register and login', async ({ page }) => {
 - ✅ Screenshots/videos when tests fail
 - ✅ Fast feedback (< 3 minutes)
 
+### Continuous Integration — `.github/workflows/ci.yml`
+
+The CI pipeline runs on every push and pull request to `main` and `develop`.
+
+It performs:
+
+1. **Lint + Format Check**
+   - Installs backend deps
+   - Runs ESLint and Prettier
+
+2. **Docker Build**
+   - Ensures the backend Docker image builds successfully
+
+3. **Backend API Tests**
+   - Spins up Postgres as a GitHub Actions service
+   - Applies migrations
+   - Runs integration tests and EC2-related backend tests
+
+4. **Frontend Unit Tests**
+   - Installs frontend dependencies
+   - Runs Jest DOM/unit tests
+
+5. **End-to-End Tests (Playwright)**
+   - Installs Playwright + browsers
+   - Starts the entire stack with Docker Compose
+   - Waits for `/login` and `/register` to respond
+   - Runs Playwright E2E tests
+   - Uploads screenshots + reports as artifacts
+
+This ensures the whole stack is validated before any deployment happens.
+
+### Continuous Deployment — `.github/workflows/cd.yml`
+
+The CD pipeline runs on **push to `main`**.
+
+It handles production deployment:
+
+1. **AWS Credential Setup**
+   - Configures AWS region + credentials from GitHub Secrets
+
+2. **ECR Login**
+   - Authenticates the GitHub runner to your AWS ECR registry
+
+3. **Build + Tag Backend Docker Image**
+   - Builds from `conductor-server/Dockerfile`
+   - Tags with `latest` and the commit SHA
+
+4. **Push to Amazon ECR**
+   - Pushes both tags to the `ECR_REPOSITORY`
+
+5. **Deploy to EC2**
+   - Creates an SSH key file from `SSH_PRIVATE_KEY` secret
+   - SSHes into EC2 with `EC2_HOST` + `EC2_USER`
+   - Executes `~/deploy.sh` which:
+     - Pulls the new ECR image
+     - Restarts the backend container
+
+This turns every merge to `main` into an automatic deployment.
+
 ---
 
 ## Key Decisions & Rationale

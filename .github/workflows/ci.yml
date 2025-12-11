@@ -91,7 +91,7 @@ jobs:
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
-          echo "✅ PostgreSQL is up"
+          echo "PostgreSQL is up"
       
       - name: Run Database Migrations
         env:
@@ -137,7 +137,7 @@ jobs:
       - name: Verify test structure
         working-directory: frontend
         run: |
-          echo "📁 Checking test files..."
+          echo "Checking test files..."
           echo "Unit tests (*.test.js):"
           find src/tests/unit -name "*.test.js" -type f 2>/dev/null || echo "No unit tests found"
       
@@ -171,7 +171,7 @@ jobs:
       - name: Verify test structure
         working-directory: frontend
         run: |
-          echo "📁 Checking E2E test files..."
+          echo "Checking E2E test files..."
           echo "E2E tests (*.spec.js):"
           find src/tests/e2e -name "*.spec.js" -type f 2>/dev/null || echo "No E2E tests found"
 
@@ -189,16 +189,16 @@ jobs:
 
       - name: Wait for Services to be Ready
         run: |
-          echo "⏳ Waiting for services to start..."
+          echo "Waiting for services to start..."
           sleep 15
           
-          echo "🔍 Checking backend health..."
+          echo "Checking backend health..."
           curl -f http://localhost:3000/login -I || echo "⚠️ Backend not responding yet"
           
-          echo "🔍 Verifying register endpoint..."
+          echo "Verifying register endpoint..."
           curl -f http://localhost:3000/register -I || echo "⚠️ Register endpoint not ready"
           
-          echo "✅ Services should be ready"
+          echo "Services should be ready"
 
       - name: Run Playwright E2E Tests
         working-directory: frontend
