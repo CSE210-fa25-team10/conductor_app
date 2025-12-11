@@ -6,7 +6,8 @@ SELECT
   phone,
   availability,
   pronunciation,
-  slack
+  slack,
+  role
 FROM users
 WHERE user_id = $1;
 

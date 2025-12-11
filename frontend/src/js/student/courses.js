@@ -1,5 +1,5 @@
 // 配置用户角色和数据
-const userRole = 'student'; // 可以是 'student', 'ta', 或 'professor'
+let userRole = 'student'; // 可以是 'student', 'ta', 或 'professor'
 
 // 模拟数据
 const userData = {
@@ -142,6 +142,24 @@ async function fetchCurrentUserId() {
     }
 }
 
+async function fetchCurrentUserInfo(){
+    try {
+        const res = await fetch('/api/postman/user', {
+            method: "GET",
+            credentials: "include",
+        });
+        if (!res.ok) {
+            throw new Error('Failed to fetch current user ID');
+        }
+        const data = await res.json();
+        console.log('Current user info:', data);
+        userRole = data.role; 
+        return data
+    } catch (e) {
+        console.error('Error fetching current user ID:', e);
+        return null;
+    }
+}
 
 // 根据角色渲染内容
 async function renderGroupInfo() {
@@ -250,7 +268,8 @@ async function renderGroupInfo() {
             groupInfoSection.innerHTML = `<p style="color: red;">Error: Failed to load your group information.</p>`;
         }
     }
-     else if (userRole === 'ta' || userRole === 'professor') {
+     else if (userRole === 'ta' || userRole === 'teamlead') {
+         console.log("Rendering TA/teamlead view");
         // TA / Professor view (Kept for completeness, though not explicitly requested to change)
         const data = userData.ta; // Assuming TA data structure for now
         groupInfoSection.innerHTML = `
@@ -290,5 +309,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// 页面加载时渲染
-document.addEventListener('DOMContentLoaded', renderGroupInfo);
+document.addEventListener('DOMContentLoaded', async () => {
+    const userInfo = await fetchCurrentUserInfo();
+    if (userInfo) {
+        console.log(`Successfully fetched user role: ${userRole}`);
+        await renderGroupInfo();
+    } else {
+        console.error("Critical: Failed to load user info. Cannot proceed with rendering.");
+    }
+});
