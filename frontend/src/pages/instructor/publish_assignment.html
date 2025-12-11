@@ -8,7 +8,7 @@
         body {
             margin: 0;
             padding: 40px 20px;
-            background-color: #e9dbee; 
+            background-color: #e9dbee;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -24,17 +24,53 @@
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             width: 100%;
-            max-width: 550px; 
+            max-width: 550px;
             box-sizing: border-box;
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #8b5cf6;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+            margin: 0;
+            transition: all 0.2s;
+            border-radius: 8px;
+        }
+
+        .back-btn:hover {
+            background: #f3e8ff;
+            transform: translateX(-2px);
+        }
+
+        .back-btn:active {
+            transform: translateX(0);
         }
 
         h1 {
             font-size: 24px;
             font-weight: 700;
             color: #1f2937;
-            margin-top: 0;
-            margin-bottom: 30px;
+            margin: 0;
+            flex: 1;
             text-align: center;
+        }
+
+        .placeholder {
+            width: 40px;
         }
 
         .form-group {
@@ -65,7 +101,7 @@
         }
 
         textarea {
-            resize: vertical; 
+            resize: vertical;
             min-height: 100px;
             line-height: 1.5;
         }
@@ -133,7 +169,11 @@
 <body>
 
 <div class="card-box">
-    <h1>Create Assignment</h1>
+    <div class="header-row">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <h1>Create Assignment</h1>
+        <div class="placeholder"></div>
+    </div>
 
     <div class="form-group">
         <label for="courseIdInput">Course ID</label>
@@ -168,6 +208,6 @@
     <div id="resultMsg"></div>
 </div>
 
-<script src="./publish_assignment.js"></script>
+<script src="/js/instructor/publish_assignment.js"></script>
 </body>
 </html>
