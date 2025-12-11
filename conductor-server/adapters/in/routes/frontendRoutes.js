@@ -32,6 +32,10 @@ export function makeFrontendRouter() {
 
       const user = users[0];
       const userInfo = { ...user };
+      // Convert profile_photo (bytea/Buffer) to base64 string for JSON transport
+      if (userInfo.profile_photo && userInfo.profile_photo instanceof Buffer) {
+        userInfo.profile_photo = userInfo.profile_photo.toString('base64');
+      }
       delete userInfo.password; // Exclude password safely
       res.json(userInfo);
     } catch (error) {
@@ -76,7 +80,11 @@ export function makeFrontendRouter() {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      res.json(result[0]);
+      const out = { ...result[0] };
+      if (out.profile_photo && out.profile_photo instanceof Buffer) {
+        out.profile_photo = out.profile_photo.toString('base64');
+      }
+      res.json(out);
     } catch (error) {
       console.error('POST /api/user error:', error);
       if (error.code === '23505') {
@@ -161,6 +169,16 @@ export function makeFrontendRouter() {
       console.error('GET /api/courses error:', error);
       res.status(500).json({ error: error.message });
     }
+  });
+
+  /**
+   * GET /api/config/google
+   * Returns public Google API config (clientId and apiKey) for the frontend to initialize gapi.
+   */
+  router.get('/config/google', (req, res) => {
+    const clientId = process.env.GOOGLE_CLIENT_ID || null;
+    const apiKey = process.env.GOOGLE_API_KEY || null;
+    res.json({ clientId, apiKey });
   });
 
   // /**
@@ -257,6 +275,57 @@ export function makeFrontendRouter() {
     } catch (error) {
       console.error('POST /api/assignment error:', error);
       res.status(400).json({ error: error.message });
+    }
+  });
+
+  /**
+   * PUT /api/user/profile-photo
+   * Accepts JSON { profile_photo: "base64..." } and updates the user's profile photo (bytea)
+   */
+  router.put('/user/profile-photo', async (req, res) => {
+    console.log(
+      '[frontendRoutes] PUT /api/user/profile-photo hit - content-type:',
+      req.headers['content-type']
+    );
+    console.log('[frontendRoutes] session user present:', Boolean(req.session?.user));
+    const sessionUser = req.session?.user || {};
+    const userId = sessionUser.id || sessionUser.user_id || req.body.user_id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const userIdInt = Number.parseInt(userId, 10);
+    if (!Number.isInteger(userIdInt)) {
+      return res.status(400).json({ error: 'Invalid user_id' });
+    }
+
+    const { profile_photo } = req.body || {};
+    if (!profile_photo) {
+      return res.status(400).json({ error: 'profile_photo is required' });
+    }
+
+    try {
+      // profile_photo may be a data URL like 'data:image/png;base64,AAA...'
+      let base64 = profile_photo;
+      const commaIdx = base64.indexOf(',');
+      if (commaIdx !== -1) base64 = base64.slice(commaIdx + 1);
+
+      const buffer = Buffer.from(base64, 'base64');
+
+      const result = await queryService.executeQuery('updateUserProfilePhoto', [userIdInt, buffer]);
+      if (!result || result.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      const out = { ...result[0] };
+      if (out.profile_photo && out.profile_photo instanceof Buffer) {
+        out.profile_photo = out.profile_photo.toString('base64');
+      }
+      // return the updated user row with profile_photo as base64
+      res.json(out);
+    } catch (error) {
+      console.error('PUT /api/user/profile-photo error:', error);
+      res.status(500).json({ error: error.message });
     }
   });
 

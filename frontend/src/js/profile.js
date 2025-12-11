@@ -16,35 +16,56 @@ const DISCOVERY_DOCS = [
 const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 // ===== Google API init =====
-function initializeGoogleAPI() {
-  if (typeof gapi === "undefined") {
-    // In tests or environments without gapi, just skip
-    return;
+async function initializeGoogleAPI() {
+  try {
+    const resp = await fetch('/api/config/google');
+    if (!resp.ok) {
+      console.warn('No Google config available from server');
+      return;
+    }
+    const cfg = await resp.json();
+    const clientId = cfg.clientId;
+    const apiKey = cfg.apiKey;
+
+    if (!clientId || !apiKey) {
+      console.warn('Google API keys not configured on server; skipping Google Calendar initialization.');
+      return;
+    }
+
+    if (typeof gapi === 'undefined') {
+      console.warn('gapi not loaded in this environment');
+      return;
+    }
+
+    gapi.load('client:auth2', () => {
+      gapi.client
+          .init({
+            apiKey: apiKey,
+            clientId: clientId,
+            discoveryDocs: DISCOVERY_DOCS,
+            scope: SCOPES,
+          })
+          .then(() => {
+            gapiInitialized = true;
+          })
+          .catch((err) => {
+            console.error('Error initializing Google API:', err);
+          });
+    });
+  } catch (err) {
+    console.error('Failed to initialize Google API config fetch:', err);
   }
-  gapi.load("client:auth2", () => {
-    gapi.client
-      .init({
-        apiKey: GOOGLE_API_KEY,
-        clientId: GOOGLE_CLIENT_ID,
-        discoveryDocs: DISCOVERY_DOCS,
-        scope: SCOPES,
-      })
-      .then(() => {
-        gapiInitialized = true;
-      })
-      .catch((err) => {
-        console.error("Error initializing Google API:", err);
-      });
-  });
 }
 
 async function handleSyncCalendarClick() {
+  // If keys not set, inform user how to enable Google Calendar
+  if (GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID') || GOOGLE_API_KEY.includes('YOUR_API_KEY')) {
+    alert('Google Calendar is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_API_KEY in the frontend to enable sync.');
+    return;
+  }
+
   if (typeof gapi === "undefined") {
-    // In tests / non-browser, bail out
-    alert &&
-      alert(
-        "Google Calendar is not available in this environment. (gapi not loaded)"
-      );
+    alert && alert("Google Calendar is not available in this environment. (gapi not loaded)");
     return;
   }
 
@@ -77,9 +98,9 @@ async function loadGoogleCalendarEvents() {
     const now = new Date();
     const timeMin = now.toISOString();
     const threeMonthsLater = new Date(
-      now.getFullYear(),
-      now.getMonth() + 3,
-      now.getDate()
+        now.getFullYear(),
+        now.getMonth() + 3,
+        now.getDate()
     );
     const timeMax = threeMonthsLater.toISOString();
 
@@ -118,19 +139,22 @@ async function loadGoogleCalendarEvents() {
 // ===== User profile =====
 async function loadUserProfile() {
   try {
-    const response = await fetch("/api/auth/me", { credentials: "include" });
+    const response = await fetch("/api/postman/user", { credentials: "include" });
 
     if (response.ok) {
       const data = await response.json();
-      currentUser = data.user;
+      // /api/user returns the user object directly
+      currentUser = data;
       populateForm(currentUser);
 
       if (currentUser.role === "student") {
         await loadUserTeams();
       }
-    } else {
+    } else if (response.status === 401) {
       // redirect to login if not authenticated
-      window.location.href = "../auth/login.html";
+      window.location.href = "/login";
+    } else {
+      console.error('Failed to load user profile:', response.status);
     }
   } catch (error) {
     console.error("Error loading profile:", error);
@@ -146,16 +170,18 @@ function populateForm(user) {
   const lastNameEl = document.getElementById("lastName");
   const pronEl = document.getElementById("pronunciation");
   const emailEl = document.getElementById("email");
+  const phoneEl = document.getElementById("phone");
   const roleEl = document.getElementById("role");
 
   if (firstNameEl) firstNameEl.value = firstName;
   if (lastNameEl) lastNameEl.value = lastName;
   if (pronEl) pronEl.value = user.pronunciation || "";
   if (emailEl) emailEl.value = user.email || "";
+  if (phoneEl) phoneEl.value = user.phone || "";
   if (roleEl)
     roleEl.value = user.role
-      ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
-      : "";
+        ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+        : "";
 
   if (user.profile_photo) {
     const photoPreview = document.getElementById("profilePhotoPreview");
@@ -168,7 +194,7 @@ function populateForm(user) {
     const days = user.availability.split(",");
     days.forEach((day) => {
       const checkbox = document.querySelector(
-        `input[value="${day.trim()}"]`
+          `input[value="${day.trim()}"]`
       );
       if (checkbox) checkbox.checked = true;
     });
@@ -193,27 +219,43 @@ function handlePhotoChange(e) {
     }
   };
   reader.readAsDataURL(file);
-
-  const formData = new FormData();
-  formData.append("profile_photo", file);
-
-  fetch("/api/user/profile-photo", {
-    method: "PUT",
-    credentials: "include",
-    body: formData,
-  })
-    .then((response) => {
-      if (response.ok) {
-        showSuccessMessage();
-      } else {
-        return response.json().then((data) => {
-          alert("Error uploading photo: " + data.error);
-        });
-      }
+  // Send as base64 JSON so server can parse without multipart middleware
+  reader.onloadend = function (ev) {
+    const dataUrl = ev.target.result; // data:image/...;base64,AAAA
+    fetch("/api/user/profile-photo", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ profile_photo: dataUrl }),
     })
-    .catch((error) => {
-      alert("Error uploading photo: " + error.message);
-    });
+        .then(async (response) => {
+          if (response.ok) {
+            try {
+              const data = await response.json();
+              showSuccessMessage();
+              return;
+            } catch (err) {
+              // ok but invalid json
+              const text = await response.text();
+              alert("Uploaded but unexpected response: " + text);
+              return;
+            }
+          }
+          // not ok - attempt to read json, fallback to text
+          const text = await response.text();
+          let errMsg = text;
+          try {
+            const parsed = JSON.parse(text);
+            errMsg = parsed.error || parsed.message || JSON.stringify(parsed);
+          } catch (e) {
+            // text remains
+          }
+          alert("Error uploading photo: " + response.status + " " + errMsg);
+        })
+        .catch((error) => {
+          alert("Error uploading photo: " + error.message);
+        });
+  };
 }
 
 // ===== Teams =====
@@ -259,8 +301,8 @@ function displayTeams() {
   } else {
     teamsSection.classList.remove("hidden");
     teamsList.innerHTML = userTeams
-      .map(
-        (team) => `
+        .map(
+            (team) => `
         <div class="team-card" onclick="viewTeamMembers(${team.group_id})">
             <div class="team-header">
                 <div>
@@ -274,8 +316,8 @@ function displayTeams() {
             </button>
         </div>
     `
-      )
-      .join("");
+        )
+        .join("");
   }
 }
 
@@ -305,32 +347,32 @@ function showMembersModal(members, groupName) {
   modalTitle.textContent = `${groupName} - Members`;
 
   membersList.innerHTML = members
-    .map((member) => {
-      const initials =
-        (member.name || "")
-          .split(" ")
-          .filter(Boolean)
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase() || "?";
+      .map((member) => {
+        const initials =
+            (member.name || "")
+                .split(" ")
+                .filter(Boolean)
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase() || "?";
 
-      return `
+        return `
         <div class="member-card">
             <div class="member-avatar">${initials}</div>
             <div class="member-info">
                 <div class="member-name">${member.name}</div>
                 <div class="member-email">${member.email}</div>
                 ${
-                  member.pronunciation
-                    ? `<div class="info-note">Prefers: ${member.pronunciation}</div>`
-                    : ""
-                }
+            member.pronunciation
+                ? `<div class="info-note">Prefers: ${member.pronunciation}</div>`
+                : ""
+        }
             </div>
             <a href="mailto:${member.email}" class="contact-btn">Email</a>
         </div>
       `;
-    })
-    .join("");
+      })
+      .join("");
 
   modal.classList.add("show");
 }
@@ -346,30 +388,41 @@ function showSuccessMessage() {
 function handleProfileSubmit(e) {
   e.preventDefault();
 
-  fetch("/api/user/pronunciation", {
-    method: "PUT",
+  const formData = new FormData(e.target);
+  const data = {};
+  formData.forEach((value, key) => {
+    if (key === "pronunciation") {
+      data.pronunciation = value;
+    } else if (key === "phone") {
+      data.phone = value;
+    }
+  });
+
+  fetch("/api/user", {
+    method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      pronunciation: document.getElementById("pronunciation").value,
-    }),
+    body: JSON.stringify(data),
   })
-    .then((response) =>
-      response.json().then((data) => ({
-        ok: response.ok,
-        data,
-      }))
-    )
-    .then(({ ok, data }) => {
-      if (ok) {
-        showSuccessMessage();
-      } else {
-        alert("Error: " + data.error);
-      }
-    })
-    .catch((error) => {
-      alert("Error updating profile: " + error.message);
-    });
+      .then((response) =>
+          response.json().then((data) => ({
+            ok: response.ok,
+            data,
+          }))
+      )
+      .then(({ ok, data }) => {
+        if (ok) {
+          showSuccessMessage();
+          // server returns updated user object directly
+          currentUser = data;
+          populateForm(currentUser);
+        } else {
+          alert("Error: " + (data.error || data.message));
+        }
+      })
+      .catch((error) => {
+        alert("Error updating profile: " + error.message);
+      });
 }
 
 function handleAvailabilitySubmit(e) {
@@ -377,35 +430,36 @@ function handleAvailabilitySubmit(e) {
 
   const selectedDays = [];
   document
-    .querySelectorAll('.day-checkbox input[type="checkbox"]:checked')
-    .forEach((cb) => {
-      selectedDays.push(cb.value);
-    });
+      .querySelectorAll('.day-checkbox input[type="checkbox"]:checked')
+      .forEach((cb) => {
+        selectedDays.push(cb.value);
+      });
 
-  fetch("/api/user/availability", {
-    method: "PUT",
+  // server exposes a POST /api/user endpoint that accepts availability updates
+  fetch("/api/postman/user", {
+    method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       availability: selectedDays.join(", "),
     }),
   })
-    .then((response) =>
-      response.json().then((data) => ({
-        ok: response.ok,
-        data,
-      }))
-    )
-    .then(({ ok, data }) => {
-      if (ok) {
-        showSuccessMessage();
-      } else {
-        alert("Error: " + data.error);
-      }
-    })
-    .catch((error) => {
-      alert("Error updating availability: " + error.message);
-    });
+      .then((response) =>
+          response.json().then((data) => ({
+            ok: response.ok,
+            data,
+          }))
+      )
+      .then(({ ok, data }) => {
+        if (ok) {
+          showSuccessMessage();
+        } else {
+          alert("Error: " + data.error);
+        }
+      })
+      .catch((error) => {
+        alert("Error updating availability: " + error.message);
+      });
 }
 
 // ===== Modal helpers (used by inline HTML) =====
@@ -431,8 +485,8 @@ function addLocalEvent(dateStr, summary, description, type, location) {
   const date = new Date(dateStr);
   userEvents.push({
     id: `local-${type}-${date.getTime()}-${Math.random()
-      .toString(36)
-      .slice(2)}`,
+        .toString(36)
+        .slice(2)}`,
     summary,
     description,
     location: location || null,
@@ -476,31 +530,31 @@ async function loadCourseEvents() {
       const start = new Date(ev.start_at);
       const end = ev.end_at ? new Date(ev.end_at) : null;
       const timeStr = end
-        ? `${start.toLocaleTimeString([], {
+          ? `${start.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           })} - ${end.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           })}`
-        : start.toLocaleTimeString([], {
+          : start.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           });
       addLocalEvent(
-        ev.start_at,
-        `[LEC] ${ev.title}`,
-        `Course: ${ev.course} • ${timeStr}`,
-        "lecture",
-        ev.location
+          ev.start_at,
+          `[LEC] ${ev.title}`,
+          `Course: ${ev.course} • ${timeStr}`,
+          "lecture",
+          ev.location
       );
     } else if (ev.type === "assignment") {
       addLocalEvent(
-        ev.start_at,
-        `[HW] ${ev.title}`,
-        `Course: ${ev.course}`,
-        "assignment",
-        ev.location
+          ev.start_at,
+          `[HW] ${ev.title}`,
+          `Course: ${ev.course}`,
+          "assignment",
+          ev.location
       );
     }
   });
@@ -549,9 +603,9 @@ function renderCalendar() {
 
   // previous month days
   for (
-    let d = daysInPrevMonth - startingWeekday + 1;
-    d <= daysInPrevMonth;
-    d++
+      let d = daysInPrevMonth - startingWeekday + 1;
+      d <= daysInPrevMonth;
+      d++
   ) {
     const date = new Date(year, month - 1, d);
     addDayCell(calendarGrid, date, false);
@@ -579,9 +633,9 @@ function addDayCell(container, date, isCurrentMonth) {
 
   const today = new Date();
   if (
-    date.getFullYear() === today.getFullYear() &&
-    date.getMonth() === today.getMonth() &&
-    date.getDate() === today.getDate()
+      date.getFullYear() === today.getFullYear() &&
+      date.getMonth() === today.getMonth() &&
+      date.getDate() === today.getDate()
   ) {
     cell.classList.add("today");
   }
@@ -602,7 +656,7 @@ function addDayCell(container, date, isCurrentMonth) {
     const line = document.createElement("div");
     const typeClass = ev.type ? `event-dot-${ev.type}` : "";
     line.innerHTML = `<span class="event-dot ${typeClass}"></span>${
-      ev.summary || "(No title)"
+        ev.summary || "(No title)"
     }`;
     eventsContainer.appendChild(line);
   });
@@ -633,35 +687,35 @@ function openEventsModal(date, events) {
 
   if (!events || events.length === 0) {
     list.innerHTML =
-      '<p style="font-size:13px;color:#6b7280;">No events for this day.</p>';
+        '<p style="font-size:13px;color:#6b7280;">No events for this day.</p>';
   } else {
     list.innerHTML = events
-      .map(
-        (ev) => `
+        .map(
+            (ev) => `
         <div class="event-item">
             <div class="event-title">${ev.summary || "(No title)"}</div>
             <div class="event-meta">
                 ${ev.startTime ? `Time: ${ev.startTime}<br>` : ""}
                 ${ev.location ? `Location: ${ev.location}<br>` : ""}
                 ${
-                  ev.type === "lecture"
+                ev.type === "lecture"
                     ? "Type: Lecture / Course event"
                     : ev.type === "assignment"
-                    ? "Type: Assignment due"
-                    : ev.type === "google"
-                    ? "Source: Google Calendar"
-                    : ""
-                }
+                        ? "Type: Assignment due"
+                        : ev.type === "google"
+                            ? "Source: Google Calendar"
+                            : ""
+            }
             </div>
             ${
-              ev.description
-                ? `<div class="event-meta" style="margin-top:4px;">${ev.description}</div>`
-                : ""
+                ev.description
+                    ? `<div class="event-meta" style="margin-top:4px;">${ev.description}</div>`
+                    : ""
             }
         </div>
       `
-      )
-      .join("");
+        )
+        .join("");
   }
 
   modal.classList.add("show");
@@ -681,11 +735,8 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
   const backBtn = document.getElementById("backToDashboard");
   if (backBtn) {
     backBtn.addEventListener("click", function () {
-      if (currentUser && currentUser.role === "instructor") {
-        window.location.href = "../instructor/instructor_dashboard.html";
-      } else {
-        window.location.href = "../student/dashboard.html";
-      }
+      // Always navigate back to the student dashboard URL
+      window.location.href = "/student";
     });
   }
 
