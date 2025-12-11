@@ -133,8 +133,11 @@ if (typeof window !== "undefined") {
   window.addEventListener("DOMContentLoaded", attachRegisterHandlers);
 }
 
-module.exports = {
-  attachRegisterHandlers,
-  showError,
-  showSuccess,
-};
+// FIXED: Only export in Node.js environment (for tests), not in browser
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    attachRegisterHandlers,
+    showError,
+    showSuccess,
+  };
+}

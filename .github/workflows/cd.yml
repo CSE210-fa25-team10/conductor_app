@@ -32,14 +32,14 @@ jobs:
     
     - name: Build, tag, and push image to ECR
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
+	      ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  	    IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-    
+    	  docker build -f conductor-server/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./conductor-server
+    	  docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    	  docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+    	  docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest   
+
     - name: Deploy to EC2
       env:
         EC2_HOST: ${{ secrets.EC2_HOST }}
