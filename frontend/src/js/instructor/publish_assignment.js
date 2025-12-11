@@ -1,6 +1,5 @@
 console.log('Assignment script loaded');
 
-const API_BASE = 'http://localhost:3000';
 
 document.addEventListener('DOMContentLoaded', () => {
   // courseId 应该从 这里 取得http://localhost:3000/instructor/courses/1/assignments
@@ -43,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         created_by: null,
         points_possible: Number(points)
       });
-      const res = await fetch(`${API_BASE}/api/postman/assignment`, {
+      const res = await fetch(`/api/postman/assignment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
