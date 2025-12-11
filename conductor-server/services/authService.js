@@ -97,15 +97,15 @@ export const generateAuthUrl = () => {
   // Debug: Log environment variables to ensure they're loaded
   console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Not set');
   console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Not set');
-  
+
   const authUrl = client.generateAuthUrl({
     access_type: 'offline',
     scope: ['profile', 'email'],
     response_type: 'code',
     client_id: process.env.GOOGLE_CLIENT_ID, // Explicitly include client_id
-    redirect_uri: `${process.env.LIVE_URL || 'http://localhost:3000'}/api/auth/google/callback`
+    redirect_uri: `${process.env.LIVE_URL || 'http://localhost:3000'}/api/auth/google/callback`,
   });
-  
+
   console.log('Generated OAuth URL:', authUrl);
   return authUrl;
 };
