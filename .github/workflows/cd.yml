@@ -46,9 +46,6 @@ jobs:
         EC2_USER: ${{ secrets.EC2_USER }}
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
-        echo "$SSH_PRIVATE_KEY" > private_key.pem
+        echo "$SSH_PRIVATE_KEY" | base64 -d > private_key.pem
         chmod 600 private_key.pem
-        # Verify key format
-        head -1 private_key.pem
-        # Try SSH with verbose output
-        ssh -vvv -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST 'bash ~/deploy.sh'
+        ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST 'bash ~/deploy.sh'
