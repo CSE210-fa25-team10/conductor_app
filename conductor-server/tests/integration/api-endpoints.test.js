@@ -164,7 +164,7 @@ describe('Backend API Integration Tests', () => {
         email: testInstructor.email,
         password: testInstructor.password,
       });
-      
+
       // Verify login succeeded before proceeding
       if (loginRes.statusCode !== 200) {
         throw new Error(`Login failed in beforeEach: ${loginRes.statusCode}`);
@@ -185,7 +185,7 @@ describe('Backend API Integration Tests', () => {
         expect(res.body).toHaveProperty('id', testInstructorId);
         expect(res.body).toHaveProperty('name', testInstructor.name);
         expect(res.body).toHaveProperty('email', testInstructor.email);
-        expect(res.body).not.toHaveProperty('password'); 
+        expect(res.body).not.toHaveProperty('password');
       });
 
       it('should return 401 without session', async () => {
@@ -214,16 +214,14 @@ describe('Backend API Integration Tests', () => {
       });
 
       it('should reject update without session', async () => {
-        const res = await request(app)
-          .post('/api/postman/user')
-          .send({ pronouns: 'they/them' });
+        const res = await request(app).post('/api/postman/user').send({ pronouns: 'they/them' });
 
         expect(res.statusCode).toBe(401);
       });
 
       it('should reject duplicate email update', async () => {
         const res = await instructorAgent.post('/api/postman/user').send({
-          email: testStudent.email, 
+          email: testStudent.email,
         });
 
         expect(res.statusCode).toBe(400);
@@ -237,7 +235,7 @@ describe('Backend API Integration Tests', () => {
 
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body.length).toBeGreaterThanOrEqual(2); 
+        expect(res.body.length).toBeGreaterThanOrEqual(2);
       });
 
       it('GET /api/queries/users/:id - should get specific user', async () => {
@@ -355,9 +353,7 @@ describe('Backend API Integration Tests', () => {
       });
 
       it('should filter courses by user_id', async () => {
-        const res = await instructorAgent.get(
-          `/api/postman/courses?user_id=${testStudentId}`
-        );
+        const res = await instructorAgent.get(`/api/postman/courses?user_id=${testStudentId}`);
 
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
@@ -378,13 +374,11 @@ describe('Backend API Integration Tests', () => {
 
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body.length).toBeGreaterThanOrEqual(2); 
+        expect(res.body.length).toBeGreaterThanOrEqual(2);
       });
 
       it('GET /api/queries/courses/:id/activities - should get course activities', async () => {
-        const res = await instructorAgent.get(
-          `/api/queries/courses/${testCourseId}/activities`
-        );
+        const res = await instructorAgent.get(`/api/queries/courses/${testCourseId}/activities`);
 
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
@@ -410,7 +404,7 @@ describe('Backend API Integration Tests', () => {
           course_id: testCourseId,
           name: 'Test Assignment 1',
           description: 'Integration test assignment',
-          due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), 
+          due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           created_by: testInstructorId,
         };
 
@@ -453,9 +447,7 @@ describe('Backend API Integration Tests', () => {
       });
 
       it('should get assignments filtered by course_id', async () => {
-        const res = await instructorAgent.get(
-          `/api/postman/assignment?course_id=${testCourseId}`
-        );
+        const res = await instructorAgent.get(`/api/postman/assignment?course_id=${testCourseId}`);
 
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
@@ -539,9 +531,7 @@ describe('Backend API Integration Tests', () => {
 
     describe('GET /api/queries/users/:id/attendance', () => {
       it('should get attendance for specific user', async () => {
-        const res = await instructorAgent.get(
-          `/api/queries/users/${testStudentId}/attendance`
-        );
+        const res = await instructorAgent.get(`/api/queries/users/${testStudentId}/attendance`);
 
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
@@ -569,7 +559,7 @@ describe('Backend API Integration Tests', () => {
     });
 
     it('should handle SQL injection attempts', async () => {
-      const res = await instructorAgent.get("/api/queries/users/1; DROP TABLE users;--");
+      const res = await instructorAgent.get('/api/queries/users/1; DROP TABLE users;--');
       expect(res.statusCode).toBeGreaterThanOrEqual(200);
     });
 
@@ -600,7 +590,7 @@ describe('Backend API Integration Tests', () => {
         })
       );
 
-      const requests = agents.map(agent => agent.get('/api/postman/user'));
+      const requests = agents.map((agent) => agent.get('/api/postman/user'));
       const responses = await Promise.all(requests);
 
       responses.forEach((res) => {
@@ -638,9 +628,7 @@ describe('Backend API Integration Tests', () => {
     });
 
     it('GET /api/queries/activities?course_id=X - should filter by course', async () => {
-      const res = await instructorAgent.get(
-        `/api/queries/activities?course_id=${testCourseId}`
-      );
+      const res = await instructorAgent.get(`/api/queries/activities?course_id=${testCourseId}`);
 
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);

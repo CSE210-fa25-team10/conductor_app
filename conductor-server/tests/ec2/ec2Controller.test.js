@@ -24,17 +24,15 @@ describe('ec2Controller', () => {
 
   describe('startEc2Instance', () => {
     it('should start an instance and return 200', async () => {
-      const sendMock = jest
-        .spyOn(EC2Client.prototype, 'send')
-        .mockResolvedValueOnce({
-          StartingInstances: [
-            {
-              InstanceId: TEST_INSTANCE_ID,
-              CurrentState: { Name: 'pending' },
-              PreviousState: { Name: 'stopped' },
-            },
-          ],
-        });
+      const sendMock = jest.spyOn(EC2Client.prototype, 'send').mockResolvedValueOnce({
+        StartingInstances: [
+          {
+            InstanceId: TEST_INSTANCE_ID,
+            CurrentState: { Name: 'pending' },
+            PreviousState: { Name: 'stopped' },
+          },
+        ],
+      });
 
       const req = {
         body: { instanceId: TEST_INSTANCE_ID, region: TEST_REGION },
@@ -68,22 +66,20 @@ describe('ec2Controller', () => {
 
   describe('getEc2InstanceStatus', () => {
     it('should return instance status with 200', async () => {
-      const sendMock = jest
-        .spyOn(EC2Client.prototype, 'send')
-        .mockResolvedValueOnce({
-          Reservations: [
-            {
-              Instances: [
-                {
-                  InstanceId: TEST_INSTANCE_ID,
-                  State: { Name: 'running' },
-                  InstanceType: 't3.micro',
-                  Placement: { AvailabilityZone: 'us-east-1a' },
-                },
-              ],
-            },
-          ],
-        });
+      const sendMock = jest.spyOn(EC2Client.prototype, 'send').mockResolvedValueOnce({
+        Reservations: [
+          {
+            Instances: [
+              {
+                InstanceId: TEST_INSTANCE_ID,
+                State: { Name: 'running' },
+                InstanceType: 't3.micro',
+                Placement: { AvailabilityZone: 'us-east-1a' },
+              },
+            ],
+          },
+        ],
+      });
 
       const req = {
         params: { instanceId: TEST_INSTANCE_ID },

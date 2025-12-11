@@ -15,7 +15,16 @@ export async function createTestUser(userData) {
     `INSERT INTO users (name, email, password, role, pronouns, phone, availability, slack)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      RETURNING user_id, name, email, role, pronouns, phone, availability, slack`,
-    [name, email, hashedPassword, role, pronouns || null, phone || null, availability || null, slack || null]
+    [
+      name,
+      email,
+      hashedPassword,
+      role,
+      pronouns || null,
+      phone || null,
+      availability || null,
+      slack || null,
+    ]
   );
 
   return result.rows[0];
@@ -154,7 +163,10 @@ export async function cleanupTestUser(userId) {
  */
 export async function cleanupTestCourse(courseId) {
   await pool.query('DELETE FROM assignments WHERE course_id = $1', [courseId]);
-  await pool.query('DELETE FROM attendance WHERE activity_id IN (SELECT activity_id FROM activities WHERE course_id = $1)', [courseId]);
+  await pool.query(
+    'DELETE FROM attendance WHERE activity_id IN (SELECT activity_id FROM activities WHERE course_id = $1)',
+    [courseId]
+  );
   await pool.query('DELETE FROM activities WHERE course_id = $1', [courseId]);
   await pool.query('DELETE FROM course_users WHERE course_id = $1', [courseId]);
   await pool.query('DELETE FROM course_groups WHERE course_id = $1', [courseId]);

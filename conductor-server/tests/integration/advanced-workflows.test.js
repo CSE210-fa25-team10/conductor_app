@@ -277,7 +277,7 @@ describe('Advanced Workflow & Performance Tests', () => {
         email: instructor.email,
         password: 'ProfPass123!',
       });
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
     });
 
     it('should retrieve user profile efficiently', async () => {
@@ -331,7 +331,9 @@ describe('Advanced Workflow & Performance Tests', () => {
       expect(result.body.length).toBeGreaterThanOrEqual(10);
       expect(executionTime).toBeLessThan(300);
 
-      console.log(` Attendance query (${result.body.length} records) completed in ${executionTime}ms`);
+      console.log(
+        ` Attendance query (${result.body.length} records) completed in ${executionTime}ms`
+      );
     });
   });
 
@@ -358,10 +360,9 @@ describe('Advanced Workflow & Performance Tests', () => {
       await pool.query('DELETE FROM courses WHERE course_id = $1', [tempCourse.course_id]);
 
       // Verify activity was also deleted (cascade)
-      const activityCheck = await pool.query(
-        'SELECT * FROM activities WHERE activity_id = $1',
-        [tempActivity.activity_id]
-      );
+      const activityCheck = await pool.query('SELECT * FROM activities WHERE activity_id = $1', [
+        tempActivity.activity_id,
+      ]);
 
       expect(activityCheck.rows.length).toBe(0);
 
@@ -435,10 +436,9 @@ describe('Advanced Workflow & Performance Tests', () => {
       await cleanupTestUser(tempStudent.user_id);
 
       // Verify attendance was deleted
-      const attendanceCheck = await pool.query(
-        'SELECT * FROM attendance WHERE user_id = $1',
-        [tempStudent.user_id]
-      );
+      const attendanceCheck = await pool.query('SELECT * FROM attendance WHERE user_id = $1', [
+        tempStudent.user_id,
+      ]);
 
       expect(attendanceCheck.rows.length).toBe(0);
 
