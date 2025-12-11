@@ -9,7 +9,7 @@
 
 A comprehensive testing infrastructure for the Conductor application with three types of tests:
 
-1. **Backend Integration Tests** (~30 tests) - Test API endpoints with real database
+1. **Backend Integration Tests** (30 tests) - Test API endpoints with real database
 2. **Frontend Unit Tests** (9 tests) - Test JavaScript functions and DOM manipulation
 3. **End-to-End Tests** (16 tests) - Test complete user workflows in a real browser
 
