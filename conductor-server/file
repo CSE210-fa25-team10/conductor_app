@@ -1,0 +1,8 @@
+
+> conductor-server@1.0.0 test:integration
+> NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js tests/integration --forceExit --detectOpenHandles
+
+
+> conductor-server@1.0.0 test:integration
+> NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js tests/integration --forceExit --detectOpenHandles
+

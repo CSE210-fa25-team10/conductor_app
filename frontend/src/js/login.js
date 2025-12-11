@@ -95,13 +95,13 @@ function attachLoginHandlers() {
   });
 }
 
-// run automatically in browser
+// Attach handlers when running in browser
 if (typeof window !== "undefined") {
   window.addEventListener("DOMContentLoaded", attachLoginHandlers);
 }
 
-// export for tests if they want to call attachLoginHandlers manually
-if (typeof module !== "undefined") {
+// FIXED: Only export in Node.js environment (for tests), not in browser
+if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     attachLoginHandlers,
     showError,
