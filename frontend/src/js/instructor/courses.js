@@ -24,7 +24,7 @@ async function getAssignmentsByCourseId() {
     const courseId = pathParts[pathParts.length - 1];
 
     try {
-        const res = await fetch(`${API_BASE}/api/postman/assignment?course_id=${courseId}`, {
+        const res = await fetch(`/api/postman/assignment?course_id=${courseId}`, {
             method: "GET",
             credentials: "include",
         });
