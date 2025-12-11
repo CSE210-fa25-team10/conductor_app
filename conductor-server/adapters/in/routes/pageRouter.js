@@ -15,6 +15,12 @@ export function makePageRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/pages/auth/register.html'));
   });
 
+  // Profile page - accessible by both instructors and students
+  // No auth middleware - let JavaScript handle authentication
+  router.get('/profile', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/pages/shared/profile.html'));
+  });
+
   /**
    * ===== INSTRUCTOR ROUTES =====
    */

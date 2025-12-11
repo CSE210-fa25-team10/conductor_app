@@ -118,22 +118,26 @@ async function loadGoogleCalendarEvents() {
 // ===== User profile =====
 async function loadUserProfile() {
   try {
-    const response = await fetch("/api/auth/me", { credentials: "include" });
+    const response = await fetch("/api/postman/user", { credentials: "include" });
 
     if (response.ok) {
-      const data = await response.json();
-      currentUser = data.user;
+      const userData = await response.json();
+      currentUser = userData;
       populateForm(currentUser);
 
       if (currentUser.role === "student") {
         await loadUserTeams();
       }
     } else {
+      console.error("Failed to load user profile. Status:", response.status);
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Error details:", errorData);
       // redirect to login if not authenticated
-      window.location.href = "../auth/login.html";
+      window.location.href = "/login";
     }
   } catch (error) {
     console.error("Error loading profile:", error);
+    // Don't redirect on network errors, keep user on page to see error
   }
 }
 
@@ -375,7 +379,7 @@ function handleProfileSubmit(e) {
     }
   }
 
-  fetch("/api/user", {
+  fetch("/api/postman/user", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -730,8 +734,21 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
 
   const goToCoursesBtn = document.getElementById("goToCourses");
   if (goToCoursesBtn) {
-    goToCoursesBtn.addEventListener("click", () => {
-      window.location.href = "../student/courses.html";
+    goToCoursesBtn.addEventListener("click", async () => {
+      // Navigate to courses based on user role
+      try {
+        const response = await fetch('/api/user', { credentials: 'include' });
+        if (response.ok) {
+          const userData = await response.json();
+          const role = userData.role || 'student';
+          window.location.href = role === 'instructor' ? '/instructor' : '/student';
+        } else {
+          window.location.href = '/student';
+        }
+      } catch (error) {
+        console.error('Error fetching user role:', error);
+        window.location.href = '/student';
+      }
     });
   }
 

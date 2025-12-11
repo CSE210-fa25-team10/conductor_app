@@ -394,10 +394,21 @@ function initLogout() {
     }
 }
 
+function initAvatarClick() {
+    const avatar = document.querySelector('.avatar');
+    if (avatar) {
+        avatar.style.cursor = 'pointer';
+        avatar.addEventListener('click', () => {
+            window.location.href = '/profile';
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await initUserInfo();
     initCourses();
     initLogout();
+    initAvatarClick();
     const joinClassBtn = document.querySelector('.top-bar .join-class-btn');
     if (joinClassBtn) {
         joinClassBtn.addEventListener('click', showCreateCourseModal);

@@ -27,6 +27,11 @@ export function makeCssRouter() {
   router.get('/standup.css', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/css/standup.css'));
   });
+
+  router.get('/profile.css', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/css/profile.css'));
+  });
+
   /**
    * ===== INSTRUCTOR CSS =====
    */
@@ -42,6 +47,10 @@ export function makeCssRouter() {
   // FIXME: Can we confirm if this styles.css is required please?
   router.get('/instructor/styles.css', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'frontend/src/css/instructor/styles.css'));
+  });
+
+  router.get('/instructor/db_styles.css', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/css/instructor/db_styles.css'));
   });
 
   return router;

@@ -62,7 +62,13 @@ app.use(cors());
 // app.use('/api', apiRoutes);
 
 // serve static assets (CSS, JS, images)
+// Serve from the root-level frontend folder (one level up from conductor-server)
 app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Also explicitly serve CSS and JS directories to ensure proper MIME types
+app.use('/css', express.static(path.join(__dirname, '../frontend/css')));
+app.use('/js', express.static(path.join(__dirname, '../frontend/js')));
+app.use('/src', express.static(path.join(__dirname, '../frontend/src')));
 
 // build dependencies (repos, use-cases, controllers, etc.)
 const container = buildContainer(process.env);
