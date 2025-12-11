@@ -1,5 +1,6 @@
 import express from 'express';
 import { makeQueryService } from '../../../services/queryService.js';
+import { requireAuth } from '../../../middleware/auth.js';
 import { pool } from '../../../db.js';
 
 export function makeFrontendRouter() {
@@ -278,6 +279,65 @@ export function makeFrontendRouter() {
     } catch (error) {
       console.error('GET /api/assignment error:', error);
       res.status(500).json({ error: error.message });
+    }
+  });
+router.post('/course', async (req, res, next) => {
+  try {
+    const { name, code, semester, description } = req.body;
+
+    const instructorId = req.session.user.user_id;
+
+    const course = await classRepository.createCourse({
+      name,
+      code,
+      semester,
+      description,
+    });
+
+    
+    await classRepository.addCourseUser({
+      userId: instructorId,
+      courseId: course.course_id,
+      role: 'instructor',
+    });
+
+    res.status(201).json(course);
+  } catch (err) {
+    next(err);
+  }
+});
+
+ router.post('/enroll', async (req, res, next) => {
+    try {
+      const { user_id, course_code } = req.body;
+
+      if (!user_id || !course_code) {
+        return res.status(400).json({ error: 'user_id and course_code are required' });
+      }
+
+      // 1. Find the course by its code (e.g. "CS101")
+      const { rows } = await pool.query(
+        'SELECT course_id FROM courses WHERE code = $1',
+        [course_code]
+      );
+
+      const course = rows[0];
+      if (!course) {
+        return res.status(404).json({ error: 'Course not found' });
+      }
+
+      // 2. Enroll the user as a student by default
+      await pool.query(
+        `INSERT INTO course_users (user_id, course_id, role)
+         VALUES ($1, $2, 'student')
+         ON CONFLICT DO NOTHING`,
+        [user_id, course.course_id]
+      );
+
+      // 3. Return a simple JSON success response
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      next(err);
     }
   });
 
