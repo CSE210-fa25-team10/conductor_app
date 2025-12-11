@@ -12,6 +12,10 @@ export function makeCssRouter() {
     res.sendFile(path.join(process.cwd(), 'frontend/src/css/auth.css'));
   });
 
+  router.get('/profile.css', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'frontend/src/css/profile.css'));
+  });
+
   /**
    * ===== STUDENT CSS =====
    */

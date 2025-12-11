@@ -1,5 +1,9 @@
 // src/js/register.js
 
+/**
+ * Show an error message on the registration form.
+ * @param {string} msg - The error message to display.
+ */
 function showError(msg) {
   const el = document.getElementById("registerError");
   if (!el) return;
@@ -10,6 +14,10 @@ function showError(msg) {
   if (success) success.style.display = "none";
 }
 
+/**
+ * Show a success message on the registration form.
+ * @param {string} msg - The success message to display.
+ */
 function showSuccess(msg) {
   const el = document.getElementById("registerSuccess");
   if (!el) return;
@@ -20,12 +28,17 @@ function showSuccess(msg) {
   if (error) error.style.display = "none";
 }
 
+/**
+ * Attach event handlers for the registration form.
+ * Validates input and submits registration to the API.
+ */
 function attachRegisterHandlers() {
   const form = document.getElementById("registerForm");
   const firstName = document.getElementById("firstName");
   const lastName = document.getElementById("lastName");
   const pronunciation = document.getElementById("pronunciation");
   const email = document.getElementById("email");
+  const phone = document.getElementById("phone");
   const role = document.getElementById("role");
   const password = document.getElementById("password");
   const confirmPassword = document.getElementById("confirmPassword");
@@ -85,6 +98,7 @@ function attachRegisterHandlers() {
           password: password.value,
           role: role.value,
           pronunciation: pronunciation.value.trim() || undefined,
+          phone: phone.value.trim() || undefined,
         }),
       });
 
@@ -119,8 +133,11 @@ if (typeof window !== "undefined") {
   window.addEventListener("DOMContentLoaded", attachRegisterHandlers);
 }
 
-module.exports = {
-  attachRegisterHandlers,
-  showError,
-  showSuccess,
-};
+// FIXED: Only export in Node.js environment (for tests), not in browser
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    attachRegisterHandlers,
+    showError,
+    showSuccess,
+  };
+}
