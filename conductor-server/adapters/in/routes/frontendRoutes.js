@@ -33,7 +33,7 @@ export function makeFrontendRouter() {
 
       const user = users[0];
       const userInfo = { ...user };
-      delete userInfo.password; // Exclude password safely
+      delete userInfo.password;
       res.json(userInfo);
     } catch (error) {
       console.error('GET /api/user error:', error);
@@ -92,42 +92,40 @@ export function makeFrontendRouter() {
    * Create course (instructor)
    */
   router.post('/course', async (req, res) => {
-  const { name, code, semester, description } = req.body || {};
+    const { name, code, semester, description } = req.body || {};
 
-  if (!name) {
-    return res.status(400).json({ error: 'course name is required' });
-  }
+    if (!name) {
+      return res.status(400).json({ error: 'course name is required' });
+    }
 
-  try {
-    // 1. Create the course via queryService
-    const result = await queryService.executeQuery('createCourse', [
-      name,
-      code || null,
-      semester || null,
-      description || null,
-    ]);
+    try {
+      const result = await queryService.executeQuery('createCourse', [
+        name,
+        code || null,
+        semester || null,
+        description || null,
+      ]);
 
-    const course = result[0];
+      const course = result[0];
 
-    // 2. If a user is logged in, enroll them as instructor
-    const instructor = req.session?.user;
-    if (instructor && course?.course_id) {
-      await pool.query(
-        `
+      const instructor = req.session?.user;
+      if (instructor && course?.course_id) {
+        await pool.query(
+          `
         INSERT INTO course_users (user_id, course_id, role)
         VALUES ($1, $2, 'instructor')
         ON CONFLICT (user_id, course_id) DO NOTHING
         `,
-        [instructor.user_id, course.course_id]
-      );
-    }
+          [instructor.user_id, course.course_id]
+        );
+      }
 
-    res.status(201).json(course);
-  } catch (error) {
-    console.error('POST /api/course error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
+      res.status(201).json(course);
+    } catch (error) {
+      console.error('POST /api/course error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
 
   /**
    * GET /api/course
@@ -298,17 +296,15 @@ export function makeFrontendRouter() {
     }
   });
 
- router.post('/enroll', async (req, res, next) => {
+  router.post('/enroll', async (req, res, next) => {
     try {
       const { course_code } = req.body || {};
       const sessionUser = req.session?.user;
 
-      // Must be logged in
       if (!sessionUser) {
         return res.status(401).json({ error: 'Authentication required' });
       }
 
-      // Must provide course_code
       if (!course_code) {
         return res.status(400).json({ error: 'course_code is required' });
       }
@@ -317,10 +313,9 @@ export function makeFrontendRouter() {
       const role = sessionUser.role || 'student'; // 'student' or 'instructor'
 
       // 1. Look up the course by its code (e.g. "CSE210")
-      const { rows } = await pool.query(
-        'SELECT course_id FROM courses WHERE code = $1',
-        [course_code]
-      );
+      const { rows } = await pool.query('SELECT course_id FROM courses WHERE code = $1', [
+        course_code,
+      ]);
       const course = rows[0];
 
       if (!course) {

@@ -41,12 +41,7 @@ export function makePgClassRepository({ pool }) {
   `;
 
   async function createCourse({ name, code, semester, description }) {
-    const { rows } = await pool.query(createCourseSql, [
-      name,
-      code,
-      semester,
-      description ?? null,
-    ]);
+    const { rows } = await pool.query(createCourseSql, [name, code, semester, description ?? null]);
     return rows[0];
   }
 
@@ -59,11 +54,7 @@ export function makePgClassRepository({ pool }) {
   `;
 
   async function addCourseUser({ userId, courseId, role }) {
-    const { rows } = await pool.query(addCourseUserSql, [
-      userId,
-      courseId,
-      role,
-    ]);
+    const { rows } = await pool.query(addCourseUserSql, [userId, courseId, role]);
     // rows might be empty if conflict; that's fine
     return rows[0] ?? { user_id: userId, course_id: courseId, role };
   }
