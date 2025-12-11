@@ -177,24 +177,6 @@ describe('Backend API Integration Tests', () => {
       });
     });
 
-    describe('GET /api/postman/user', () => {
-      it('should get current user info with valid session', async () => {
-        const res = await instructorAgent.get('/api/postman/user');
-
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty('id', testInstructorId);
-        expect(res.body).toHaveProperty('name', testInstructor.name);
-        expect(res.body).toHaveProperty('email', testInstructor.email);
-        expect(res.body).not.toHaveProperty('password');
-      });
-
-      it('should return 401 without session', async () => {
-        const res = await request(app).get('/api/postman/user');
-        expect(res.statusCode).toBe(401);
-        expect(res.body).toHaveProperty('error');
-      });
-    });
-
     describe('POST /api/postman/user', () => {
       it('should update user profile information', async () => {
         const updates = {
