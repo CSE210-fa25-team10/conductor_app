@@ -321,8 +321,8 @@ async function joinCourse(joinData) {
     });
     
 
-    console.warn("Backend missing enroll endpoint");
-    showNotification('Enrollment API not implemented yet', 'error');
+    // console.warn("Backend missing enroll endpoint");
+    // showNotification('Enrollment API not implemented yet', 'error');
     
     await initCourses();
 }

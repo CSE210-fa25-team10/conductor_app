@@ -1,5 +1,6 @@
 import express from 'express';
 import { makeQueryService } from '../../../services/queryService.js';
+import { requireAuth } from '../../../middleware/auth.js';
 import { pool } from '../../../db.js';
 
 export function makeFrontendRouter() {
@@ -32,6 +33,7 @@ export function makeFrontendRouter() {
 
       const user = users[0];
       const userInfo = { ...user };
+      delete userInfo.password;
       // Convert profile_photo (bytea/Buffer) to base64 string for JSON transport
       if (userInfo.profile_photo && userInfo.profile_photo instanceof Buffer) {
         userInfo.profile_photo = userInfo.profile_photo.toString('base64');
@@ -113,7 +115,21 @@ export function makeFrontendRouter() {
         description || null,
       ]);
 
-      res.status(201).json(result[0]);
+      const course = result[0];
+
+      const instructor = req.session?.user;
+      if (instructor && course?.course_id) {
+        await pool.query(
+          `
+        INSERT INTO course_users (user_id, course_id, role)
+        VALUES ($1, $2, 'instructor')
+        ON CONFLICT (user_id, course_id) DO NOTHING
+        `,
+          [instructor.user_id, course.course_id]
+        );
+      }
+
+      res.status(201).json(course);
     } catch (error) {
       console.error('POST /api/course error:', error);
       res.status(500).json({ error: error.message });
@@ -347,6 +363,51 @@ export function makeFrontendRouter() {
     } catch (error) {
       console.error('GET /api/assignment error:', error);
       res.status(500).json({ error: error.message });
+    }
+  });
+
+  router.post('/enroll', async (req, res, next) => {
+    try {
+      const { course_code } = req.body || {};
+      const sessionUser = req.session?.user;
+
+      if (!sessionUser) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      if (!course_code) {
+        return res.status(400).json({ error: 'course_code is required' });
+      }
+
+      const userId = sessionUser.user_id;
+      const role = sessionUser.role || 'student'; // 'student' or 'instructor'
+
+      // 1. Look up the course by its code (e.g. "CSE210")
+      const { rows } = await pool.query('SELECT course_id FROM courses WHERE code = $1', [
+        course_code,
+      ]);
+      const course = rows[0];
+
+      if (!course) {
+        return res.status(404).json({ error: 'Course not found' });
+      }
+
+      // 2. Enroll the current user into this course
+      await pool.query(
+        `
+        INSERT INTO course_users (user_id, course_id, role)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (user_id, course_id) DO UPDATE
+        SET role = EXCLUDED.role
+        `,
+        [userId, course.course_id, role]
+      );
+
+      // 3. Return success
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      console.error('POST /api/postman/enroll error:', err);
+      next(err);
     }
   });
 
