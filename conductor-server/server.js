@@ -8,6 +8,9 @@ import { fileURLToPath } from 'url';
 import { mountRoutes } from './adapters/in/routes/routes.js';
 import { buildContainer } from './infra/container.js';
 
+// Load environment variables first
+dotenv.config();
+
 const PORT = Number(process.env.PORT) || 3000;
 
 // Get the full path to the current file
@@ -15,8 +18,6 @@ const __filename = fileURLToPath(import.meta.url);
 
 // Get the directory name of the current file
 const __dirname = path.dirname(__filename);
-
-dotenv.config();
 const app = express();
 
 // // --- NEW CORS CONFIGURATION ---

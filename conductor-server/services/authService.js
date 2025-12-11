@@ -6,10 +6,18 @@ import { pool } from '../db.js'; // ADDED: Use the shared pool
 
 dotenv.config();
 
+// Validate required environment variables
+if (!process.env.GOOGLE_CLIENT_ID) {
+  console.error('ERROR: GOOGLE_CLIENT_ID environment variable is not set');
+}
+if (!process.env.GOOGLE_CLIENT_SECRET) {
+  console.error('ERROR: GOOGLE_CLIENT_SECRET environment variable is not set');
+}
+
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `http://localhost:3000/api/auth/google/callback`
+  `${process.env.LIVE_URL || 'http://localhost:3000'}/api/auth/google/callback`
 );
 
 // REMOVED: This block caused the SASL error (missing password) and the SyntaxError (duplicate variable)
@@ -86,10 +94,20 @@ export const register = async (userData) => {
  * @returns {string} - The authentication URL
  */
 export const generateAuthUrl = () => {
-  return client.generateAuthUrl({
+  // Debug: Log environment variables to ensure they're loaded
+  console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'Set' : 'Not set');
+  console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Not set');
+  
+  const authUrl = client.generateAuthUrl({
     access_type: 'offline',
     scope: ['profile', 'email'],
+    response_type: 'code',
+    client_id: process.env.GOOGLE_CLIENT_ID, // Explicitly include client_id
+    redirect_uri: `${process.env.LIVE_URL || 'http://localhost:3000'}/api/auth/google/callback`
   });
+  
+  console.log('Generated OAuth URL:', authUrl);
+  return authUrl;
 };
 
 /**
