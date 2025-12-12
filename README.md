@@ -2,6 +2,18 @@
 
 Conductor helps instructors and students stay on top of attendance, standups, and coursework. This repo brings everything together: a Node.js + Express API that talks to Postgres, a static frontend with accompanying Jest/Playwright tests, and a Docker Compose stack that reproduces the full environment in a couple of commands.
 
+## Deployed Link
+
+http://ec2-18-191-213-71.us-east-2.compute.amazonaws.com:3000/
+
+## Videos
+
+Show off Video: https://youtu.be/xxqZBAdkLBc
+
+Lessons Video: https://www.youtube.com/watch?v=kvau754AKL4
+
+Technical Video: https://youtu.be/nzaMBrjko2I
+
 ## Repository Layout
 
 ```
